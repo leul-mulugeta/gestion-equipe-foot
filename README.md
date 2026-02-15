@@ -5,6 +5,10 @@ Cette application web permet à un coach de gérer son équipe de football. Elle
 
 **🌐 [Démo en ligne](https://gestion-equipe-foot.alwaysdata.net/)**
 
+>**Identifiants de test :**
+> - **Email :** `coach@equipe.fr`
+> - **Mot de passe :** `motdepasse`
+
 ## 🚀 Fonctionnalités
 - **Compte Coach unique** : Accès protégé pour la gestion globale de l'équipe.
 - **Gestion des Joueurs** : Suivi des informations, des postes et des statuts (actif, blessé, etc.).
