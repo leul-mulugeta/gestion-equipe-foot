@@ -23,14 +23,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $joueur) {
 
 		if ($succes) {
 			$_SESSION['succes'] = 'Le joueur ' . htmlspecialchars($joueur->getNom()) . ' a bien été supprimé.';
-			header("Location: index.php?page=joueurs");
+			header("Location: /joueurs");
 			exit;
 		} else {
 			$erreur = 'Erreur lors de la suppression. Note : un joueur ayant déjà participé à un match ne peut pas être supprimé.';
 		}
 	} else {
 		$_SESSION['succes'] = 'Suppression annulée.';
-		header("Location: index.php?page=joueurs");
+		header("Location: /joueurs");
 		exit;
 	}
 }

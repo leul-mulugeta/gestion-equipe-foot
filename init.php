@@ -25,6 +25,8 @@ require_once __DIR__ . '/src/Model/DAO/ParticipantDAO.php';
 require_once __DIR__ . '/src/Model/DAO/StatistiquesDAO.php';
 
 // Controleur
+require_once __DIR__ . '/src/Controller/SeConnecter.php';
+
 require_once __DIR__ . '/src/Controller/CreerUnCommentaire.php';
 require_once __DIR__ . '/src/Controller/ObtenirToutLesCommentairesDUnJoueur.php';
 require_once __DIR__ . '/src/Controller/SupprimerUnCommentaire.php';

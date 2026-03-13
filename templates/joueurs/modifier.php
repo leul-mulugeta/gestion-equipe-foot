@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $joueur) {
 			$resultat = $modifierUnJoueur->executer();
 			if ($resultat) {
 				$_SESSION['succes'] = 'Joueur ' . $resultat->getNumeroDeLicence() . ' modifié avec succès.';
-				header("Location: index.php?page=joueurs");
+				header("Location: /joueurs");
 				exit;
 			} else {
 				$erreur = "Échec de la modification du joueur.";
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $joueur) {
 		</select>
 
 		<button type="submit">Enregistrer</button>
-		<a href="index.php?page=detailJoueur&id=<?= $joueur->getId() ?>"><button type="button">Annuler</button></a>
+		<a href="/joueurs/detail?id=<?= $joueur->getId() ?>"><button type="button">Annuler</button></a>
 	</form>
 
 <?php } ?>

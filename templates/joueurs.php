@@ -17,7 +17,7 @@ unset($_SESSION['succes']);
 <?php } ?>
 
 <div class="actions">
-	<a href="index.php?page=ajouterJoueur"><button>Ajouter un joueur</button></a>
+	<a href="/joueurs/ajouter"><button>Ajouter un joueur</button></a>
 </div>
 
 <?php if (count($joueurs) > 0) { ?>
@@ -46,7 +46,7 @@ unset($_SESSION['succes']);
 					<td><?= htmlspecialchars($j->getPoids()) ?> kg</td>
 					<td><?= htmlspecialchars($j->getPoste()->value) ?></td>
 					<td><?= htmlspecialchars($j->getStatut()->value) ?></td>
-					<td><a href="index.php?page=detailJoueur&id=<?= $j->getId() ?>">Détails</a></td>
+					<td><a href="/joueurs/detail?id=<?= $j->getId() ?>">Détails</a></td>
 				</tr>
 			<?php } ?>
 		</tbody>

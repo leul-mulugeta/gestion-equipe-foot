@@ -42,8 +42,8 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 	<h1>Détails du joueur : <?= htmlspecialchars($joueur->getPrenom() . ' ' . $joueur->getNom()) ?></h1>
 
 	<div class="actions">
-		<a href="index.php?page=modifierJoueur&id=<?= $joueur->getId() ?>"><button type="button">Modifier</button></a>
-		<a href="index.php?page=supprimerJoueur&id=<?= $joueur->getId() ?>"><button type="button">Supprimer</button></a>
+		<a href="/joueurs/modifier?id=<?= $joueur->getId() ?>"><button type="button">Modifier</button></a>
+		<a href="/joueurs/supprimer?id=<?= $joueur->getId() ?>"><button type="button">Supprimer</button></a>
 	</div>
 
 	<div class="fiche">
@@ -91,5 +91,5 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 <?php } ?>
 
 <div class="actions">
-	<a href="index.php?page=joueurs"><button type="button">Retour à la liste</button></a>
+	<a href="/joueurs"><button type="button">Retour à la liste</button></a>
 </div>

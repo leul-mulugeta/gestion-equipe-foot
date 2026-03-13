@@ -44,10 +44,33 @@ Cette application web permet à un coach de gérer son équipe de football. Elle
    - L'identifiant et le mot de passe du coach sont également modifiables dans ce fichier (par défaut : `coach@equipe.fr` / `motdepasse`).
 
 4. **Exécution** :
-   Lancez le serveur via XAMPP/WAMP ou avec la commande :
-   ```bash
-   php -S localhost:8000 -t public
-   ```
+   Lancez votre serveur web. Reportez-vous à la section **Configuration du Serveur Web** ci-dessous pour plus de détails sur le routage.
+
+## ⚙️ Configuration du Serveur Web
+
+> **⚠️ Important :** Pour que le système de routage fonctionne, l'application **doit être servie à la racine de votre domaine ou port** (ex: `http://localhost:8000` ou `http://gestion-equipe-foot.local`). Elle ne fonctionnera pas si elle est lancée dans un sous-dossier (ex: `http://localhost/gestion-equipe-foot/public`).
+
+### Option 1 : Apache (VirtualHost recommandé)
+Un fichier `public/.htaccess` est déjà inclus. Assurez-vous que le module `mod_rewrite` est activé dans votre configuration Apache.
+Configurez votre **VirtualHost** en utilisant le **chemin absolu** vers votre projet :
+```apache
+<VirtualHost *:80>
+    ServerName gestion-equipe-foot.local
+    # Remplacez CHEMIN_ABSOLU par le chemin réel sur votre machine
+    DocumentRoot "CHEMIN_ABSOLU/gestion-equipe-foot/public"
+    <Directory "CHEMIN_ABSOLU/gestion-equipe-foot/public">
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+```
+
+### Option 2 : Serveur intégré PHP (Méthode la plus simple)
+Exécutez la commande suivante à la racine du projet :
+```bash
+php -S localhost:8000 -t public
+```
+L'application sera alors accessible sur `http://localhost:8000`.
 
 ## 📁 Structure du projet
 - `public/` : Fichiers accessibles (index.php, CSS).

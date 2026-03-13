@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre) {
 
             if ($succesSuppr) {
                 $_SESSION['succes'] = "Match contre " . htmlspecialchars($rencontre->getNomEquipeAdverse()) . " supprimé avec succès.";
-                header("Location: index.php?page=matchs");
+                header("Location: /matchs");
                 exit;
             } else {
                 $erreur = "Échec de la suppression du match.";
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre) {
         }
     } else {
         $_SESSION['succes'] = 'Suppression annulée.';
-        header("Location: index.php?page=matchs");
+        header("Location: /matchs");
         exit;
     }
 }
@@ -67,7 +67,7 @@ if ($rencontre && $rencontre->getDateEtHeure() < new DateTime()) {
         </form>
     <?php } else { ?>
         <div class="actions">
-            <a href="index.php?page=matchs"><button type="button">Retour à la liste</button></a>
+            <a href="/matchs"><button type="button">Retour à la liste</button></a>
         </div>
     <?php } ?>
 

@@ -1,7 +1,7 @@
 <?php
 
 if (isset($_SESSION['id'])) {
-	header("Location: index.php?page=accueil");
+	header("Location: /joueurs");
 	exit;
 }
 
@@ -13,10 +13,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	$password = trim($_POST['password']);
 
 	if (!empty($email) && !empty($password)) {
-		if ($email === COACH_EMAIL && $password === COACH_PASSWORD) {
+		$controleurConnexion = new SeConnecter($email, $password);
+		if ($controleurConnexion->executer()) {
 			session_regenerate_id(true);
 			$_SESSION['id'] = time();
-			header("Location: index.php");
+			header("Location: /joueurs");
 			exit;
 		} else {
 			$erreur = 'Email ou mot de passe incorrect.';
@@ -25,13 +26,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$erreur = 'Veuillez remplir tous les champs.';
 	}
 }
+
 ?>
 
 <div class="page-connexion">
 	<div class="boite-connexion">
 		<h1>Connexion</h1>
 
-		<form method="post" action="index.php?page=login">
+		<form method="post" action="/login">
 			<label>Email</label>
 			<input type="email" name="email" placeholder="Email" required />
 

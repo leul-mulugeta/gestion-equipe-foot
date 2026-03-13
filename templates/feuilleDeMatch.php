@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
             $controleurCreation->executer();
         }
         $_SESSION['succes'] = "Feuille de match enregistrée avec succès.";
-        header("Location: index.php?page=detailRencontre&id=" . $rencontre->getId());
+        header("Location: /matchs/detail?id=" . $rencontre->getId());
         exit;
     }
 }
@@ -223,7 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
 
         <div class="actions">
             <button type="submit">Enregistrer</button>
-            <a href="index.php?page=detailRencontre&id=<?= $rencontre->getId() ?>"><button type="button">Annuler</button></a>
+            <a href="/matchs/detail?id=<?= $rencontre->getId() ?>"><button type="button">Annuler</button></a>
         </div>
     </form>
 <?php } ?>

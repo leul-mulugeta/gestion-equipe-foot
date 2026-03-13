@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($rencontre) {
                 $_SESSION['succes'] = "Match contre " . htmlspecialchars($nomEquipeAdverse) . " ajouté avec succès.";
-                header("Location: index.php?page=matchs");
+                header("Location: /matchs");
                 exit;
             } else {
                 $erreur = "Échec de l'ajout du match.";
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <h1>Ajouter un match</h1>
 
-<form method="post" action="index.php?page=ajouterRencontre">
+<form method="post" action="/matchs/ajouter">
     <label for="date">Date :</label>
     <input type="date" id="date" name="date" min="<?= date('Y-m-d') ?>" value="<?= htmlspecialchars($dateMatch) ?>" required>
 
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <input type="text" id="adresse" name="adresse" value="<?= htmlspecialchars($adresse) ?>" required>
 
     <button type="submit">Ajouter</button>
-    <a href="index.php?page=matchs"><button type="button">Annuler</button></a>
+    <a href="/matchs"><button type="button">Annuler</button></a>
 </form>
 
 <?php if ($erreur) { ?>

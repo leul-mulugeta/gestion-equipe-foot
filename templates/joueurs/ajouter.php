@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			$joueur = $creerUnJoueur->executer();
 			if ($joueur) {
 				$_SESSION['succes'] = 'Joueur ' . $joueur->getNumeroDeLicence() . ' ajouté avec succès.';
-				header("Location: index.php?page=joueurs");
+				header("Location: /joueurs");
 				exit;
 			} else {
 				$erreur = "Échec de l'ajout du joueur (Vérifiez si le numéro de licence n'existe pas déjà).";
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <h1>Ajouter un joueur</h1>
 
-<form method="post" action="index.php?page=ajouterJoueur">
+<form method="post" action="/joueurs/ajouter">
 
 	<label for="numeroDeLicence">Numéro de licence :</label>
 	<input type="number" min="1" id="numeroDeLicence" name="numeroDeLicence" value="<?= htmlspecialchars($numeroDeLicence) ?>" required>
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	</select>
 
 	<button type="submit">Ajouter</button>
-	<a href="index.php?page=joueurs"><button type="button">Annuler</button></a>
+	<a href="/joueurs"><button type="button">Annuler</button></a>
 </form>
 
 <?php if ($erreur) { ?>

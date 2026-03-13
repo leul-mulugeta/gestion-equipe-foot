@@ -55,7 +55,7 @@ if ($rencontre) {
                         }
 
                         $_SESSION['succes'] = "Résultat et évaluations enregistrés avec succès.";
-                        header("Location: index.php?page=matchs");
+                        header("Location: /matchs");
                         exit;
                     } else {
                         $erreur = "Échec de l'enregistrement.";
@@ -89,7 +89,7 @@ if ($rencontre) {
                     );
                     if ($modifierRencontre->executer()) {
                         $_SESSION['succes'] = "Match contre " . htmlspecialchars($adversaireVal) . " modifié avec succès.";
-                        header("Location: index.php?page=matchs");
+                        header("Location: /matchs");
                         exit;
                     } else {
                         $erreur = "Échec de la modification du match.";
@@ -184,7 +184,7 @@ if ($rencontre) {
         <?php } ?>
 
         <button type="submit">Enregistrer</button>
-        <a href="index.php?page=detailRencontre&id=<?= $rencontre->getId() ?>"><button type="button">Annuler</button></a>
+        <a href="/matchs/detail?id=<?= $rencontre->getId() ?>"><button type="button">Annuler</button></a>
     </form>
 <?php } ?>
 

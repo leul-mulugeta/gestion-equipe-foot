@@ -17,7 +17,7 @@ unset($_SESSION['succes']);
 <?php } ?>
 
 <div class="actions">
-	<a href="index.php?page=ajouterRencontre"><button>Ajouter un match</button></a>
+	<a href="/matchs/ajouter"><button>Ajouter un match</button></a>
 </div>
 
 <?php if (count($rencontres) > 0) { ?>
@@ -49,7 +49,7 @@ unset($_SESSION['succes']);
 					</td>
 
 					<td><?= $r->getResultat() ? htmlspecialchars($r->getResultat()->value) : 'À venir' ?></td>
-					<td><a href="index.php?page=detailRencontre&id=<?= $r->getId() ?>">Détails</a></td>
+					<td><a href="/matchs/detail?id=<?= $r->getId() ?>">Détails</a></td>
 				</tr>
 			<?php } ?>
 		</tbody>
