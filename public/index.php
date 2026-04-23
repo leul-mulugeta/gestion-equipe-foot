@@ -4,26 +4,29 @@ require_once __DIR__ . '/../init.php';
 
 session_start();
 
-$uri = strtok($_SERVER["REQUEST_URI"], '?');
+$uri = strtok($_SERVER['REQUEST_URI'], '?');
+if ($uri !== '/') {
+	$uri = rtrim($uri, '/');
+}
 
 // Si on essaie d'accéder à une page protégée sans être connecté
 if (!isset($_SESSION['id']) && $uri !== '/login') {
 	if ($uri !== '/') {
-		$_SESSION['erreur'] = "Vous devez être connecté pour consulter cette page.";
+		$_SESSION['erreur'] = 'Vous devez être connecté pour consulter cette page.';
 	}
-	header("Location: /login");
+	header('Location: /login');
 	exit;
 }
 
 if ($uri === '/') {
-	header("Location: /joueurs");
+	header('Location: /joueurs');
 	exit;
 }
 
 if ($uri === '/logout') {
 	session_unset();
 	session_destroy();
-	header("Location: /login");
+	header('Location: /login');
 	exit;
 }
 
@@ -45,7 +48,6 @@ if ($uri === '/logout') {
 	?>
 		<nav>
 			<ul>
-				<li><a href="/accueil" class="<?php echo $uri === '/accueil' ? 'active' : ''; ?>">Accueil</a></li>
 				<li><a href="/joueurs" class="<?php echo str_starts_with($uri, '/joueurs') ? 'active' : ''; ?>">Joueurs</a></li>
 				<li><a href="/matchs" class="<?php echo str_starts_with($uri, '/matchs') ? 'active' : ''; ?>">Matchs</a></li>
 				<li><a href="/statistiques" class="<?php echo $uri === '/statistiques' ? 'active' : ''; ?>">Statistiques</a></li>
@@ -58,11 +60,11 @@ if ($uri === '/logout') {
 
 	<div id="contenu">
 		<?php
-		$page = '../templates' . $uri . '.php';
+		$page = '../src/Vue' . $uri . '.php';
 		if (file_exists($page)) {
 			require_once $page;
 		} else {
-			echo "<h1>Page non trouvée</h1>";
+			echo '<h1>Page non trouvée</h1>';
 		}
 		?>
 	</div>

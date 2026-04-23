@@ -76,7 +76,7 @@ L'application sera alors accessible sur `http://localhost:8000`.
 - `public/` : Fichiers accessibles (index.php, CSS).
 - `src/Controller/` : Logique de contrôle.
 - `src/Model/` : Objets métiers (Entity) et accès aux données (DAO).
-- `templates/` : Vues de l'application (HTML/PHP).
+- `src/Vue/` : Vues de l'application (HTML/PHP).
 - `sql/` : Scripts de création de la base de données.
 
 ## 🧑‍💻 À propos

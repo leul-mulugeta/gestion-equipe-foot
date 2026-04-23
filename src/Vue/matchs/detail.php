@@ -26,7 +26,7 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 
     <div class="actions">
         <?php if ($rencontre->getDateEtHeure() > new DateTime()) { ?>
-            <a href="/feuilleDeMatch&id=<?= $rencontre->getId() ?>"><button type="button">Feuille de match</button></a>
+            <a href="/feuilleDeMatch?id=<?= $rencontre->getId() ?>"><button type="button">Feuille de match</button></a>
         <?php } ?>
         <a href="/matchs/modifier?id=<?= $rencontre->getId() ?>"><button type="button">Modifier</button></a>
         <a href="/matchs/supprimer?id=<?= $rencontre->getId() ?>"><button type="button">Supprimer</button></a>

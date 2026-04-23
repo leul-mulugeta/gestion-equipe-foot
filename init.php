@@ -45,7 +45,6 @@ require_once __DIR__ . '/src/Controller/SupprimerUneRencontre.php';
 
 require_once __DIR__ . '/src/Controller/CreerUnParticipant.php';
 require_once __DIR__ . '/src/Controller/ObtenirUnParticipant.php';
-require_once __DIR__ . '/src/Controller/ObtenirTousLesParticipationsDUnJoueur.php';
 require_once __DIR__ . '/src/Controller/ObtenirTousLesParticipantsDUneRencontre.php';
 require_once __DIR__ . '/src/Controller/SupprimerUnParticipant.php';
 require_once __DIR__ . '/src/Controller/SupprimerTousLesParticipantsDUneRencontre.php';

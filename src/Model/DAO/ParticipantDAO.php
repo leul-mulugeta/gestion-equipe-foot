@@ -62,35 +62,6 @@ class ParticipantDAO
 		return null;
 	}
 
-	public function selectAllByIdJoueur(int $idJoueur): array
-	{
-		$requete = "SELECT * FROM participant WHERE idJoueur = :idJoueur";
-		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':idJoueur', $idJoueur);
-		$statement->execute();
-
-		$participants = [];
-		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
-			$participant = new Participant(
-				$row['id'],
-				null,
-				null,
-				TypeDeParticipation::from($row['typeDeParticipation']),
-				Poste::from($row['poste']),
-				$row['evaluation'] !== null ? (int) $row['evaluation'] : null
-			);
-
-			$joueur = $this->joueurDAO->selectById($row['idJoueur']);
-			$rencontre = $this->rencontreDAO->selectById($row['idRencontre']);
-			$participant->setJoueur($joueur);
-			$participant->setRencontre($rencontre);
-
-			$participants[] = $participant;
-		}
-
-		return $participants;
-	}
-
 	public function selectAllByIdRencontre(int $idRencontre): array
 	{
 		$requete = "SELECT * FROM participant WHERE idRencontre = :idRencontre";
