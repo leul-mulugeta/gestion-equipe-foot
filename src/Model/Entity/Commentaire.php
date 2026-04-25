@@ -4,13 +4,13 @@ class Commentaire
 {
 	private int $id;
 	private ?Joueur $joueur;
-	private string $note;
+	private string $contenu;
 
-	public function __construct(int $id, ?Joueur $joueur, string $note)
+	public function __construct(int $id, ?Joueur $joueur, string $contenu)
 	{
 		$this->id = $id;
 		$this->joueur = $joueur;
-		$this->note = $note;
+		$this->contenu = $contenu;
 	}
 
 	public function getId(): int
@@ -33,8 +33,8 @@ class Commentaire
 		$this->joueur = $joueur;
 	}
 
-	public function getNote(): string
+	public function getContenu(): string
 	{
-		return $this->note;
+		return $this->contenu;
 	}
 }

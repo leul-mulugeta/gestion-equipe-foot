@@ -13,14 +13,14 @@ class JoueurDAO
 
 	public function insert(Joueur $joueur): ?Joueur
 	{
-		$requete = "INSERT INTO joueur (numeroDeLicence, nom, prenom, dateDeNaissance, taille, poids, statut, poste) 
-					VALUES (:numeroDeLicence, :nom, :prenom, :dateDeNaissance, :taille, :poids, :statut, :poste)";
+		$requete = 'INSERT INTO joueur (numero_licence, nom, prenom, date_naissance, taille, poids, statut, poste) 
+					VALUES (:numero_licence, :nom, :prenom, :date_naissance, :taille, :poids, :statut, :poste)';
 
 		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':numeroDeLicence', $joueur->getNumeroDeLicence());
+		$statement->bindValue(':numero_licence', $joueur->getNumeroDeLicence());
 		$statement->bindValue(':nom', $joueur->getNom());
 		$statement->bindValue(':prenom', $joueur->getPrenom());
-		$statement->bindValue(':dateDeNaissance', $joueur->getDateDeNaissance()->format('Y-m-d'));
+		$statement->bindValue(':date_naissance', $joueur->getDateDeNaissance()->format('Y-m-d'));
 		$statement->bindValue(':taille', $joueur->getTaille());
 		$statement->bindValue(':poids', $joueur->getPoids());
 		$statement->bindValue(':statut', $joueur->getStatut()->value);
@@ -36,27 +36,27 @@ class JoueurDAO
 
 	public function update(Joueur $joueur): ?Joueur
 	{
-		$requete = "UPDATE joueur SET
-					numeroDeLicence = :numeroDeLicence,
+		$requete = 'UPDATE joueur SET
+					numero_licence = :numero_licence,
 					nom = :nom,
 					prenom = :prenom,
-					dateDeNaissance = :dateDeNaissance,
+					date_naissance = :date_naissance,
 					taille = :taille,
 					poids = :poids,
 					statut = :statut,
 					poste = :poste
-					WHERE id = :id";
+					WHERE joueur_id = :joueur_id';
 
 		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':numeroDeLicence', $joueur->getNumeroDeLicence());
+		$statement->bindValue(':numero_licence', $joueur->getNumeroDeLicence());
 		$statement->bindValue(':nom', $joueur->getNom());
 		$statement->bindValue(':prenom', $joueur->getPrenom());
-		$statement->bindValue(':dateDeNaissance', $joueur->getDateDeNaissance()->format('Y-m-d'));
+		$statement->bindValue(':date_naissance', $joueur->getDateDeNaissance()->format('Y-m-d'));
 		$statement->bindValue(':taille', $joueur->getTaille());
 		$statement->bindValue(':poids', $joueur->getPoids());
 		$statement->bindValue(':statut', $joueur->getStatut()->value);
 		$statement->bindValue(':poste', $joueur->getPoste()->value);
-		$statement->bindValue(':id', $joueur->getId());
+		$statement->bindValue(':joueur_id', $joueur->getId());
 
 		if ($statement->execute()) {
 			return $joueur;
@@ -67,19 +67,19 @@ class JoueurDAO
 
 	public function selectById(int $id): ?Joueur
 	{
-		$requete = "SELECT * FROM joueur WHERE id = :id";
+		$requete = 'SELECT * FROM joueur WHERE joueur_id = :joueur_id';
 		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':id', $id);
+		$statement->bindValue(':joueur_id', $id);
 		$statement->execute();
 
 		$row = $statement->fetch(PDO::FETCH_ASSOC);
 		if ($row) {
 			$joueur = new Joueur(
-				$row['id'],
-				(int) $row['numeroDeLicence'],
+				$row['joueur_id'],
+				(int) $row['numero_licence'],
 				$row['nom'],
 				$row['prenom'],
-				new DateTime($row['dateDeNaissance']),
+				new DateTime($row['date_naissance']),
 				(int) $row['taille'],
 				(float) $row['poids'],
 				Statut::from($row['statut']),
@@ -101,18 +101,18 @@ class JoueurDAO
 
 	public function selectAll(): array
 	{
-		$requete = "SELECT * FROM joueur";
+		$requete = 'SELECT * FROM joueur';
 		$statement = $this->pdo->prepare($requete);
 		$statement->execute();
 
 		$joueurs = [];
 		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
 			$joueur = new Joueur(
-				$row['id'],
-				(int) $row['numeroDeLicence'],
+				$row['joueur_id'],
+				(int) $row['numero_licence'],
 				$row['nom'],
 				$row['prenom'],
-				new DateTime($row['dateDeNaissance']),
+				new DateTime($row['date_naissance']),
 				(int) $row['taille'],
 				(float) $row['poids'],
 				Statut::from($row['statut']),
@@ -134,9 +134,9 @@ class JoueurDAO
 
 	public function delete(int $id): bool
 	{
-		$requete = "DELETE FROM joueur WHERE id = :id";
+		$requete = 'DELETE FROM joueur WHERE joueur_id = :joueur_id';
 		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':id', $id);
+		$statement->bindValue(':joueur_id', $id);
 		$statement->execute();
 
 		return $statement->rowCount() > 0;

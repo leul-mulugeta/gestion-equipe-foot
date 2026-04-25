@@ -16,10 +16,10 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 	if (!$joueur) {
 		$erreur = "Aucun joueur trouvé avec cet identifiant.";
 	} else {
-		if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['note'])) {
-			$noteTexte = trim($_POST['note']);
-			if (!empty($noteTexte)) {
-				$creerCom = new CreerUnCommentaire(0, $joueur, $noteTexte);
+		if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contenu'])) {
+			$contenu = trim($_POST['contenu']);
+			if (!empty($contenu)) {
+				$creerCom = new CreerUnCommentaire(0, $joueur, $contenu);
 				$resultatCom = $creerCom->executer();
 				if ($resultatCom) {
 					$succes = "Commentaire ajouté avec succès.";
@@ -69,7 +69,7 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 		<ul class="liste-commentaires">
 			<?php foreach ($commentaires as $com) { ?>
 				<li>
-					<?= htmlspecialchars($com->getNote()) ?>
+					<?= htmlspecialchars($com->getContenu()) ?>
 					<hr>
 				</li>
 			<?php } ?>
@@ -80,7 +80,7 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 
 	<h4>Ajouter une note :</h4>
 	<form method="post" action="">
-		<textarea name="note" rows="4" cols="50" placeholder="Saisir votre observation ici..." required></textarea>
+		<textarea name="contenu" rows="4" cols="50" placeholder="Saisir votre observation ici..." required></textarea>
 		<button type="submit">Ajouter la note</button>
 	</form>
 

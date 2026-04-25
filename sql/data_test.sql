@@ -17,7 +17,7 @@ ALTER TABLE commentaire AUTO_INCREMENT = 1;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- Insertion des 20 joueurs
-INSERT INTO joueur (numeroDeLicence, nom, prenom, dateDeNaissance, taille, poids, statut, poste) VALUES
+INSERT INTO joueur (numero_licence, nom, prenom, date_naissance, taille, poids, statut, poste) VALUES
 (1001, 'Lloris', 'Hugo', '1986-12-26', 188, 82.0, 'ACTIF', 'GARDIEN'),
 (1002, 'Maignan', 'Mike', '1995-07-03', 191, 89.0, 'ACTIF', 'GARDIEN'),
 (1003, 'Pavard', 'Benjamin', '1996-03-28', 186, 81.0, 'ACTIF', 'DEFENSEUR'),
@@ -40,7 +40,7 @@ INSERT INTO joueur (numeroDeLicence, nom, prenom, dateDeNaissance, taille, poids
 (1020, 'Areola', 'Alphonse', '1993-02-27', 195, 94.0, 'ACTIF', 'GARDIEN');
 
 -- Insertion des Commentaires
-INSERT INTO commentaire (idJoueur, note) VALUES
+INSERT INTO commentaire (joueur_id, contenu) VALUES
 (1, 'Capitaine exemplaire, très rassurant sur sa ligne.'),
 (4, 'Un peu fébrile sur les relances lors du dernier entraînement.'),
 (6, 'Blessure à la cuisse, indisponible pour 3 semaines.'),
@@ -48,7 +48,7 @@ INSERT INTO commentaire (idJoueur, note) VALUES
 (14, 'Suspendu suite au carton rouge du dernier match.');
 
 -- Insertion des 7 Rencontres
-INSERT INTO rencontre (dateEtHeure, lieu, adresse, nomEquipeAdverse, resultat, scoreEquipeLocale, scoreEquipeAdverse) VALUES
+INSERT INTO rencontre (date_heure, lieu, adresse, nom_equipe_adverse, resultat, score_equipe_locale, score_equipe_adverse) VALUES
 ('2025-11-10 20:45:00', 'DOMICILE', 'Stade de France, Paris', 'Allemagne', 'VICTOIRE', 3, 1),
 ('2025-11-25 20:45:00', 'EXTERIEUR', 'Wembley, Londres', 'Angleterre', 'NUL', 2, 2),
 ('2025-12-05 20:45:00', 'DOMICILE', 'Stade de France, Paris', 'Italie', 'DEFAITE', 0, 1),
@@ -59,7 +59,7 @@ INSERT INTO rencontre (dateEtHeure, lieu, adresse, nomEquipeAdverse, resultat, s
 
 -- Insertion des Participants
 -- Match 1
-INSERT INTO participant (idJoueur, idRencontre, typeDeParticipation, poste, evaluation) VALUES
+INSERT INTO participant (joueur_id, rencontre_id, type_participation, poste, evaluation) VALUES
 (1, 1, 'TITULAIRE', 'GARDIEN', 4),
 (3, 1, 'TITULAIRE', 'DEFENSEUR', 3), (4, 1, 'TITULAIRE', 'DEFENSEUR', 4), (5, 1, 'TITULAIRE', 'DEFENSEUR', 4), (7, 1, 'TITULAIRE', 'DEFENSEUR', 3),
 (8, 1, 'TITULAIRE', 'MILIEU', 5), (9, 1, 'TITULAIRE', 'MILIEU', 4), (11, 1, 'TITULAIRE', 'MILIEU', 5),
@@ -67,7 +67,7 @@ INSERT INTO participant (idJoueur, idRencontre, typeDeParticipation, poste, eval
 (18, 1, 'REMPLACANT', 'ATTAQUANT', 4), (17, 1, 'REMPLACANT', 'MILIEU', 3);
 
 -- Match 2
-INSERT INTO participant (idJoueur, idRencontre, typeDeParticipation, poste, evaluation) VALUES
+INSERT INTO participant (joueur_id, rencontre_id, type_participation, poste, evaluation) VALUES
 (1, 2, 'TITULAIRE', 'GARDIEN', 3),
 (3, 2, 'TITULAIRE', 'DEFENSEUR', 2), (19, 2, 'TITULAIRE', 'DEFENSEUR', 3), (7, 2, 'TITULAIRE', 'DEFENSEUR', 3), (16, 2, 'TITULAIRE', 'DEFENSEUR', 3),
 (8, 2, 'TITULAIRE', 'MILIEU', 4), (10, 2, 'TITULAIRE', 'MILIEU', 3), (17, 2, 'TITULAIRE', 'MILIEU', 3),
@@ -75,7 +75,7 @@ INSERT INTO participant (idJoueur, idRencontre, typeDeParticipation, poste, eval
 (13, 2, 'REMPLACANT', 'ATTAQUANT', 4), (11, 2, 'REMPLACANT', 'MILIEU', 5);
 
 -- Match 3
-INSERT INTO participant (idJoueur, idRencontre, typeDeParticipation, poste, evaluation) VALUES
+INSERT INTO participant (joueur_id, rencontre_id, type_participation, poste, evaluation) VALUES
 (2, 3, 'TITULAIRE', 'GARDIEN', 4),
 (4, 3, 'TITULAIRE', 'DEFENSEUR', 2), (5, 3, 'TITULAIRE', 'DEFENSEUR', 2), (16, 3, 'TITULAIRE', 'DEFENSEUR', 3), (19, 3, 'TITULAIRE', 'DEFENSEUR', 2),
 (9, 3, 'TITULAIRE', 'MILIEU', 2), (11, 3, 'TITULAIRE', 'MILIEU', 3), (17, 3, 'TITULAIRE', 'MILIEU', 2),
@@ -83,7 +83,7 @@ INSERT INTO participant (idJoueur, idRencontre, typeDeParticipation, poste, eval
 (18, 3, 'REMPLACANT', 'ATTAQUANT', 3);
 
 -- Match 4
-INSERT INTO participant (idJoueur, idRencontre, typeDeParticipation, poste, evaluation) VALUES
+INSERT INTO participant (joueur_id, rencontre_id, type_participation, poste, evaluation) VALUES
 (1, 4, 'TITULAIRE', 'GARDIEN', 5),
 (3, 4, 'TITULAIRE', 'DEFENSEUR', 4), (4, 4, 'TITULAIRE', 'DEFENSEUR', 4), (5, 4, 'TITULAIRE', 'DEFENSEUR', 5), (7, 4, 'TITULAIRE', 'DEFENSEUR', 4),
 (8, 4, 'TITULAIRE', 'MILIEU', 4), (11, 4, 'TITULAIRE', 'MILIEU', 5), (10, 4, 'TITULAIRE', 'MILIEU', 4),
@@ -91,7 +91,7 @@ INSERT INTO participant (idJoueur, idRencontre, typeDeParticipation, poste, eval
 (9, 4, 'REMPLACANT', 'MILIEU', 4), (16, 4, 'REMPLACANT', 'DEFENSEUR', 4);
 
 -- Match 5
-INSERT INTO participant (idJoueur, idRencontre, typeDeParticipation, poste, evaluation) VALUES
+INSERT INTO participant (joueur_id, rencontre_id, type_participation, poste, evaluation) VALUES
 (1, 5, 'TITULAIRE', 'GARDIEN', 4),
 (5, 5, 'TITULAIRE', 'DEFENSEUR', 4), (7, 5, 'TITULAIRE', 'DEFENSEUR', 4), (16, 5, 'TITULAIRE', 'DEFENSEUR', 4), (19, 5, 'TITULAIRE', 'DEFENSEUR', 4),
 (10, 5, 'TITULAIRE', 'MILIEU', 5), (11, 5, 'TITULAIRE', 'MILIEU', 5), (17, 5, 'TITULAIRE', 'MILIEU', 4),

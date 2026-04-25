@@ -36,7 +36,7 @@ Cette application web permet à un coach de gérer son équipe de football. Elle
    - Exécutez les scripts SQL situés dans le dossier `sql/` dans l'ordre suivant :
      1. `sql/01_create_tables.sql` (**Obligatoire** : crée la structure).
      2. `sql/02_add_constraints.sql` (**Obligatoire** : ajoute les relations).
-     3. `sql/test.sql` (**Optionnel** : ajoute des données de démonstration).
+     3. `sql/data_test.sql` (**Optionnel** : ajoute des données de démonstration).
 
 3. **Configuration** :
    - Renommez le fichier `config.sample.php` vers `config.php`.

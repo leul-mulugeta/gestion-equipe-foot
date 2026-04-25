@@ -11,10 +11,10 @@ class CommentaireDAO
 
 	public function insert(Commentaire $commentaire): ?Commentaire
 	{
-		$requete = "INSERT INTO commentaire (idJoueur, note) VALUES (:idJoueur, :note)";
+		$requete = "INSERT INTO commentaire (joueur_id, contenu) VALUES (:joueur_id, :contenu)";
 		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':idJoueur', $commentaire->getJoueur()->getId());
-		$statement->bindValue(':note', $commentaire->getNote());
+		$statement->bindValue(':joueur_id', $commentaire->getJoueur()->getId());
+		$statement->bindValue(':contenu', $commentaire->getContenu());
 
 		if ($statement->execute()) {
 			$commentaire->setId($this->pdo->lastInsertId());
@@ -26,17 +26,17 @@ class CommentaireDAO
 
 	public function selectByIdJoueur(int $idJoueur): array
 	{
-		$requete = "SELECT * FROM commentaire WHERE idJoueur = :idJoueur";
+		$requete = "SELECT * FROM commentaire WHERE joueur_id = :joueur_id";
 		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':idJoueur', $idJoueur);
+		$statement->bindValue(':joueur_id', $idJoueur);
 		$statement->execute();
 
 		$commentaires = [];
 		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
 			$commentaire = new Commentaire(
-				$row['id'],
+				$row['commentaire_id'],
 				null,
-				$row['note']
+				$row['contenu']
 			);
 
 			$commentaires[] = $commentaire;
@@ -47,9 +47,9 @@ class CommentaireDAO
 
 	public function delete(int $id): bool
 	{
-		$requete = "DELETE FROM commentaire WHERE id = :id";
+		$requete = "DELETE FROM commentaire WHERE commentaire_id = :commentaire_id";
 		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':id', $id);
+		$statement->bindValue(':commentaire_id', $id);
 		$statement->execute();
 
 		return $statement->rowCount() > 0;
