@@ -7,12 +7,17 @@ class SupprimerTousLesParticipantsDUneRencontre
 
 	public function __construct(int $idRencontre)
 	{
-		$this->participantDAO = new ParticipantDAO();
+		$this->participantDAO = ParticipantDAO::getInstance();
 		$this->idRencontre = $idRencontre;
 	}
 
 	public function executer(): bool
 	{
-		return $this->participantDAO->deleteAllByIdRencontre($this->idRencontre);
+		try {
+			$this->participantDAO->deleteParticipantsByRencontreId($this->idRencontre);
+			return true;
+		} catch (Exception $e) {
+			return false;
+		}
 	}
 }

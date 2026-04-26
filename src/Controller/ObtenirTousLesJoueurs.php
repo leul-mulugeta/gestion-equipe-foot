@@ -6,11 +6,11 @@ class ObtenirTousLesJoueurs
 
 	public function __construct()
 	{
-		$this->joueurDAO = new JoueurDAO();
+		$this->joueurDAO = JoueurDAO::getInstance();
 	}
 
 	public function executer(): array
 	{
-		return $this->joueurDAO->selectAll();
+		return $this->joueurDAO->selectAllJoueurs();
 	}
 }

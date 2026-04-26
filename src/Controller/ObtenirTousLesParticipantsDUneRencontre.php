@@ -7,12 +7,12 @@ class ObtenirTousLesParticipantsDUneRencontre
 
 	public function __construct(int $idRencontre)
 	{
-		$this->participantDAO = new ParticipantDAO();
+		$this->participantDAO = ParticipantDAO::getInstance();
 		$this->idRencontre = $idRencontre;
 	}
 
 	public function executer(): array
 	{
-		return $this->participantDAO->selectAllByIdRencontre($this->idRencontre);
+		return $this->participantDAO->selectParticipantsByRencontreId($this->idRencontre);
 	}
 }

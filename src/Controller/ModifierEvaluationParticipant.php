@@ -4,17 +4,22 @@ class ModifierEvaluationParticipant
 {
 	private ParticipantDAO $participantDAO;
 	private int $idParticipant;
-	private ?int $evaluation;
+	private int $evaluation;
 
-	public function __construct(int $idParticipant, ?int $evaluation)
+	public function __construct(int $idParticipant, int $evaluation)
 	{
-		$this->participantDAO = new ParticipantDAO();
+		$this->participantDAO = ParticipantDAO::getInstance();
 		$this->idParticipant = $idParticipant;
 		$this->evaluation = $evaluation;
 	}
 
 	public function executer(): bool
 	{
-		return $this->participantDAO->updateEvaluation($this->idParticipant, $this->evaluation);
+		try {
+			$this->participantDAO->updateEvaluationParticipant($this->idParticipant, $this->evaluation);
+			return true;
+		} catch (Exception $e) {
+			return false;
+		}
 	}
 }

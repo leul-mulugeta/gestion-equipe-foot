@@ -14,7 +14,7 @@ class ModifierUneRencontre
 
 	public function __construct(int $id, DateTime $dateEtHeure, Lieu $lieu, string $adresse, string $nomEquipeAdverse, ?Resultat $resultat, ?int $scoreEquipeLocale, ?int $scoreEquipeAdverse)
 	{
-		$this->rencontreDAO = new RencontreDAO();
+		$this->rencontreDAO = RencontreDAO::getInstance();
 		$this->id = $id;
 		$this->dateEtHeure = $dateEtHeure;
 		$this->lieu = $lieu;
@@ -25,13 +25,14 @@ class ModifierUneRencontre
 		$this->scoreEquipeAdverse = $scoreEquipeAdverse;
 	}
 
-	public function executer(): ?Rencontre
+	public function executer(): bool
 	{
 		try {
 			$rencontre = new Rencontre($this->id, $this->dateEtHeure, $this->lieu, $this->adresse, $this->nomEquipeAdverse, $this->resultat, $this->scoreEquipeLocale, $this->scoreEquipeAdverse);
-			return $this->rencontreDAO->update($rencontre);
-		} catch (PDOException $e) {
-			return null;
+			$this->rencontreDAO->updateRencontre($rencontre);
+			return true;
+		} catch (Exception $e) {
+			return false;
 		}
 	}
 }

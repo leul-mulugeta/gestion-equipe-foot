@@ -7,12 +7,12 @@ class ObtenirUnParticipant
 
 	public function __construct(int $id)
 	{
-		$this->participantDAO = new ParticipantDAO();
+		$this->participantDAO = ParticipantDAO::getInstance();
 		$this->id = $id;
 	}
 
 	public function executer(): ?Participant
 	{
-		return $this->participantDAO->selectByid($this->id);
+		return $this->participantDAO->selectParticipantById($this->id);
 	}
 }

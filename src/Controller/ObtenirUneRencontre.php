@@ -7,12 +7,12 @@ class ObtenirUneRencontre
 
 	public function __construct(int $id)
 	{
-		$this->rencontreDAO = new RencontreDAO();
+		$this->rencontreDAO = RencontreDAO::getInstance();
 		$this->id = $id;
 	}
 
 	public function executer(): ?Rencontre
 	{
-		return $this->rencontreDAO->selectById($this->id);
+		return $this->rencontreDAO->selectRencontreById($this->id);
 	}
 }

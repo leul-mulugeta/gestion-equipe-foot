@@ -9,15 +9,20 @@ class CreerUnCommentaire
 
 	public function __construct(int $id, int $joueurId, string $contenu)
 	{
-		$this->commentaireDAO = new CommentaireDAO();
+		$this->commentaireDAO = CommentaireDAO::getInstance();
 		$this->id = $id;
 		$this->joueurId = $joueurId;
 		$this->contenu = $contenu;
 	}
 
-	public function executer(): ?Commentaire
+	public function executer(): bool
 	{
-		$commentaire = new Commentaire($this->id, $this->contenu);
-		return $this->commentaireDAO->insert($commentaire, $this->joueurId);
+		try {
+			$commentaire = new Commentaire($this->id, $this->contenu);
+			$this->commentaireDAO->insertCommentaire($commentaire, $this->joueurId);
+			return true;
+		} catch (Exception $e) {
+			return false;
+		}
 	}
 }

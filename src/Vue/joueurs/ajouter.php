@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			);
 			$joueur = $creerUnJoueur->executer();
 			if ($joueur) {
-				$_SESSION['succes'] = 'Joueur ' . $joueur->getNumeroDeLicence() . ' ajouté avec succès.';
+				$_SESSION['succes'] = "Joueur $numeroDeLicence ajouté avec succès.";
 				header("Location: /joueurs");
 				exit;
 			} else {

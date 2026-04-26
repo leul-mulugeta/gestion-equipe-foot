@@ -6,7 +6,7 @@ class ObtenirStatistiquesJoueurs
 
 	public function __construct()
 	{
-		$this->statistiquesDAO = new StatistiquesDAO();
+		$this->statistiquesDAO = StatistiquesDAO::getInstance();
 	}
 
 	public function executer(): array

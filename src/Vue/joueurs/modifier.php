@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $joueur) {
 
 			$resultat = $modifierUnJoueur->executer();
 			if ($resultat) {
-				$_SESSION['succes'] = 'Joueur ' . $resultat->getNumeroDeLicence() . ' modifié avec succès.';
+				$_SESSION['succes'] = "Joueur $numeroDeLicence modifié avec succès.";
 				header("Location: /joueurs");
 				exit;
 			} else {

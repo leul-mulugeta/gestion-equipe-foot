@@ -2,117 +2,109 @@
 
 class ParticipantDAO
 {
-	private PDO $pdo;
-	private JoueurDAO $joueurDAO;
+	private static ?ParticipantDAO $instance = null;
+	private readonly PDO $pdo;
+	private readonly JoueurDAO $joueurDAO;
 
-	public function __construct()
+	private function __construct()
 	{
-		$this->pdo = MySQLDataSource::getInstance()->getConnection();
-		$this->joueurDAO = new JoueurDAO();
+		$this->pdo = DBConnection::getInstance()->getConnection();
+		$this->joueurDAO = JoueurDAO::getInstance();
 	}
 
-	public function insert(Participant $participant): ?Participant
+	public static function getInstance(): ParticipantDAO
 	{
-		$requete = 'INSERT INTO participant (joueur_id, rencontre_id, type_participation, poste, evaluation) 
+		if (self::$instance === null) {
+			self::$instance = new ParticipantDAO();
+		}
+		return self::$instance;
+	}
+
+	public function insertParticipant(Participant $participant): void
+	{
+		$query = 'INSERT INTO participant (joueur_id, rencontre_id, type_participation, poste, evaluation) 
 					VALUES (:joueur_id, :rencontre_id, :type_participation, :poste, :evaluation)';
 
-		$statement = $this->pdo->prepare($requete);
+		$statement = $this->pdo->prepare($query);
 		$statement->bindValue(':joueur_id', $participant->getJoueur()->getJoueurId());
 		$statement->bindValue(':rencontre_id', $participant->getRencontreId());
 		$statement->bindValue(':type_participation', $participant->getTypeDeParticipation()->value);
 		$statement->bindValue(':poste', $participant->getPoste()->value);
 		$statement->bindValue(':evaluation', $participant->getEvaluation());
-
-		if ($statement->execute()) {
-			$participant->setParticipantId($this->pdo->lastInsertId());
-			return $participant;
-		}
-
-		return null;
+		$statement->execute();
 	}
 
-	public function selectById(int $id): ?Participant
+	public function selectParticipantById(int $participantId): ?Participant
 	{
-		$requete = 'SELECT * FROM participant WHERE participant_id = :participant_id';
-		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':participant_id', $id);
+		$query = 'SELECT * FROM participant WHERE participant_id = :participant_id';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':participant_id', $participantId);
 		$statement->execute();
 
-		$row = $statement->fetch(PDO::FETCH_ASSOC);
-		if ($row) {
-			$participant = new Participant(
-				$row['participant_id'],
-				$this->joueurDAO->selectById($row['joueur_id']),
-				$row['rencontre_id'],
-				TypeDeParticipation::from($row['type_participation']),
-				Poste::from($row['poste']),
-				$row['evaluation'] !== null ? (int) $row['evaluation'] : null
-			);
-
-			return $participant;
+		$dbLine = $statement->fetch();
+		if (!$dbLine) {
+			return null;
 		}
 
-		return null;
+		return $this->arrayToParticipant($dbLine);
 	}
 
-	public function selectAllByIdRencontre(int $idRencontre): array
+	public function selectParticipantsByRencontreId(int $rencontreId): array
 	{
-		$requete = 'SELECT * FROM participant WHERE rencontre_id = :rencontre_id';
-		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':rencontre_id', $idRencontre);
+		$query = 'SELECT * FROM participant WHERE rencontre_id = :rencontre_id';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':rencontre_id', $rencontreId);
 		$statement->execute();
 
-		$participants = [];
-		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
-			$participant = new Participant(
-				$row['participant_id'],
-				$this->joueurDAO->selectById($row['joueur_id']),
-				$row['rencontre_id'],
-				TypeDeParticipation::from($row['type_participation']),
-				Poste::from($row['poste']),
-				$row['evaluation'] !== null ? (int) $row['evaluation'] : null
-			);
-
-			$participants[] = $participant;
-		}
-
-		return $participants;
+		return array_map(fn($dbLine) => $this->arrayToParticipant($dbLine), $statement->fetchAll());
 	}
 
-	public function delete(int $id): bool
+	public function deleteParticipant(int $participantId): bool
 	{
-		$requete = 'DELETE FROM participant WHERE participant_id = :participant_id';
-		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':participant_id', $id);
+		$query = 'DELETE FROM participant WHERE participant_id = :participant_id';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':participant_id', $participantId);
 		$statement->execute();
 
 		return $statement->rowCount() > 0;
 	}
 
-	public function deleteAllByIdRencontre(int $idRencontre): bool
+	public function deleteParticipantsByRencontreId(int $rencontreId): void
 	{
-		$requete = 'DELETE FROM participant WHERE rencontre_id = :rencontre_id';
-		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':rencontre_id', $idRencontre);
-		return $statement->execute();
-	}
-
-	public function updateEvaluation(int $idParticipant, ?int $evaluation): bool
-	{
-		$requete = 'UPDATE participant SET evaluation = :evaluation WHERE participant_id = :participant_id';
-		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':evaluation', $evaluation);
-		$statement->bindValue(':participant_id', $idParticipant);
-		return $statement->execute();
-	}
-
-	public function getMoyenneEvaluationByIdJoueur(int $idJoueur): float
-	{
-		$requete = 'SELECT AVG(evaluation) as moyenne FROM participant WHERE joueur_id = :joueur_id AND evaluation > 0';
-		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':joueur_id', $idJoueur);
+		$query = 'DELETE FROM participant WHERE rencontre_id = :rencontre_id';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':rencontre_id', $rencontreId);
 		$statement->execute();
-		$row = $statement->fetch(PDO::FETCH_ASSOC);
-		return $row['moyenne'] ? (float)$row['moyenne'] : 0.0;
+	}
+
+	public function updateEvaluationParticipant(int $participantId, int $evaluation): void
+	{
+		$query = 'UPDATE participant SET evaluation = :evaluation WHERE participant_id = :participant_id';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':evaluation', $evaluation);
+		$statement->bindValue(':participant_id', $participantId);
+		$statement->execute();
+	}
+
+	public function selectMoyennesEvaluationByJoueurId(int $joueurId): float
+	{
+		$query = 'SELECT AVG(evaluation) as moyenne FROM participant WHERE joueur_id = :joueur_id AND evaluation > 0';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':joueur_id', $joueurId);
+		$statement->execute();
+		$dbLine = $statement->fetch();
+		return $dbLine['moyenne'] ? (float)$dbLine['moyenne'] : 0.0;
+	}
+
+	private function arrayToParticipant(array $dbLine): Participant
+	{
+		return new Participant(
+			$dbLine['participant_id'],
+			$this->joueurDAO->selectJoueurById($dbLine['joueur_id']),
+			$dbLine['rencontre_id'],
+			TypeDeParticipation::from($dbLine['type_participation']),
+			Poste::from($dbLine['poste']),
+			$dbLine['evaluation'] !== null ? (int) $dbLine['evaluation'] : null
+		);
 	}
 }

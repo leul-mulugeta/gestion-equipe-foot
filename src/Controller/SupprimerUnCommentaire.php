@@ -7,12 +7,16 @@ class SupprimerUnCommentaire
 
 	public function __construct(int $id)
 	{
-		$this->commentaireDAO = new CommentaireDAO();
+		$this->commentaireDAO = CommentaireDAO::getInstance();
 		$this->id = $id;
 	}
 
 	public function executer(): bool
 	{
-		return $this->commentaireDAO->delete($this->id);
+		try {
+			return $this->commentaireDAO->deleteCommentaire($this->id);
+		} catch (Exception $e) {
+			return false;
+		}
 	}
 }

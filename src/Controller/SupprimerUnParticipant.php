@@ -7,12 +7,16 @@ class SupprimerUnParticipant
 
 	public function __construct(int $id)
 	{
-		$this->participantDAO = new participantDAO();
+		$this->participantDAO = ParticipantDAO::getInstance();
 		$this->id = $id;
 	}
 
 	public function executer(): bool
 	{
-		return $this->participantDAO->delete($this->id);
+		try {
+			return $this->participantDAO->deleteParticipant($this->id);
+		} catch (Exception $e) {
+			return false;
+		}
 	}
 }

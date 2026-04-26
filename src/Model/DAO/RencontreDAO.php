@@ -2,19 +2,28 @@
 
 class RencontreDAO
 {
-	private PDO $pdo;
+	private static ?RencontreDAO $instance = null;
+	private readonly PDO $pdo;
 
-	public function __construct()
+	private function __construct()
 	{
-		$this->pdo = MySQLDataSource::getInstance()->getConnection();
+		$this->pdo = DBConnection::getInstance()->getConnection();
 	}
 
-	public function insert(Rencontre $rencontre): ?Rencontre
+	public static function getInstance(): RencontreDAO
 	{
-		$requete = 'INSERT INTO rencontre (date_heure, lieu, adresse, nom_equipe_adverse, resultat, score_equipe_locale, score_equipe_adverse) 
+		if (self::$instance === null) {
+			self::$instance = new RencontreDAO();
+		}
+		return self::$instance;
+	}
+
+	public function insertRencontre(Rencontre $rencontre): void
+	{
+		$query = 'INSERT INTO rencontre (date_heure, lieu, adresse, nom_equipe_adverse, resultat, score_equipe_locale, score_equipe_adverse) 
 					VALUES (:date_heure, :lieu, :adresse, :nom_equipe_adverse, :resultat, :score_equipe_locale, :score_equipe_adverse)';
 
-		$statement = $this->pdo->prepare($requete);
+		$statement = $this->pdo->prepare($query);
 		$statement->bindValue(':date_heure', $rencontre->getDateEtHeure()->format('Y-m-d H:i:s'));
 		$statement->bindValue(':lieu', $rencontre->getLieu()->value);
 		$statement->bindValue(':adresse', $rencontre->getAdresse());
@@ -22,18 +31,12 @@ class RencontreDAO
 		$statement->bindValue(':resultat', $rencontre->getResultat() ? $rencontre->getResultat()->value : null);
 		$statement->bindValue(':score_equipe_locale', $rencontre->getScoreEquipeLocale());
 		$statement->bindValue(':score_equipe_adverse', $rencontre->getScoreEquipeAdverse());
-
-		if ($statement->execute()) {
-			$rencontre->setRencontreId($this->pdo->lastInsertId());
-			return $rencontre;
-		}
-
-		return null;
+		$statement->execute();
 	}
 
-	public function update(Rencontre $rencontre): ?Rencontre
+	public function updateRencontre(Rencontre $rencontre): void
 	{
-		$requete = 'UPDATE rencontre SET 
+		$query = 'UPDATE rencontre SET 
 					date_heure = :date_heure, 
 					lieu = :lieu, 
 					adresse = :adresse, 
@@ -43,7 +46,7 @@ class RencontreDAO
 					score_equipe_adverse = :score_equipe_adverse 
 					WHERE rencontre_id = :rencontre_id';
 
-		$statement = $this->pdo->prepare($requete);
+		$statement = $this->pdo->prepare($query);
 		$statement->bindValue(':date_heure', $rencontre->getDateEtHeure()->format('Y-m-d H:i:s'));
 		$statement->bindValue(':lieu', $rencontre->getLieu()->value);
 		$statement->bindValue(':adresse', $rencontre->getAdresse());
@@ -52,111 +55,54 @@ class RencontreDAO
 		$statement->bindValue(':score_equipe_locale', $rencontre->getScoreEquipeLocale());
 		$statement->bindValue(':score_equipe_adverse', $rencontre->getScoreEquipeAdverse());
 		$statement->bindValue(':rencontre_id', $rencontre->getRencontreId());
-
-		if ($statement->execute()) {
-			return $rencontre;
-		}
-
-		return null;
+		$statement->execute();
 	}
 
-	public function selectById(int $id): ?Rencontre
+	public function selectRencontreById(int $rencontreId): ?Rencontre
 	{
-		$requete = 'SELECT * FROM rencontre WHERE rencontre_id = :rencontre_id';
-		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':rencontre_id', $id);
+		$query = 'SELECT * FROM rencontre WHERE rencontre_id = :rencontre_id';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':rencontre_id', $rencontreId);
 		$statement->execute();
 
-		$row = $statement->fetch(PDO::FETCH_ASSOC);
-		if ($row) {
-			$rencontre = new Rencontre(
-				(int) $row['rencontre_id'],
-				new DateTime($row['date_heure']),
-				Lieu::from($row['lieu']),
-				$row['adresse'],
-				$row['nom_equipe_adverse'],
-				$row['resultat'] ? Resultat::tryFrom($row['resultat']) : null,
-				$row['score_equipe_locale'] !== null ? (int) $row['score_equipe_locale'] : null,
-				$row['score_equipe_adverse'] !== null ? (int) $row['score_equipe_adverse'] : null
-			);
-
-			return $rencontre;
+		$dbLine = $statement->fetch();
+		if (!$dbLine) {
+			return null;
 		}
 
-		return null;
+		return $this->arrayToRencontre($dbLine);
 	}
 
-	public function selectAll(): array
+	public function selectAllRencontres(): array
 	{
-		$requete = 'SELECT * FROM rencontre ORDER BY date_heure DESC';
-		$statement = $this->pdo->prepare($requete);
+		$query = 'SELECT * FROM rencontre ORDER BY date_heure DESC';
+		$statement = $this->pdo->prepare($query);
 		$statement->execute();
 
-		$rencontres = [];
-		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
-			$rencontre = new Rencontre(
-				(int) $row['rencontre_id'],
-				new DateTime($row['date_heure']),
-				Lieu::from($row['lieu']),
-				$row['adresse'],
-				$row['nom_equipe_adverse'],
-				$row['resultat'] ? Resultat::tryFrom($row['resultat']) : null,
-				$row['score_equipe_locale'] !== null ? (int) $row['score_equipe_locale'] : null,
-				$row['score_equipe_adverse'] !== null ? (int) $row['score_equipe_adverse'] : null
-			);
-
-			$rencontres[] = $rencontre;
-		}
-
-		return $rencontres;
+		return array_map(fn($dbLine) => $this->arrayToRencontre($dbLine), $statement->fetchAll());
 	}
 
-	public function delete(int $id): bool
+	public function deleteRencontre(int $rencontreId): bool
 	{
-		$requete = 'DELETE FROM rencontre WHERE rencontre_id = :rencontre_id';
-		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':rencontre_id', $id);
+		$query = 'DELETE FROM rencontre WHERE rencontre_id = :rencontre_id';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':rencontre_id', $rencontreId);
 		$statement->execute();
 
 		return $statement->rowCount() > 0;
 	}
 
-	public function getGlobalStats(): array
+	private function arrayToRencontre(array $dbLine): Rencontre
 	{
-		$requete = "SELECT 
-						COUNT(*) as total,
-						SUM(CASE WHEN resultat = 'VICTOIRE' THEN 1 ELSE 0 END) as victoires,
-						SUM(CASE WHEN resultat = 'DEFAITE' THEN 1 ELSE 0 END) as defaites,
-						SUM(CASE WHEN resultat = 'NUL' THEN 1 ELSE 0 END) as nuls
-					FROM rencontre 
-					WHERE resultat IS NOT NULL";
-
-		$statement = $this->pdo->prepare($requete);
-		$statement->execute();
-		$row = $statement->fetch(PDO::FETCH_ASSOC);
-
-		if ($row['total'] > 0) {
-			$stats = [
-				'total' => (int)$row['total'],
-				'victoires' => (int)$row['victoires'],
-				'defaites' => (int)$row['defaites'],
-				'nuls' => (int)$row['nuls'],
-				'pourcentageVictoires' => round(($row['victoires'] / $row['total']) * 100, 2),
-				'pourcentageDefaites' => round(($row['defaites'] / $row['total']) * 100, 2),
-				'pourcentageNuls' => round(($row['nuls'] / $row['total']) * 100, 2),
-			];
-		} else {
-			$stats = [
-				'total' => 0,
-				'victoires' => 0,
-				'defaites' => 0,
-				'nuls' => 0,
-				'pourcentageVictoires' => 0,
-				'pourcentageDefaites' => 0,
-				'pourcentageNuls' => 0,
-			];
-		}
-
-		return $stats;
+		return new Rencontre(
+			(int) $dbLine['rencontre_id'],
+			new DateTime($dbLine['date_heure']),
+			Lieu::from($dbLine['lieu']),
+			$dbLine['adresse'],
+			$dbLine['nom_equipe_adverse'],
+			$dbLine['resultat'] !== null ? Resultat::from($dbLine['resultat']) : null,
+			$dbLine['score_equipe_locale'] !== null ? (int) $dbLine['score_equipe_locale'] : null,
+			$dbLine['score_equipe_adverse'] !== null ? (int) $dbLine['score_equipe_adverse'] : null
+		);
 	}
 }

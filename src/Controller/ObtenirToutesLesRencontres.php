@@ -6,11 +6,11 @@ class ObtenirToutesLesRencontres
 
 	public function __construct()
 	{
-		$this->rencontreDAO = new RencontreDAO();
+		$this->rencontreDAO = RencontreDAO::getInstance();
 	}
 
 	public function executer(): array
 	{
-		return $this->rencontreDAO->selectAll();
+		return $this->rencontreDAO->selectAllRencontres();
 	}
 }

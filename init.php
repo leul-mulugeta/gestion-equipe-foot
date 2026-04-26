@@ -1,5 +1,7 @@
 <?php
 
+date_default_timezone_set('Europe/Paris');
+
 // Charger la configuration
 require_once __DIR__ . '/config.php';
 
@@ -17,7 +19,7 @@ require_once __DIR__ . '/src/Model/Entity/Rencontre.php';
 require_once __DIR__ . '/src/Model/Entity/Participant.php';
 
 // DAO
-require_once __DIR__ . '/src/Model/DAO/MySQLDataSource.php';
+require_once __DIR__ . '/src/Model/DAO/DBConnection.php';
 require_once __DIR__ . '/src/Model/DAO/CommentaireDAO.php';
 require_once __DIR__ . '/src/Model/DAO/JoueurDAO.php';
 require_once __DIR__ . '/src/Model/DAO/RencontreDAO.php';

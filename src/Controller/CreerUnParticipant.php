@@ -12,7 +12,7 @@ class CreerUnParticipant
 
 	public function __construct(int $id, Joueur $joueur, int $rencontreId, TypeDeParticipation $typeDeParticipation, Poste $poste, ?int $evaluation)
 	{
-		$this->participantDAO = new ParticipantDAO();
+		$this->participantDAO = ParticipantDAO::getInstance();
 		$this->id = $id;
 		$this->joueur = $joueur;
 		$this->rencontreId = $rencontreId;
@@ -21,9 +21,14 @@ class CreerUnParticipant
 		$this->evaluation = $evaluation;
 	}
 
-	public function executer(): ?Participant
+	public function executer(): bool
 	{
-		$participant = new Participant($this->id, $this->joueur, $this->rencontreId, $this->typeDeParticipation, $this->poste, $this->evaluation);
-		return $this->participantDAO->insert($participant);
+		try {
+			$participant = new Participant($this->id, $this->joueur, $this->rencontreId, $this->typeDeParticipation, $this->poste, $this->evaluation);
+			$this->participantDAO->insertParticipant($participant);
+			return true;
+		} catch (Exception $e) {
+			return false;
+		}
 	}
 }

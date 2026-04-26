@@ -7,12 +7,16 @@ class SupprimerUnJoueur
 
 	public function __construct(int $id)
 	{
-		$this->joueurDAO = new JoueurDAO();
+		$this->joueurDAO = JoueurDAO::getInstance();
 		$this->id = $id;
 	}
 
 	public function executer(): bool
 	{
-		return $this->joueurDAO->delete($this->id);
+		try {
+			return $this->joueurDAO->deleteJoueur($this->id);
+		} catch (Exception $e) {
+			return false;
+		}
 	}
 }

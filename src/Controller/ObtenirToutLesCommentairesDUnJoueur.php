@@ -7,12 +7,12 @@ class ObtenirToutLesCommentairesDUnJoueur
 
 	public function __construct(int $idJoueur)
 	{
-		$this->commentaireDAO = new CommentaireDAO();
+		$this->commentaireDAO = CommentaireDAO::getInstance();
 		$this->idJoueur = $idJoueur;
 	}
 
 	public function executer(): array
 	{
-		return $this->commentaireDAO->selectByIdJoueur($this->idJoueur);
+		return $this->commentaireDAO->selectCommentaireByJoueurId($this->idJoueur);
 	}
 }

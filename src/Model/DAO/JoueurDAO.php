@@ -2,19 +2,28 @@
 
 class JoueurDAO
 {
-	private PDO $pdo;
+	private static ?JoueurDAO $instance = null;
+	private readonly PDO $pdo;
 
-	public function __construct()
+	private function __construct()
 	{
-		$this->pdo = MySQLDataSource::getInstance()->getConnection();
+		$this->pdo = DBConnection::getInstance()->getConnection();
 	}
 
-	public function insert(Joueur $joueur): ?Joueur
+	public static function getInstance(): JoueurDAO
 	{
-		$requete = 'INSERT INTO joueur (numero_licence, nom, prenom, date_naissance, taille, poids, statut, poste) 
+		if (self::$instance === null) {
+			self::$instance = new JoueurDAO();
+		}
+		return self::$instance;
+	}
+
+	public function insertJoueur(Joueur $joueur): void
+	{
+		$query = 'INSERT INTO joueur (numero_licence, nom, prenom, date_naissance, taille, poids, statut, poste) 
 					VALUES (:numero_licence, :nom, :prenom, :date_naissance, :taille, :poids, :statut, :poste)';
 
-		$statement = $this->pdo->prepare($requete);
+		$statement = $this->pdo->prepare($query);
 		$statement->bindValue(':numero_licence', $joueur->getNumeroDeLicence());
 		$statement->bindValue(':nom', $joueur->getNom());
 		$statement->bindValue(':prenom', $joueur->getPrenom());
@@ -23,18 +32,12 @@ class JoueurDAO
 		$statement->bindValue(':poids', $joueur->getPoids());
 		$statement->bindValue(':statut', $joueur->getStatut()->value);
 		$statement->bindValue(':poste', $joueur->getPoste()->value);
-
-		if ($statement->execute()) {
-			$joueur->setJoueurId($this->pdo->lastInsertId());
-			return $joueur;
-		}
-
-		return null;
+		$statement->execute();
 	}
 
-	public function update(Joueur $joueur): ?Joueur
+	public function updateJoueur(Joueur $joueur): void
 	{
-		$requete = 'UPDATE joueur SET
+		$query = 'UPDATE joueur SET
 					numero_licence = :numero_licence,
 					nom = :nom,
 					prenom = :prenom,
@@ -45,7 +48,7 @@ class JoueurDAO
 					poste = :poste
 					WHERE joueur_id = :joueur_id';
 
-		$statement = $this->pdo->prepare($requete);
+		$statement = $this->pdo->prepare($query);
 		$statement->bindValue(':numero_licence', $joueur->getNumeroDeLicence());
 		$statement->bindValue(':nom', $joueur->getNom());
 		$statement->bindValue(':prenom', $joueur->getPrenom());
@@ -55,74 +58,55 @@ class JoueurDAO
 		$statement->bindValue(':statut', $joueur->getStatut()->value);
 		$statement->bindValue(':poste', $joueur->getPoste()->value);
 		$statement->bindValue(':joueur_id', $joueur->getJoueurId());
-
-		if ($statement->execute()) {
-			return $joueur;
-		}
-
-		return null;
+		$statement->execute();
 	}
 
-	public function selectById(int $id): ?Joueur
+	public function selectJoueurById(int $joueurId): ?Joueur
 	{
-		$requete = 'SELECT * FROM joueur WHERE joueur_id = :joueur_id';
-		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':joueur_id', $id);
+		$query = 'SELECT * FROM joueur WHERE joueur_id = :joueur_id';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':joueur_id', $joueurId);
 		$statement->execute();
 
-		$row = $statement->fetch(PDO::FETCH_ASSOC);
-		if ($row) {
-			$joueur = new Joueur(
-				$row['joueur_id'],
-				(int) $row['numero_licence'],
-				$row['nom'],
-				$row['prenom'],
-				new DateTime($row['date_naissance']),
-				(int) $row['taille'],
-				(float) $row['poids'],
-				Statut::from($row['statut']),
-				Poste::from($row['poste'])
-			);
-
-			return $joueur;
+		$dbLine = $statement->fetch();
+		if (!$dbLine) {
+			return null;
 		}
 
-		return null;
+		return $this->arrayToJoueur($dbLine);
 	}
 
-	public function selectAll(): array
+	public function selectAllJoueurs(): array
 	{
-		$requete = 'SELECT * FROM joueur';
-		$statement = $this->pdo->prepare($requete);
+		$query = 'SELECT * FROM joueur';
+		$statement = $this->pdo->prepare($query);
 		$statement->execute();
 
-		$joueurs = [];
-		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
-			$joueur = new Joueur(
-				$row['joueur_id'],
-				(int) $row['numero_licence'],
-				$row['nom'],
-				$row['prenom'],
-				new DateTime($row['date_naissance']),
-				(int) $row['taille'],
-				(float) $row['poids'],
-				Statut::from($row['statut']),
-				Poste::from($row['poste'])
-			);
-
-			$joueurs[] = $joueur;
-		}
-
-		return $joueurs;
+		return array_map(fn($dbLine) => $this->arrayToJoueur($dbLine), $statement->fetchAll());
 	}
 
-	public function delete(int $id): bool
+	public function deleteJoueur(int $joueurId): bool
 	{
-		$requete = 'DELETE FROM joueur WHERE joueur_id = :joueur_id';
-		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':joueur_id', $id);
+		$query = 'DELETE FROM joueur WHERE joueur_id = :joueur_id';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':joueur_id', $joueurId);
 		$statement->execute();
 
 		return $statement->rowCount() > 0;
+	}
+
+	private function arrayToJoueur(array $dbLine): Joueur
+	{
+		return new Joueur(
+			$dbLine['joueur_id'],
+			(int) $dbLine['numero_licence'],
+			$dbLine['nom'],
+			$dbLine['prenom'],
+			new DateTime($dbLine['date_naissance']),
+			(int) $dbLine['taille'],
+			(float) $dbLine['poids'],
+			Statut::from($dbLine['statut']),
+			Poste::from($dbLine['poste'])
+		);
 	}
 }

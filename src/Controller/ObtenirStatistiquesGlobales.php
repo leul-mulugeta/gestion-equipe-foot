@@ -2,15 +2,15 @@
 
 class ObtenirStatistiquesGlobales
 {
-	private RencontreDAO $rencontreDAO;
+	private StatistiquesDAO $statistiquesDAO;
 
 	public function __construct()
 	{
-		$this->rencontreDAO = new RencontreDAO();
+		$this->statistiquesDAO = StatistiquesDAO::getInstance();
 	}
 
 	public function executer(): array
 	{
-		return $this->rencontreDAO->getGlobalStats();
+		return $this->statistiquesDAO->getGlobalStats();
 	}
 }

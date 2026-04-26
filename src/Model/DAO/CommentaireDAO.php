@@ -2,55 +2,56 @@
 
 class CommentaireDAO
 {
-	private PDO $pdo;
+	private static ?CommentaireDAO $instance = null;
+	private readonly PDO $pdo;
 
-	public function __construct()
+	private function __construct()
 	{
-		$this->pdo = MySQLDataSource::getInstance()->getConnection();
+		$this->pdo = DBConnection::getInstance()->getConnection();
 	}
 
-	public function insert(Commentaire $commentaire, int $joueurId): ?Commentaire
+	public static function getInstance(): CommentaireDAO
 	{
-		$requete = "INSERT INTO commentaire (joueur_id, contenu) VALUES (:joueur_id, :contenu)";
-		$statement = $this->pdo->prepare($requete);
+		if (self::$instance === null) {
+			self::$instance = new CommentaireDAO();
+		}
+		return self::$instance;
+	}
+
+	public function insertCommentaire(Commentaire $commentaire, int $joueurId): void
+	{
+		$query = 'INSERT INTO commentaire (joueur_id, contenu) VALUES (:joueur_id, :contenu)';
+		$statement = $this->pdo->prepare($query);
 		$statement->bindValue(':joueur_id', $joueurId);
 		$statement->bindValue(':contenu', $commentaire->getContenu());
-
-		if ($statement->execute()) {
-			$commentaire->setCommentaireId($this->pdo->lastInsertId());
-			return $commentaire;
-		}
-
-		return null;
+		$statement->execute();
 	}
 
-	public function selectByIdJoueur(int $idJoueur): array
+	public function selectCommentaireByJoueurId(int $joueurId): array
 	{
-		$requete = "SELECT * FROM commentaire WHERE joueur_id = :joueur_id";
-		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':joueur_id', $idJoueur);
+		$query = 'SELECT * FROM commentaire WHERE joueur_id = :joueur_id';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':joueur_id', $joueurId);
 		$statement->execute();
 
-		$commentaires = [];
-		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
-			$commentaire = new Commentaire(
-				$row['commentaire_id'],
-				$row['contenu']
-			);
-
-			$commentaires[] = $commentaire;
-		}
-
-		return $commentaires;
+		return array_map(fn($dbLine) => $this->arrayToCommentaire($dbLine), $statement->fetchAll());
 	}
 
-	public function delete(int $id): bool
+	public function deleteCommentaire(int $commentaireId): bool
 	{
-		$requete = "DELETE FROM commentaire WHERE commentaire_id = :commentaire_id";
-		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':commentaire_id', $id);
+		$query = 'DELETE FROM commentaire WHERE commentaire_id = :commentaire_id';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':commentaire_id', $commentaireId);
 		$statement->execute();
 
 		return $statement->rowCount() > 0;
+	}
+
+	private function arrayToCommentaire(array $dbLine): Commentaire
+	{
+		return new Commentaire(
+			$dbLine['commentaire_id'],
+			$dbLine['contenu'],
+		);
 	}
 }

@@ -2,17 +2,65 @@
 
 class StatistiquesDAO
 {
-	private PDO $pdo;
+	private static ?StatistiquesDAO $instance = null;
+	private readonly PDO $pdo;
 
-	public function __construct()
+	private function __construct()
 	{
-		$this->pdo = MySQLDataSource::getInstance()->getConnection();
+		$this->pdo = DBConnection::getInstance()->getConnection();
+	}
+
+	public static function getInstance(): StatistiquesDAO
+	{
+		if (self::$instance === null) {
+			self::$instance = new StatistiquesDAO();
+		}
+		return self::$instance;
+	}
+
+	public function getGlobalStats(): array
+	{
+		$query = "SELECT 
+						COUNT(*) as total,
+						SUM(CASE WHEN resultat = 'VICTOIRE' THEN 1 ELSE 0 END) as victoires,
+						SUM(CASE WHEN resultat = 'DEFAITE' THEN 1 ELSE 0 END) as defaites,
+						SUM(CASE WHEN resultat = 'NUL' THEN 1 ELSE 0 END) as nuls
+					FROM rencontre 
+					WHERE resultat IS NOT NULL";
+
+		$statement = $this->pdo->prepare($query);
+		$statement->execute();
+		$dbLine = $statement->fetch();
+
+		if ($dbLine['total'] > 0) {
+			$stats = [
+				'total' => (int)$dbLine['total'],
+				'victoires' => (int)$dbLine['victoires'],
+				'defaites' => (int)$dbLine['defaites'],
+				'nuls' => (int)$dbLine['nuls'],
+				'pourcentageVictoires' => round(($dbLine['victoires'] / $dbLine['total']) * 100, 2),
+				'pourcentageDefaites' => round(($dbLine['defaites'] / $dbLine['total']) * 100, 2),
+				'pourcentageNuls' => round(($dbLine['nuls'] / $dbLine['total']) * 100, 2),
+			];
+		} else {
+			$stats = [
+				'total' => 0,
+				'victoires' => 0,
+				'defaites' => 0,
+				'nuls' => 0,
+				'pourcentageVictoires' => 0,
+				'pourcentageDefaites' => 0,
+				'pourcentageNuls' => 0,
+			];
+		}
+
+		return $stats;
 	}
 
 	public function getJoueursStats(): array
 	{
 		// Récupère les statistiques agrégées pour chaque joueur
-		$requete = "SELECT 
+		$query = "SELECT 
 						j.joueur_id, 
 						j.nom, 
 						j.prenom, 
@@ -29,9 +77,9 @@ class StatistiquesDAO
 					LEFT JOIN rencontre r ON p.rencontre_id = r.rencontre_id AND r.resultat IS NOT NULL
 					GROUP BY j.joueur_id";
 
-		$statement = $this->pdo->prepare($requete);
+		$statement = $this->pdo->prepare($query);
 		$statement->execute();
-		$joueursStats = $statement->fetchAll(PDO::FETCH_ASSOC);
+		$joueursStats = $statement->fetchAll();
 
 		foreach ($joueursStats as &$stats) {
 			// Calcul des pourcentages et formatage des moyennes
@@ -53,16 +101,16 @@ class StatistiquesDAO
 	{
 		// On récupère toutes les rencontres passées (qui ont un résultat ou dont la date est passée)
 		// Ordonnées par date décroissante pour vérifier la série actuelle
-		$requeteRencontres = 'SELECT rencontre_id FROM rencontre WHERE date_heure <= NOW() OR resultat IS NOT NULL ORDER BY date_heure DESC';
-		$statementRencontres = $this->pdo->prepare($requeteRencontres);
+		$queryRencontres = 'SELECT rencontre_id FROM rencontre WHERE date_heure <= NOW() OR resultat IS NOT NULL ORDER BY date_heure DESC';
+		$statementRencontres = $this->pdo->prepare($queryRencontres);
 		$statementRencontres->execute();
-		$rencontres = $statementRencontres->fetchAll(PDO::FETCH_ASSOC);
+		$rencontres = $statementRencontres->fetchAll();
 
 		$consecutives = 0;
 		foreach ($rencontres as $rencontre) {
 			// On vérifie si le joueur était présent à ce match précis
-			$requeteParticipation = 'SELECT COUNT(*) FROM participant WHERE joueur_id = :joueur_id AND rencontre_id = :rencontre_id';
-			$statementParticipation = $this->pdo->prepare($requeteParticipation);
+			$queryParticipation = 'SELECT COUNT(*) FROM participant WHERE joueur_id = :joueur_id AND rencontre_id = :rencontre_id';
+			$statementParticipation = $this->pdo->prepare($queryParticipation);
 			$statementParticipation->bindValue(':joueur_id', $idJoueur);
 			$statementParticipation->bindValue(':rencontre_id', $rencontre['rencontre_id']);
 			$statementParticipation->execute();
