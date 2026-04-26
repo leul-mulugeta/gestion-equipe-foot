@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre) {
         if ($rencontre->getDateEtHeure() < new DateTime()) {
             $erreur = "Impossible de supprimer un match qui a déjà eu lieu.";
         } else {
-            $controleurSuppr = new SupprimerUneRencontre($rencontre->getId());
+            $controleurSuppr = new SupprimerUneRencontre($rencontre->getRencontreId());
             $succesSuppr = $controleurSuppr->executer();
 
             if ($succesSuppr) {

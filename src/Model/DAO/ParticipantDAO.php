@@ -4,13 +4,11 @@ class ParticipantDAO
 {
 	private PDO $pdo;
 	private JoueurDAO $joueurDAO;
-	private RencontreDAO $rencontreDAO;
 
 	public function __construct()
 	{
 		$this->pdo = MySQLDataSource::getInstance()->getConnection();
 		$this->joueurDAO = new JoueurDAO();
-		$this->rencontreDAO = new RencontreDAO();
 	}
 
 	public function insert(Participant $participant): ?Participant
@@ -19,14 +17,14 @@ class ParticipantDAO
 					VALUES (:joueur_id, :rencontre_id, :type_participation, :poste, :evaluation)';
 
 		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':joueur_id', $participant->getJoueur()->getId());
-		$statement->bindValue(':rencontre_id', $participant->getRencontre()->getId());
+		$statement->bindValue(':joueur_id', $participant->getJoueur()->getJoueurId());
+		$statement->bindValue(':rencontre_id', $participant->getRencontreId());
 		$statement->bindValue(':type_participation', $participant->getTypeDeParticipation()->value);
 		$statement->bindValue(':poste', $participant->getPoste()->value);
 		$statement->bindValue(':evaluation', $participant->getEvaluation());
 
 		if ($statement->execute()) {
-			$participant->setId($this->pdo->lastInsertId());
+			$participant->setParticipantId($this->pdo->lastInsertId());
 			return $participant;
 		}
 
@@ -44,17 +42,12 @@ class ParticipantDAO
 		if ($row) {
 			$participant = new Participant(
 				$row['participant_id'],
-				null,
-				null,
+				$this->joueurDAO->selectById($row['joueur_id']),
+				$row['rencontre_id'],
 				TypeDeParticipation::from($row['type_participation']),
 				Poste::from($row['poste']),
 				$row['evaluation'] !== null ? (int) $row['evaluation'] : null
 			);
-
-			$joueur = $this->joueurDAO->selectById($row['joueur_id']);
-			$rencontre = $this->rencontreDAO->selectById($row['rencontre_id']);
-			$participant->setJoueur($joueur);
-			$participant->setRencontre($rencontre);
 
 			return $participant;
 		}
@@ -73,17 +66,12 @@ class ParticipantDAO
 		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
 			$participant = new Participant(
 				$row['participant_id'],
-				null,
-				null,
+				$this->joueurDAO->selectById($row['joueur_id']),
+				$row['rencontre_id'],
 				TypeDeParticipation::from($row['type_participation']),
 				Poste::from($row['poste']),
 				$row['evaluation'] !== null ? (int) $row['evaluation'] : null
 			);
-
-			$joueur = $this->joueurDAO->selectById($row['joueur_id']);
-			$rencontre = $this->rencontreDAO->selectById($row['rencontre_id']);
-			$participant->setJoueur($joueur);
-			$participant->setRencontre($rencontre);
 
 			$participants[] = $participant;
 		}

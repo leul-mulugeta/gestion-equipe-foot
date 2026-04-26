@@ -28,7 +28,7 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 
         // On indexe les participants existants par ID de joueur pour accès rapide
         foreach ($participantsExistantsRaw as $p) {
-            $participantsExistants[$p->getJoueur()->getId()] = $p;
+            $participantsExistants[$p->getJoueur()->getJoueurId()] = $p;
         }
 
         // Tri alphabétique pour une liste propre
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
     $controleurJoueurs = new ObtenirTousLesJoueurs();
     $joueursMap = [];
     foreach ($controleurJoueurs->executer() as $j) {
-        $joueursMap[$j->getId()] = $j;
+        $joueursMap[$j->getJoueurId()] = $j;
     }
 
     foreach ($roles as $idJoueur => $role) {
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
         $erreur = "Il ne peut y avoir plus de 7 remplaçants (actuellement : $nbRemplacants).";
     } else {
         // Sauvegarde
-        $controleurSuppression = new SupprimerTousLesParticipantsDUneRencontre($rencontre->getId());
+        $controleurSuppression = new SupprimerTousLesParticipantsDUneRencontre($rencontre->getRencontreId());
         $controleurSuppression->executer();
 
         foreach ($nouveauxParticipants as $np) {
@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
             $controleurCreation = new CreerUnParticipant(
                 0,
                 $joueur,
-                $rencontre,
+                $rencontre->getRencontreId(),
                 TypeDeParticipation::from($np['role']),
                 Poste::from($np['poste']),
                 $evalATransmettre
@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
             $controleurCreation->executer();
         }
         $_SESSION['succes'] = "Feuille de match enregistrée avec succès.";
-        header("Location: /matchs/detail?id=" . $rencontre->getId());
+        header("Location: /matchs/detail?id=" . $rencontre->getRencontreId());
         exit;
     }
 }
@@ -153,7 +153,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
             </thead>
             <tbody>
                 <?php foreach ($tousLesJoueurs as $j) {
-                    $id = $j->getId();
+                    $id = $j->getJoueurId();
                     $pExistant = $participantsExistants[$id] ?? null;
 
                     $estActif = $j->getStatut()->value === 'ACTIF';
@@ -195,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
                         <td><?= $moyenne > 0 ? number_format($moyenne, 1) . ' / 5' : '-' ?></td>
                         <td><?= htmlspecialchars($j->getPoste()->value) ?></td>
                         <td>
-                            <select name="role[<?= $j->getId() ?>]">
+                            <select name="role[<?= $j->getJoueurId() ?>]">
                                 <option value="">-- Non sélectionné --</option>
                                 <?php if ($estActif || $roleActuel) { ?>
                                     <option value="TITULAIRE" <?= $roleActuel === 'TITULAIRE' ? 'selected' : '' ?>>Titulaire</option>
@@ -204,7 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
                             </select>
                         </td>
                         <td>
-                            <select name="poste[<?= $j->getId() ?>]">
+                            <select name="poste[<?= $j->getJoueurId() ?>]">
                                 <?php if ($estActif || $roleActuel) { ?>
                                     <?php foreach (Poste::cases() as $poste) { ?>
                                         <option value="<?= $poste->value ?>" <?= $posteActuel === $poste->value ? 'selected' : '' ?>>
@@ -223,7 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
 
         <div class="actions">
             <button type="submit">Enregistrer</button>
-            <a href="/matchs/detail?id=<?= $rencontre->getId() ?>"><button type="button">Annuler</button></a>
+            <a href="/matchs/detail?id=<?= $rencontre->getRencontreId() ?>"><button type="button">Annuler</button></a>
         </div>
     </form>
 <?php } ?>

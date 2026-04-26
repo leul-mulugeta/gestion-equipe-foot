@@ -38,7 +38,7 @@ if ($rencontre) {
                     $erreur = "Veuillez renseigner les deux scores et le résultat.";
                 } else {
                     $modifierRencontre = new ModifierUneRencontre(
-                        $rencontre->getId(),
+                        $rencontre->getRencontreId(),
                         $rencontre->getDateEtHeure(),
                         $rencontre->getLieu(),
                         $rencontre->getAdresse(),
@@ -78,7 +78,7 @@ if ($rencontre) {
                     $erreur = "Veuillez remplir tous les champs obligatoires.";
                 } else {
                     $modifierRencontre = new ModifierUneRencontre(
-                        $rencontre->getId(),
+                        $rencontre->getRencontreId(),
                         $nouvelleDate,
                         Lieu::from($lieuVal),
                         $adresseVal,
@@ -151,7 +151,7 @@ if ($rencontre) {
                                     <td><?= htmlspecialchars($p->getJoueur()->getPrenom() . ' ' . $p->getJoueur()->getNom()) ?></td>
                                     <td><?= htmlspecialchars($p->getTypeDeParticipation()->value) ?></td>
                                     <td>
-                                        <input type="number" name="evaluation[<?= $p->getId() ?>]" min="1" max="5" value="<?= $p->getEvaluation() ?>" required>
+                                        <input type="number" name="evaluation[<?= $p->getParticipantId() ?>]" min="1" max="5" value="<?= $p->getEvaluation() ?>" required>
                                     </td>
                                 </tr>
                             <?php } ?>
@@ -184,7 +184,7 @@ if ($rencontre) {
         <?php } ?>
 
         <button type="submit">Enregistrer</button>
-        <a href="/matchs/detail?id=<?= $rencontre->getId() ?>"><button type="button">Annuler</button></a>
+        <a href="/matchs/detail?id=<?= $rencontre->getRencontreId() ?>"><button type="button">Annuler</button></a>
     </form>
 <?php } ?>
 

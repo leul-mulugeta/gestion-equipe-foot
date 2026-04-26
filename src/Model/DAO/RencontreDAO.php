@@ -24,7 +24,7 @@ class RencontreDAO
 		$statement->bindValue(':score_equipe_adverse', $rencontre->getScoreEquipeAdverse());
 
 		if ($statement->execute()) {
-			$rencontre->setId($this->pdo->lastInsertId());
+			$rencontre->setRencontreId($this->pdo->lastInsertId());
 			return $rencontre;
 		}
 
@@ -51,7 +51,7 @@ class RencontreDAO
 		$statement->bindValue(':resultat', $rencontre->getResultat() ? $rencontre->getResultat()->value : null);
 		$statement->bindValue(':score_equipe_locale', $rencontre->getScoreEquipeLocale());
 		$statement->bindValue(':score_equipe_adverse', $rencontre->getScoreEquipeAdverse());
-		$statement->bindValue(':rencontre_id', $rencontre->getId());
+		$statement->bindValue(':rencontre_id', $rencontre->getRencontreId());
 
 		if ($statement->execute()) {
 			return $rencontre;

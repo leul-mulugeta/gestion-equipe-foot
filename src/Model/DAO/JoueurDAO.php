@@ -3,12 +3,10 @@
 class JoueurDAO
 {
 	private PDO $pdo;
-	private CommentaireDAO $commentaireDAO;
 
 	public function __construct()
 	{
 		$this->pdo = MySQLDataSource::getInstance()->getConnection();
-		$this->commentaireDAO = new CommentaireDAO();
 	}
 
 	public function insert(Joueur $joueur): ?Joueur
@@ -27,7 +25,7 @@ class JoueurDAO
 		$statement->bindValue(':poste', $joueur->getPoste()->value);
 
 		if ($statement->execute()) {
-			$joueur->setId($this->pdo->lastInsertId());
+			$joueur->setJoueurId($this->pdo->lastInsertId());
 			return $joueur;
 		}
 
@@ -56,7 +54,7 @@ class JoueurDAO
 		$statement->bindValue(':poids', $joueur->getPoids());
 		$statement->bindValue(':statut', $joueur->getStatut()->value);
 		$statement->bindValue(':poste', $joueur->getPoste()->value);
-		$statement->bindValue(':joueur_id', $joueur->getId());
+		$statement->bindValue(':joueur_id', $joueur->getJoueurId());
 
 		if ($statement->execute()) {
 			return $joueur;
@@ -86,13 +84,6 @@ class JoueurDAO
 				Poste::from($row['poste'])
 			);
 
-			$commentaires = $this->commentaireDAO->selectByIdJoueur($joueur->getId());
-
-			foreach ($commentaires as $commentaire) {
-				$commentaire->setJoueur($joueur);
-				$joueur->addCommentaire($commentaire);
-			}
-
 			return $joueur;
 		}
 
@@ -118,13 +109,6 @@ class JoueurDAO
 				Statut::from($row['statut']),
 				Poste::from($row['poste'])
 			);
-
-			$commentaires = $this->commentaireDAO->selectByIdJoueur($joueur->getId());
-
-			foreach ($commentaires as $commentaire) {
-				$commentaire->setJoueur($joueur);
-				$joueur->addCommentaire($commentaire);
-			}
 
 			$joueurs[] = $joueur;
 		}

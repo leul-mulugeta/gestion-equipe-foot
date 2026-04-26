@@ -2,7 +2,7 @@
 
 class Joueur
 {
-	private int $id;
+	private int $joueurId;
 	private int $numeroDeLicence;
 	private string $nom;
 	private string $prenom;
@@ -11,11 +11,10 @@ class Joueur
 	private float $poids;
 	private Statut $statut;
 	private Poste $poste;
-	private array $commentaires;
 
-	public function __construct(int $id, int $numeroDeLicence, string $nom, string $prenom, DateTime $dateDeNaissance, int $taille, float $poids, Statut $statut, Poste $poste)
+	public function __construct(int $joueurId, int $numeroDeLicence, string $nom, string $prenom, DateTime $dateDeNaissance, int $taille, float $poids, Statut $statut, Poste $poste)
 	{
-		$this->id = $id;
+		$this->joueurId = $joueurId;
 		$this->numeroDeLicence = $numeroDeLicence;
 		$this->nom = $nom;
 		$this->prenom = $prenom;
@@ -24,17 +23,16 @@ class Joueur
 		$this->poids = $poids;
 		$this->statut = $statut;
 		$this->poste = $poste;
-		$this->commentaires = [];
 	}
 
-	public function getId(): int
+	public function getJoueurId(): int
 	{
-		return $this->id;
+		return $this->joueurId;
 	}
 
-	public function setId($id): void
+	public function setJoueurId($joueurId): void
 	{
-		$this->id = $id;
+		$this->joueurId = $joueurId;
 	}
 
 	public function getNumeroDeLicence(): int
@@ -75,15 +73,5 @@ class Joueur
 	public function getPoste(): Poste
 	{
 		return $this->poste;
-	}
-
-	public function getCommentaires(): array
-	{
-		return $this->commentaires;
-	}
-
-	public function addCommentaire(Commentaire $commentaire): void
-	{
-		$this->commentaires[] = $commentaire;
 	}
 }

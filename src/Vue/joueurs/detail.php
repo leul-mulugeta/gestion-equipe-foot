@@ -19,7 +19,7 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 		if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contenu'])) {
 			$contenu = trim($_POST['contenu']);
 			if (!empty($contenu)) {
-				$creerCom = new CreerUnCommentaire(0, $joueur, $contenu);
+				$creerCom = new CreerUnCommentaire(0, $joueur->getJoueurId(), $contenu);
 				$resultatCom = $creerCom->executer();
 				if ($resultatCom) {
 					$succes = "Commentaire ajouté avec succès.";
@@ -42,8 +42,8 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 	<h1>Détails du joueur : <?= htmlspecialchars($joueur->getPrenom() . ' ' . $joueur->getNom()) ?></h1>
 
 	<div class="actions">
-		<a href="/joueurs/modifier?id=<?= $joueur->getId() ?>"><button type="button">Modifier</button></a>
-		<a href="/joueurs/supprimer?id=<?= $joueur->getId() ?>"><button type="button">Supprimer</button></a>
+		<a href="/joueurs/modifier?id=<?= $joueur->getJoueurId() ?>"><button type="button">Modifier</button></a>
+		<a href="/joueurs/supprimer?id=<?= $joueur->getJoueurId() ?>"><button type="button">Supprimer</button></a>
 	</div>
 
 	<div class="fiche">

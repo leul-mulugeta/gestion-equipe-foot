@@ -9,15 +9,15 @@ class CommentaireDAO
 		$this->pdo = MySQLDataSource::getInstance()->getConnection();
 	}
 
-	public function insert(Commentaire $commentaire): ?Commentaire
+	public function insert(Commentaire $commentaire, int $joueurId): ?Commentaire
 	{
 		$requete = "INSERT INTO commentaire (joueur_id, contenu) VALUES (:joueur_id, :contenu)";
 		$statement = $this->pdo->prepare($requete);
-		$statement->bindValue(':joueur_id', $commentaire->getJoueur()->getId());
+		$statement->bindValue(':joueur_id', $joueurId);
 		$statement->bindValue(':contenu', $commentaire->getContenu());
 
 		if ($statement->execute()) {
-			$commentaire->setId($this->pdo->lastInsertId());
+			$commentaire->setCommentaireId($this->pdo->lastInsertId());
 			return $commentaire;
 		}
 
@@ -35,7 +35,6 @@ class CommentaireDAO
 		while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
 			$commentaire = new Commentaire(
 				$row['commentaire_id'],
-				null,
 				$row['contenu']
 			);
 

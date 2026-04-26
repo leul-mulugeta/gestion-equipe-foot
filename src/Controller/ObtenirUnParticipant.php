@@ -7,7 +7,7 @@ class ObtenirUnParticipant
 
 	public function __construct(int $id)
 	{
-		$this->participantDAO = new participantDAO();
+		$this->participantDAO = new ParticipantDAO();
 		$this->id = $id;
 	}
 

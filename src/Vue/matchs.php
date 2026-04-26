@@ -49,7 +49,7 @@ unset($_SESSION['succes']);
 					</td>
 
 					<td><?= $r->getResultat() ? htmlspecialchars($r->getResultat()->value) : 'À venir' ?></td>
-					<td><a href="/matchs/detail?id=<?= $r->getId() ?>">Détails</a></td>
+					<td><a href="/matchs/detail?id=<?= $r->getRencontreId() ?>">Détails</a></td>
 				</tr>
 			<?php } ?>
 		</tbody>

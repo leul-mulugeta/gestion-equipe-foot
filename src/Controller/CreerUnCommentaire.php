@@ -4,20 +4,20 @@ class CreerUnCommentaire
 {
 	private CommentaireDAO $commentaireDAO;
 	private int $id;
-	private Joueur $joueur;
+	private int $joueurId;
 	private string $contenu;
 
-	public function __construct(int $id, Joueur $joueur, string $contenu)
+	public function __construct(int $id, int $joueurId, string $contenu)
 	{
 		$this->commentaireDAO = new CommentaireDAO();
 		$this->id = $id;
-		$this->joueur = $joueur;
+		$this->joueurId = $joueurId;
 		$this->contenu = $contenu;
 	}
 
 	public function executer(): ?Commentaire
 	{
-		$commentaire = new Commentaire($this->id, $this->joueur, $this->contenu);
-		return $this->commentaireDAO->insert($commentaire);
+		$commentaire = new Commentaire($this->id, $this->contenu);
+		return $this->commentaireDAO->insert($commentaire, $this->joueurId);
 	}
 }

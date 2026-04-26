@@ -26,10 +26,10 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 
     <div class="actions">
         <?php if ($rencontre->getDateEtHeure() > new DateTime()) { ?>
-            <a href="/feuilleDeMatch?id=<?= $rencontre->getId() ?>"><button type="button">Feuille de match</button></a>
+            <a href="/feuilleDeMatch?id=<?= $rencontre->getRencontreId() ?>"><button type="button">Feuille de match</button></a>
         <?php } ?>
-        <a href="/matchs/modifier?id=<?= $rencontre->getId() ?>"><button type="button">Modifier</button></a>
-        <a href="/matchs/supprimer?id=<?= $rencontre->getId() ?>"><button type="button">Supprimer</button></a>
+        <a href="/matchs/modifier?id=<?= $rencontre->getRencontreId() ?>"><button type="button">Modifier</button></a>
+        <a href="/matchs/supprimer?id=<?= $rencontre->getRencontreId() ?>"><button type="button">Supprimer</button></a>
     </div>
 
     <div class="fiche">
@@ -77,7 +77,7 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
                         <?php if ($rencontre->getResultat() !== null) { ?>
                             <td><?= $p->getEvaluation() > 0 ? $p->getEvaluation() . ' / 5' : '-' ?></td>
                         <?php } ?>
-                        <td><a href="/joueurs/detail?id=<?= $p->getJoueur()->getId() ?>">Détails</a></td>
+                        <td><a href="/joueurs/detail?id=<?= $p->getJoueur()->getJoueurId() ?>">Détails</a></td>
                     </tr>
                 <?php } ?>
             </tbody>
@@ -85,7 +85,7 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
     <?php } else if ($rencontre->getDateEtHeure() < new DateTime()) { ?>
         <p>Aucune feuille de match n'a été saisie avant la rencontre.</p>
     <?php } else { ?>
-        <p>Aucune feuille de match n'a été saisie pour cette rencontre. Allez dans "<a href="/feuilleDeMatch?id=<?= $rencontre->getId() ?>">Feuille de match</a>" pour sélectionner vos joueurs.</p>
+        <p>Aucune feuille de match n'a été saisie pour cette rencontre. Allez dans "<a href="/feuilleDeMatch?id=<?= $rencontre->getRencontreId() ?>">Feuille de match</a>" pour sélectionner vos joueurs.</p>
     <?php } ?>
 
 <?php } ?>

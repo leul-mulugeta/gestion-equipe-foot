@@ -2,35 +2,23 @@
 
 class Commentaire
 {
-	private int $id;
-	private ?Joueur $joueur;
+	private int $commentaireId;
 	private string $contenu;
 
-	public function __construct(int $id, ?Joueur $joueur, string $contenu)
+	public function __construct(int $commentaireId, string $contenu)
 	{
-		$this->id = $id;
-		$this->joueur = $joueur;
+		$this->commentaireId = $commentaireId;
 		$this->contenu = $contenu;
 	}
 
-	public function getId(): int
+	public function getCommentaireId(): int
 	{
-		return $this->id;
+		return $this->commentaireId;
 	}
 
-	public function setId($id): void
+	public function setCommentaireId($commentaireId): void
 	{
-		$this->id = $id;
-	}
-
-	public function getJoueur(): Joueur
-	{
-		return $this->joueur;
-	}
-
-	public function setJoueur($joueur): void
-	{
-		$this->joueur = $joueur;
+		$this->commentaireId = $commentaireId;
 	}
 
 	public function getContenu(): string

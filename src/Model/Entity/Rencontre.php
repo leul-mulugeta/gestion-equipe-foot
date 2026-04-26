@@ -2,7 +2,7 @@
 
 class Rencontre
 {
-	private int $id;
+	private int $rencontreId;
 	private DateTime $dateEtHeure;
 	private Lieu $lieu;
 	private string $adresse;
@@ -11,9 +11,9 @@ class Rencontre
 	private ?int $scoreEquipeLocale;
 	private ?int $scoreEquipeAdverse;
 
-	public function __construct(int $id, DateTime $dateEtHeure, Lieu $lieu, string $adresse, string $nomEquipeAdverse, ?Resultat $resultat, ?int $scoreEquipeLocale, ?int $scoreEquipeAdverse)
+	public function __construct(int $rencontreId, DateTime $dateEtHeure, Lieu $lieu, string $adresse, string $nomEquipeAdverse, ?Resultat $resultat, ?int $scoreEquipeLocale, ?int $scoreEquipeAdverse)
 	{
-		$this->id = $id;
+		$this->rencontreId = $rencontreId;
 		$this->dateEtHeure = $dateEtHeure;
 		$this->lieu = $lieu;
 		$this->adresse = $adresse;
@@ -23,14 +23,14 @@ class Rencontre
 		$this->scoreEquipeAdverse = $scoreEquipeAdverse;
 	}
 
-	public function getId(): int
+	public function getRencontreId(): int
 	{
-		return $this->id;
+		return $this->rencontreId;
 	}
 
-	public function setId($id): void
+	public function setRencontreId($rencontreId): void
 	{
-		$this->id = $id;
+		$this->rencontreId = $rencontreId;
 	}
 
 	public function getDateEtHeure(): DateTime

@@ -2,31 +2,31 @@
 
 class Participant
 {
-	private int $id;
-	private ?Joueur $joueur;
-	private ?Rencontre $rencontre;
+	private int $participantId;
+	private Joueur $joueur;
+	private int $rencontreId;
 	private TypeDeParticipation $typeDeParticipation;
 	private Poste $poste;
 	private ?int $evaluation;
 
-	public function __construct(int $id, ?Joueur $joueur, ?Rencontre $rencontre, TypeDeParticipation $typeDeParticipation, Poste $poste, ?int $evaluation)
+	public function __construct(int $participantId, Joueur $joueur, int $rencontreId, TypeDeParticipation $typeDeParticipation, Poste $poste, ?int $evaluation)
 	{
-		$this->id = $id;
+		$this->participantId = $participantId;
 		$this->joueur = $joueur;
-		$this->rencontre = $rencontre;
+		$this->rencontreId = $rencontreId;
 		$this->typeDeParticipation = $typeDeParticipation;
 		$this->poste = $poste;
 		$this->evaluation = $evaluation;
 	}
 
-	public function getId(): int
+	public function getParticipantId(): int
 	{
-		return $this->id;
+		return $this->participantId;
 	}
 
-	public function setId($id): void
+	public function setParticipantId($participantId): void
 	{
-		$this->id = $id;
+		$this->participantId = $participantId;
 	}
 
 	public function getJoueur(): Joueur
@@ -34,19 +34,9 @@ class Participant
 		return $this->joueur;
 	}
 
-	public function setJoueur(Joueur $joueur): void
+	public function getRencontreId(): int
 	{
-		$this->joueur = $joueur;
-	}
-
-	public function getRencontre(): Rencontre
-	{
-		return $this->rencontre;
-	}
-
-	public function setRencontre($rencontre): void
-	{
-		$this->rencontre = $rencontre;
+		return $this->rencontreId;
 	}
 
 	public function getTypeDeParticipation(): TypeDeParticipation

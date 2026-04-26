@@ -46,7 +46,7 @@ unset($_SESSION['succes']);
 					<td><?= htmlspecialchars($j->getPoids()) ?> kg</td>
 					<td><?= htmlspecialchars($j->getPoste()->value) ?></td>
 					<td><?= htmlspecialchars($j->getStatut()->value) ?></td>
-					<td><a href="/joueurs/detail?id=<?= $j->getId() ?>">Détails</a></td>
+					<td><a href="/joueurs/detail?id=<?= $j->getJoueurId() ?>">Détails</a></td>
 				</tr>
 			<?php } ?>
 		</tbody>

@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $joueur) {
 	if (!empty($numeroDeLicence) && !empty($nom) && !empty($prenom) && !empty($dateDeNaissance) && !empty($taille) && !empty($poids) && !empty($statut) && !empty($poste)) {
 		try {
 			$modifierUnJoueur = new ModifierUnJoueur(
-				$joueur->getId(),
+				$joueur->getJoueurId(),
 				(int) $numeroDeLicence,
 				$nom,
 				$prenom,
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $joueur) {
 		</select>
 
 		<button type="submit">Enregistrer</button>
-		<a href="/joueurs/detail?id=<?= $joueur->getId() ?>"><button type="button">Annuler</button></a>
+		<a href="/joueurs/detail?id=<?= $joueur->getJoueurId() ?>"><button type="button">Annuler</button></a>
 	</form>
 
 <?php } ?>

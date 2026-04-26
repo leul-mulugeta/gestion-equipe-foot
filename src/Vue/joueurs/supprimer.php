@@ -18,7 +18,7 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $joueur) {
 	if (isset($_POST['Oui'])) {
-		$controleurSuppr = new SupprimerUnJoueur($joueur->getId());
+		$controleurSuppr = new SupprimerUnJoueur($joueur->getJoueurId());
 		$succes = $controleurSuppr->executer();
 
 		if ($succes) {
