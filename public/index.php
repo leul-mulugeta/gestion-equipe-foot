@@ -44,25 +44,29 @@ if ($uri === '/logout') {
 <body>
 
 	<?php
-	if ($uri !== '/login') {
+	if ($uri !== '/login'):
 	?>
 		<nav>
 			<ul>
-				<li><a href="/joueurs" class="<?php echo str_starts_with($uri, '/joueurs') ? 'active' : ''; ?>">Joueurs</a></li>
-				<li><a href="/matchs" class="<?php echo str_starts_with($uri, '/matchs') ? 'active' : ''; ?>">Matchs</a></li>
-				<li><a href="/statistiques" class="<?php echo $uri === '/statistiques' ? 'active' : ''; ?>">Statistiques</a></li>
+				<li><a href="/joueurs" class="<?= str_starts_with($uri, '/joueurs') ? 'active' : '' ?>">Joueurs</a></li>
+				<li><a href="/matchs" class="<?= str_starts_with($uri, '/matchs') || $uri === '/feuilleDeMatch' ? 'active' : '' ?>">Matchs</a></li>
+				<li><a href="/statistiques" class="<?= $uri === '/statistiques' ? 'active' : '' ?>">Statistiques</a></li>
 				<li><a href="/logout">Déconnexion</a></li>
 			</ul>
 		</nav>
 	<?php
-	}
+	endif;
 	?>
 
 	<div id="contenu">
 		<?php
-		$page = '../src/Vue' . $uri . '.php';
+		$page = "../src/Vue$uri.php";
 		if (file_exists($page)) {
-			require_once $page;
+			try {
+				require_once $page;
+			} catch (Throwable $e) {
+				echo '<p class="erreur">Oups, notre serveur a rencontré un problème technique</p>';
+			}
 		} else {
 			echo '<h1>Page non trouvée</h1>';
 		}

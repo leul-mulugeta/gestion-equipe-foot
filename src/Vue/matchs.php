@@ -3,24 +3,20 @@
 $controleurRencontre = new ObtenirToutesLesRencontres();
 $rencontres = $controleurRencontre->executer();
 
-$succes = isset($_SESSION['succes']) ? $_SESSION['succes'] : '';
+$succes = $_SESSION['succes'] ?? '';
 unset($_SESSION['succes']);
 
 ?>
 
 <h1>Liste des matchs</h1>
 
-<?php if ($succes) { ?>
-	<p class="succes">
-		<?= $succes ?>
-	</p>
-<?php } ?>
-
+<?php if ($succes): ?>
+	<p class="succes"><?= htmlspecialchars($succes) ?></p>
+<?php endif; ?>
 <div class="actions">
 	<a href="/matchs/ajouter"><button>Ajouter un match</button></a>
 </div>
-
-<?php if (count($rencontres) > 0) { ?>
+<?php if (count($rencontres) > 0): ?>
 	<table>
 		<thead>
 			<tr>
@@ -34,26 +30,26 @@ unset($_SESSION['succes']);
 			</tr>
 		</thead>
 		<tbody>
-			<?php foreach ($rencontres as $r) { ?>
+			<?php foreach ($rencontres as $rencontre): ?>
 				<tr>
-					<td><?= $r->getDateEtHeure()->format('d/m/Y') ?></td>
-					<td><?= $r->getDateEtHeure()->format('H:i') ?></td>
-					<td><?= htmlspecialchars($r->getNomEquipeAdverse()) ?></td>
-					<td><?= htmlspecialchars($r->getLieu()->value) ?></td>
+					<td><?= $rencontre->getDateEtHeure()->format('d/m/Y') ?></td>
+					<td><?= $rencontre->getDateEtHeure()->format('H:i') ?></td>
+					<td><?= htmlspecialchars($rencontre->getNomEquipeAdverse()) ?></td>
+					<td><?= htmlspecialchars($rencontre->getLieu()->value) ?></td>
 					<td>
-						<?php if ($r->getScoreEquipeLocale() !== null && $r->getScoreEquipeAdverse() !== null) { ?>
-							<?= $r->getScoreEquipeLocale() ?> - <?= $r->getScoreEquipeAdverse() ?>
-						<?php } else { ?>
+						<?php if ($rencontre->getScoreEquipeLocale() !== null && $rencontre->getScoreEquipeAdverse() !== null): ?>
+							<?= $rencontre->getScoreEquipeLocale() ?> - <?= $rencontre->getScoreEquipeAdverse() ?>
+						<?php else: ?>
 							-
-						<?php } ?>
+						<?php endif; ?>
 					</td>
 
-					<td><?= $r->getResultat() ? htmlspecialchars($r->getResultat()->value) : 'À venir' ?></td>
-					<td><a href="/matchs/detail?id=<?= $r->getRencontreId() ?>">Détails</a></td>
+					<td><?= $rencontre->getResultat() ? htmlspecialchars($rencontre->getResultat()->value) : 'À venir' ?></td>
+					<td><a href="/matchs/detail?id=<?= $rencontre->getRencontreId() ?>">Détails</a></td>
 				</tr>
-			<?php } ?>
+			<?php endforeach; ?>
 		</tbody>
 	</table>
-<?php } else { ?>
+<?php else: ?>
 	<p>Aucun match trouvé.</p>
-<?php } ?>
+<?php endif; ?>

@@ -1,44 +1,77 @@
 <?php
 
+// Détermine le type de participation et le poste à afficher dans le formulaire selon la priorité :
+// 1. Saisie utilisateur (si retour après erreur POST)
+// 2. Données en base (si modification d'une feuille existante)
+// 3. Valeurs par défaut du joueur
+function determinerTypeDeParticipationEtPoste(?Participant $participantExistant, Joueur $joueur): array
+{
+    $joueurId = $joueur->getJoueurId();
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $typeDeParticipationActuel = $_POST['typeDeParticipation'][$joueurId] ?? '';
+        $valeurPoste = $_POST['poste'][$joueurId] ?? '';
+        $posteActuel = $valeurPoste !== '' ? $valeurPoste : $joueur->getPoste()->value;
+    } else {
+        $typeDeParticipationActuel = $participantExistant ? $participantExistant->getTypeDeParticipation()->value : '';
+        $posteActuel = $participantExistant ? $participantExistant->getPoste()->value : $joueur->getPoste()->value;
+    }
+    return [$typeDeParticipationActuel, $posteActuel];
+}
+
 $erreur = '';
-$succes = '';
 $rencontre = null;
 $joueursActifs = [];
 $participantsExistants = [];
 
 // Initialisation des variables pour pré-remplir le formulaire
 if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
-    $erreur = "Identifiant de match manquant ou invalide.";
+    $erreur = 'Identifiant de match manquant ou invalide.';
 } else {
-    $idMatch = (int) $_GET['id'];
-    $controleurRencontre = new ObtenirUneRencontre($idMatch);
-    $rencontre = $controleurRencontre->executer();
+    $rencontreId = (int) $_GET['id'];
+    $obtenirRencontre = new ObtenirUneRencontre($rencontreId);
+    $rencontre = $obtenirRencontre->executer();
 
     if (!$rencontre) {
-        $erreur = "Aucun match trouvé.";
+        $erreur = 'Aucun match trouvé.';
     } elseif ($rencontre->getDateEtHeure() < new DateTime()) {
         $erreur = "Impossible de modifier la feuille de match d'un match passé.";
     } else {
         // Récupération de tous les joueurs
-        $controleurJoueurs = new ObtenirTousLesJoueurs();
-        $tousLesJoueurs = $controleurJoueurs->executer();
+        $obtenirJoueurs = new ObtenirTousLesJoueurs();
+        $joueurs = $obtenirJoueurs->executer();
 
-        $controleurParticipants = new ObtenirTousLesParticipantsDUneRencontre($idMatch);
-        $participantsExistantsRaw = $controleurParticipants->executer();
+        $obtenirParticipants = new ObtenirTousLesParticipantsDUneRencontre($rencontreId);
+        $participantsExistantsRaw = $obtenirParticipants->executer();
 
         // On indexe les participants existants par ID de joueur pour accès rapide
-        foreach ($participantsExistantsRaw as $p) {
-            $participantsExistants[$p->getJoueur()->getJoueurId()] = $p;
+        foreach ($participantsExistantsRaw as $participant) {
+            $participantsExistants[$participant->getJoueur()->getJoueurId()] = $participant;
         }
 
-        // Tri alphabétique pour une liste propre
-        usort($tousLesJoueurs, fn($a, $b) => strcmp($a->getNom() . $a->getPrenom(), $b->getNom() . $b->getPrenom()));
+        // Tri par poste puis par nom alphabétique
+        $ordrePostes = ['GARDIEN' => 1, 'DEFENSEUR' => 2, 'MILIEU' => 3, 'ATTAQUANT' => 4];
+
+        usort($joueurs, function ($joueurA, $joueurB) use ($ordrePostes) {
+            $ordreJoueurA = $ordrePostes[$joueurA->getPoste()->value] ?? 99;
+            $ordreJoueurB = $ordrePostes[$joueurB->getPoste()->value] ?? 99;
+
+            // Si les postes sont différents, on trie par poste
+            if ($ordreJoueurA !== $ordreJoueurB) {
+                return $ordreJoueurA - $ordreJoueurB;
+            }
+
+            // Sinon, à poste égal, on trie par nom puis prénom
+            return strcmp(
+                $joueurA->getNom() . $joueurA->getPrenom(),
+                $joueurB->getNom() . $joueurB->getPrenom()
+            );
+        });
     }
 }
 
 // Traitement du formulaire
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
-    $roles = $_POST['role'] ?? [];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && !$erreur) {
+    $typeDeParticipations = $_POST['typeDeParticipation'] ?? [];
     $postes = $_POST['poste'] ?? [];
 
     $nouveauxParticipants = [];
@@ -49,44 +82,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
     // On re-récupère tous les joueurs pour vérifier leur statut lors de la validation
     $controleurJoueurs = new ObtenirTousLesJoueurs();
     $joueursMap = [];
-    foreach ($controleurJoueurs->executer() as $j) {
-        $joueursMap[$j->getJoueurId()] = $j;
+    foreach ($controleurJoueurs->executer() as $joueur) {
+        $joueursMap[$joueur->getJoueurId()] = $joueur;
     }
 
-    foreach ($roles as $idJoueur => $role) {
-        if (!empty($role)) {
-            // Validation Option A : Vérifier si le joueur est ACTIF
-            $joueurConcerne = $joueursMap[$idJoueur] ?? null;
-            if ($joueurConcerne && $joueurConcerne->getStatut()->value !== 'ACTIF') {
-                $erreur = "Le joueur " . $joueurConcerne->getPrenom() . " " . $joueurConcerne->getNom() . " est " . $joueurConcerne->getStatut()->value . " et ne peut pas être sélectionné.";
-                break; // On arrête tout de suite si un joueur invalide est trouvé
-            }
-
-            $posteChoisi = $postes[$idJoueur];
-
-            // Comptage des règles
-            if ($role === 'TITULAIRE') {
-                $nbTitulaires++;
-                if ($posteChoisi === 'GARDIEN') {
-                    $nbGardiensTitulaires++;
-                }
-            } elseif ($role === 'REMPLACANT') {
-                $nbRemplacants++;
-            }
-
-            // Récupération de l'ancienne évaluation si elle existe
-            $evaluation = 0;
-            if (isset($participantsExistants[$idJoueur])) {
-                $evaluation = $participantsExistants[$idJoueur]->getEvaluation();
-            }
-
-            $nouveauxParticipants[] = [
-                'idJoueur' => $idJoueur,
-                'role' => $role,
-                'poste' => $posteChoisi,
-                'evaluation' => $evaluation
-            ];
+    foreach ($typeDeParticipations as $joueurId => $typeDeParticipation) {
+        if (empty($typeDeParticipation)) {
+            continue;
         }
+
+        // Vérifier si le joueur est ACTIF
+        $joueurConcerne = $joueursMap[$joueurId] ?? null;
+        if ($joueurConcerne && $joueurConcerne->getStatut()->value !== 'ACTIF') {
+            $erreur = "Le joueur " . $joueurConcerne->getFullName() . " est " . $joueurConcerne->getStatut()->value . " et ne peut pas être sélectionné.";
+            break; // On arrête tout de suite si un joueur invalide est trouvé
+        }
+
+        $posteChoisi = $postes[$joueurId];
+
+        // Comptage pour la validation des règles du football
+        if ($typeDeParticipation === 'TITULAIRE') {
+            $nbTitulaires++;
+            if ($posteChoisi === 'GARDIEN') {
+                $nbGardiensTitulaires++;
+            }
+        } elseif ($typeDeParticipation === 'REMPLACANT') {
+            $nbRemplacants++;
+        }
+
+        // Récupération de l'ancienne évaluation si elle existe
+        $evaluationExistant = isset($participantsExistants[$joueurId])
+            ? $participantsExistants[$joueurId]->getEvaluation()
+            : null;
+
+        $nouveauxParticipants[] = [
+            'joueurId' => $joueurId,
+            'typeDeParticipation' => $typeDeParticipation,
+            'poste' => $posteChoisi,
+            'evaluation' => $evaluationExistant
+        ];
     }
 
     // Validation des règles du football
@@ -98,48 +132,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
         $erreur = "Il ne peut y avoir plus de 7 remplaçants (actuellement : $nbRemplacants).";
     } else {
         // Sauvegarde
-        $controleurSuppression = new SupprimerTousLesParticipantsDUneRencontre($rencontre->getRencontreId());
-        $controleurSuppression->executer();
+        $supprimerParticipants = new SupprimerTousLesParticipantsDUneRencontre($rencontre->getRencontreId());
+        $supprimerParticipants->executer();
 
-        foreach ($nouveauxParticipants as $np) {
-            $controleurJoueur = new ObtenirUnJoueur($np['idJoueur']);
+        foreach ($nouveauxParticipants as $nouveauParticipant) {
+            $controleurJoueur = new ObtenirUnJoueur($nouveauParticipant['joueurId']);
             $joueur = $controleurJoueur->executer();
             // On réinjecte l'évaluation sauvegardée (si 0 => null pour la BDD)
-            $evalATransmettre = $np['evaluation'] > 0 ? $np['evaluation'] : null;
+            $evalATransmettre = $nouveauParticipant['evaluation'] > 0 ? $nouveauParticipant['evaluation'] : null;
 
             $participant = new Participant(
                 0,
                 $joueur,
                 $rencontre->getRencontreId(),
-                TypeDeParticipation::from($np['role']),
-                Poste::from($np['poste']),
+                TypeDeParticipation::from($nouveauParticipant['typeDeParticipation']),
+                Poste::from($nouveauParticipant['poste']),
                 $evalATransmettre
             );
-            $controleurCreation = new CreerUnParticipant($participant);
-            $controleurCreation->executer();
+            $creerParticipant = new CreerUnParticipant($participant);
+            $creerParticipant->executer();
         }
-        $_SESSION['succes'] = "Feuille de match enregistrée avec succès.";
-        header("Location: /matchs/detail?id=" . $rencontre->getRencontreId());
+
+        $_SESSION['succes'] = 'Feuille de match enregistrée avec succès.';
+        header('Location: /matchs/detail?id=' . $rencontre->getRencontreId());
         exit;
     }
 }
+
 ?>
 
-<h1>Feuille de match contre : <?= htmlspecialchars($rencontre ? $rencontre->getNomEquipeAdverse() : '') ?></h1>
+<?php if ($erreur): ?>
+    <p class="erreur"><?= $erreur ?></p>
+<?php endif; ?>
 
-<?php if ($rencontre) { ?>
+<?php if ($rencontre): ?>
+    <h1>Feuille de match contre : <?= htmlspecialchars($rencontre->getNomEquipeAdverse()) ?></h1>
     <div class="fiche">
         <p><strong>Date :</strong> <?= $rencontre->getDateEtHeure()->format('d/m/Y à H:i') ?></p>
-        <p><strong>Lieu :</strong> <?= htmlspecialchars($rencontre->getLieu()->value) ?></p>
+        <p><strong>Lieu :</strong> <?= $rencontre->getLieu()->value ?></p>
         <p><strong>Adresse :</strong> <?= htmlspecialchars($rencontre->getAdresse()) ?></p>
     </div>
-<?php } ?>
+<?php endif; ?>
 
-<?php if ($erreur) { ?>
-    <p class="erreur"><?= $erreur ?></p>
-<?php } ?>
-
-<?php if ($rencontre) { ?>
+<?php if ($rencontre): ?>
     <form method="post" action="" class="form-large">
         <table>
             <thead>
@@ -153,78 +188,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($tousLesJoueurs as $j) {
-                    $id = $j->getJoueurId();
-                    $pExistant = $participantsExistants[$id] ?? null;
+                <?php foreach ($joueurs as $joueur): ?>
+                    <?php
+                    $joueurId = $joueur->getJoueurId();
+                    $participantExistant = $participantsExistants[$joueurId] ?? null;
 
-                    $estActif = $j->getStatut()->value === 'ACTIF';
+                    $estActif = $joueur->getStatut()->value === 'ACTIF';
                     $styleInactif = !$estActif ? 'color: #999; font-style: italic;' : '';
+                    [$typeDeParticipationActuel, $posteActuel] = determinerTypeDeParticipationEtPoste($participantExistant, $joueur);
 
-                    // Logique de priorité pour l'affichage : 
-                    // Saisie utilisateur (si erreur lors du POST)
-                    // Donnée en base (si modification existante)
-                    // Valeur par défaut
-                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                        $roleActuel = $_POST['role'][$id] ?? '';
-                        $valeurPoste = $_POST['poste'][$id] ?? '';
-
-                        if ($valeurPoste !== '') {
-                            $posteActuel = $valeurPoste;
-                        } elseif ($estActif || $roleActuel) {
-                            // Si vide mais actif (ou sélectionné), on met le poste habituel par défaut
-                            $posteActuel = $j->getPoste()->value;
-                        } else {
-                            // Sinon, on garde vide
-                            $posteActuel = '';
-                        }
-                    } else {
-                        $roleActuel = $pExistant ? $pExistant->getTypeDeParticipation()->value : '';
-                        $posteActuel = $pExistant ? $pExistant->getPoste()->value : $j->getPoste()->value;
-                    }
-
-                    $controleurMoyenne = new ObtenirMoyenneEvaluationJoueur($id);
-                    $moyenne = $controleurMoyenne->executer();
-                ?>
+                    $obtenirMoyenne = new ObtenirMoyenneEvaluationJoueur($joueurId);
+                    $moyenne = $obtenirMoyenne->executer();
+                    ?>
                     <tr style="<?= $styleInactif ?>">
                         <td>
-                            <?= htmlspecialchars($j->getPrenom() . ' ' . $j->getNom()) ?>
-                            <?php if (!$estActif) { ?>
-                                <small>(<?= htmlspecialchars($j->getStatut()->value) ?>)</small>
-                            <?php } ?>
+                            <?= htmlspecialchars($joueur->getFullName()) ?>
+                            <?php if (!$estActif): ?>
+                                <small>(<?= $joueur->getStatut()->value ?>)</small>
+                            <?php endif; ?>
                         </td>
-                        <td><?= $j->getTaille() ?>cm / <?= $j->getPoids() ?>kg</td>
+                        <td><?= $joueur->getTaille() ?>cm / <?= $joueur->getPoids() ?>kg</td>
                         <td><?= $moyenne > 0 ? number_format($moyenne, 1) . ' / 5' : '-' ?></td>
-                        <td><?= htmlspecialchars($j->getPoste()->value) ?></td>
+                        <td><?= $joueur->getPoste()->value ?></td>
                         <td>
-                            <select name="role[<?= $j->getJoueurId() ?>]">
+                            <select name="typeDeParticipation[<?= $joueur->getJoueurId() ?>]" <?= $estActif ? '' : 'disabled' ?>>
                                 <option value="">-- Non sélectionné --</option>
-                                <?php if ($estActif || $roleActuel) { ?>
-                                    <option value="TITULAIRE" <?= $roleActuel === 'TITULAIRE' ? 'selected' : '' ?>>Titulaire</option>
-                                    <option value="REMPLACANT" <?= $roleActuel === 'REMPLACANT' ? 'selected' : '' ?>>Remplaçant</option>
-                                <?php } ?>
+                                <?php if ($estActif || $typeDeParticipationActuel): ?>
+                                    <option value="TITULAIRE" <?= $typeDeParticipationActuel === 'TITULAIRE' ? 'selected' : '' ?>>Titulaire</option>
+                                    <option value="REMPLACANT" <?= $typeDeParticipationActuel === 'REMPLACANT' ? 'selected' : '' ?>>Remplaçant</option>
+                                <?php endif; ?>
                             </select>
                         </td>
                         <td>
-                            <select name="poste[<?= $j->getJoueurId() ?>]">
-                                <?php if ($estActif || $roleActuel) { ?>
-                                    <?php foreach (Poste::cases() as $poste) { ?>
-                                        <option value="<?= $poste->value ?>" <?= $posteActuel === $poste->value ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($poste->value) ?>
-                                        </option>
-                                    <?php } ?>
-                                <?php } else { ?>
-                                    <option value="">-- Non sélectionné --</option>
-                                <?php } ?>
+                            <select name="poste[<?= $joueur->getJoueurId() ?>]" <?= $estActif ? '' : 'disabled' ?>>
+                                <?php foreach (Poste::cases() as $poste): ?>
+                                    <option value="<?= $poste->value ?>" <?= $posteActuel === $poste->value ? 'selected' : '' ?>>
+                                        <?= $poste->value ?>
+                                    </option>
+                                <?php endforeach; ?>
                             </select>
                         </td>
                     </tr>
-                <?php } ?>
+                <?php endforeach; ?>
             </tbody>
         </table>
 
         <div class="actions">
             <button type="submit">Enregistrer</button>
-            <a href="/matchs/detail?id=<?= $rencontre->getRencontreId() ?>"><button type="button">Annuler</button></a>
+            <a href="/matchs/detail?id=<?= $rencontreId ?>"><button type="button">Annuler</button></a>
         </div>
     </form>
-<?php } ?>
+<?php endif; ?>
+
+<?php if ($erreur): ?>
+    <div class="actions">
+        <a href="/matchs"><button type="button">Retour à la liste</button></a>
+    </div>
+<?php endif; ?>

@@ -1,11 +1,11 @@
 <?php
 
 if (isset($_SESSION['id'])) {
-	header("Location: /joueurs");
+	header('Location: /joueurs');
 	exit;
 }
 
-$erreur = isset($_SESSION['erreur']) ? $_SESSION['erreur'] : '';
+$erreur = $_SESSION['erreur'] ?? '';
 unset($_SESSION['erreur']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		if ($controleurConnexion->executer()) {
 			session_regenerate_id(true);
 			$_SESSION['id'] = time();
-			header("Location: /joueurs");
+			header('Location: /joueurs');
 			exit;
 		} else {
 			$erreur = 'Email ou mot de passe incorrect.';
@@ -36,17 +36,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		<form method="post" action="/login">
 			<label>Email</label>
 			<input type="email" name="email" placeholder="Email" required />
-
 			<label>Mot de passe</label>
 			<input type="password" name="password" placeholder="Mot de passe" required />
-
 			<button type="submit">Se connecter</button>
 		</form>
 
-		<?php if ($erreur) { ?>
-			<p class="erreur">
-				<?= $erreur ?>
-			</p>
-		<?php } ?>
+		<?php if ($erreur): ?>
+			<p class="erreur"><?= $erreur ?></p>
+		<?php endif; ?>
 	</div>
 </div>

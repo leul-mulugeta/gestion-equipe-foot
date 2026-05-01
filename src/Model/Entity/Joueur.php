@@ -50,6 +50,11 @@ class Joueur
 		return $this->prenom;
 	}
 
+	public function getFullName(): string
+	{
+		return "{$this->prenom} {$this->nom}";
+	}
+
 	public function getDateDeNaissance(): DateTime
 	{
 		return $this->dateDeNaissance;

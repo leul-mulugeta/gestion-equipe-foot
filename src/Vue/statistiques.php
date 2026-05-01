@@ -1,9 +1,11 @@
 <?php
+
 $obtenirGlobales = new ObtenirStatistiquesGlobales();
 $statsGlobales = $obtenirGlobales->executer();
 
 $obtenirJoueurs = new ObtenirStatistiquesJoueurs();
 $statsJoueurs = $obtenirJoueurs->executer();
+
 ?>
 
 <h2>Statistiques Globales</h2>
@@ -42,26 +44,18 @@ $statsJoueurs = $obtenirJoueurs->executer();
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($statsJoueurs as $stat) { ?>
+            <?php foreach ($statsJoueurs as $stat): ?>
                 <tr>
-                    <td><?php echo htmlspecialchars($stat['prenom'] . ' ' . $stat['nom']); ?></td>
-                    <td><?php echo htmlspecialchars($stat['statut']); ?></td>
-                    <td><?php echo htmlspecialchars($stat['postePrefere'] ?? '-'); ?></td>
-                    <td><?php echo $stat['titularisations']; ?></td>
-                    <td><?php echo $stat['remplacements']; ?></td>
-                    <td>
-                        <?php 
-                        if ($stat['moyenneEvaluations'] > 0) {
-                            echo $stat['moyenneEvaluations'] . '/5'; 
-                        } else {
-                            echo '-';
-                        }
-                        ?>
-                    </td>
-                    <td><?php echo $stat['pourcentageGagnes']; ?>%</td>
-                    <td><?php echo $stat['selectionsConsecutives']; ?></td>
+                    <td><?= htmlspecialchars($stat['prenom'] . ' ' . $stat['nom']) ?></td>
+                    <td><?= htmlspecialchars($stat['statut']) ?></td>
+                    <td><?= htmlspecialchars($stat['postePrefere'] ?? '-') ?></td>
+                    <td><?= $stat['titularisations'] ?></td>
+                    <td><?= $stat['remplacements'] ?></td>
+                    <td><?= $stat['moyenneEvaluations'] > 0 ? $stat['moyenneEvaluations'] . '/5' : '-' ?></td>
+                    <td><?= $stat['pourcentageGagnes'] ?>%</td>
+                    <td><?= $stat['selectionsConsecutives'] ?></td>
                 </tr>
-            <?php } ?>
+            <?php endforeach; ?>
         </tbody>
     </table>
 </div>

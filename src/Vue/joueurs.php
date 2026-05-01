@@ -3,24 +3,20 @@
 $controleurJoueur = new ObtenirTousLesJoueurs();
 $joueurs = $controleurJoueur->executer();
 
-$succes = isset($_SESSION['succes']) ? $_SESSION['succes'] : '';
+$succes = $_SESSION['succes'] ?? '';
 unset($_SESSION['succes']);
 
 ?>
 
 <h1>Liste des joueurs</h1>
 
-<?php if ($succes) { ?>
-	<p class="succes">
-		<?= $succes ?>
-	</p>
-<?php } ?>
-
-<div class="actions">
-	<a href="/joueurs/ajouter"><button>Ajouter un joueur</button></a>
+<?php if ($succes): ?>
+	<p class="succes"><?= htmlspecialchars($succes) ?></p>
+<?php endif; ?>
+<div class='actions'>
+	<a href='/joueurs/ajouter'><button>Ajouter un joueur</button></a>
 </div>
-
-<?php if (count($joueurs) > 0) { ?>
+<?php if (count($joueurs) > 0): ?>
 	<table>
 		<thead>
 			<tr>
@@ -36,21 +32,21 @@ unset($_SESSION['succes']);
 			</tr>
 		</thead>
 		<tbody>
-			<?php foreach ($joueurs as $j) { ?>
+			<?php foreach ($joueurs as $joueur): ?>
 				<tr>
-					<td><?= htmlspecialchars($j->getNom()) ?></td>
-					<td><?= htmlspecialchars($j->getPrenom()) ?></td>
-					<td><?= htmlspecialchars($j->getNumeroDeLicence()) ?></td>
-					<td><?= $j->getDateDeNaissance()->format('d/m/Y') ?></td>
-					<td><?= htmlspecialchars($j->getTaille()) ?> cm</td>
-					<td><?= htmlspecialchars($j->getPoids()) ?> kg</td>
-					<td><?= htmlspecialchars($j->getPoste()->value) ?></td>
-					<td><?= htmlspecialchars($j->getStatut()->value) ?></td>
-					<td><a href="/joueurs/detail?id=<?= $j->getJoueurId() ?>">Détails</a></td>
+					<td><?= htmlspecialchars($joueur->getNom()) ?></td>
+					<td><?= htmlspecialchars($joueur->getPrenom()) ?></td>
+					<td><?= htmlspecialchars($joueur->getNumeroDeLicence()) ?></td>
+					<td><?= $joueur->getDateDeNaissance()->format('d/m/Y') ?></td>
+					<td><?= htmlspecialchars($joueur->getTaille()) ?> cm</td>
+					<td><?= htmlspecialchars($joueur->getPoids()) ?> kg</td>
+					<td><?= htmlspecialchars($joueur->getPoste()->value) ?></td>
+					<td><?= htmlspecialchars($joueur->getStatut()->value) ?></td>
+					<td><a href="/joueurs/detail?id=<?= $joueur->getJoueurId() ?>">Détails</a></td>
 				</tr>
-			<?php } ?>
+			<?php endforeach; ?>
 		</tbody>
 	</table>
-<?php } else { ?>
+<?php else: ?>
 	<p>Aucun joueur trouvé.</p>
-<?php } ?>
+<?php endif; ?>

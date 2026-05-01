@@ -26,19 +26,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				Statut::from($statut),
 				Poste::from($poste)
 			);
+			$creerJoueur = new CreerUnJoueur($joueur);
 
-			$creerUnJoueur = new CreerUnJoueur($joueur);
-			$isSuccessful = $creerUnJoueur->executer();
-
-			if ($isSuccessful) {
-				$_SESSION['succes'] = "Joueur $numeroDeLicence ajouté avec succès.";
-				header("Location: /joueurs");
+			if ($creerJoueur->executer()) {
+				$_SESSION['succes'] = "Le joueur {$joueur->getFullName()} (N° $numeroDeLicence) a été ajouté avec succès.";
+				header('Location: /joueurs');
 				exit;
 			} else {
 				$erreur = "Échec de l'ajout du joueur (Vérifiez si le numéro de licence n'existe pas déjà).";
 			}
 		} catch (Exception $e) {
-			$erreur = "Format de date de naissance invalide.";
+			$erreur = 'Données invalides (date, statut ou poste).';
 		}
 	} else {
 		$erreur = 'Veuillez remplir tous les champs.';
@@ -47,28 +45,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 ?>
 
+<?php if ($erreur): ?>
+	<p class="erreur"><?= $erreur ?></p>
+<?php endif; ?>
+
 <h1>Ajouter un joueur</h1>
 
 <form method="post" action="/joueurs/ajouter">
-
 	<label for="numeroDeLicence">Numéro de licence :</label>
 	<input type="number" min="1" id="numeroDeLicence" name="numeroDeLicence" value="<?= htmlspecialchars($numeroDeLicence) ?>" required>
-
 	<label for="nom">Nom :</label>
 	<input type="text" id="nom" name="nom" value="<?= htmlspecialchars($nom) ?>" required>
-
 	<label for="prenom">Prénom :</label>
 	<input type="text" id="prenom" name="prenom" value="<?= htmlspecialchars($prenom) ?>" required>
-
 	<label for="dateDeNaissance">Date de naissance :</label>
 	<input type="date" id="dateDeNaissance" name="dateDeNaissance" value="<?= htmlspecialchars($dateDeNaissance) ?>" required>
-
 	<label for="taille">Taille (en cm) :</label>
 	<input type="number" id="taille" name="taille" min="120" max="230" value="<?= htmlspecialchars($taille) ?>" required>
-
 	<label for="poids">Poids (en Kg) :</label>
 	<input type="number" id="poids" name="poids" min="30" max="160" step="0.1" value="<?= htmlspecialchars($poids) ?>" required>
-
 	<label for="statut">Statut :</label>
 	<select id="statut" name="statut">
 		<option value="ACTIF" <?= $statut === 'ACTIF' ? 'selected' : '' ?>>Actif</option>
@@ -76,7 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		<option value="SUSPENDU" <?= $statut === 'SUSPENDU' ? 'selected' : '' ?>>Suspendu</option>
 		<option value="ABSENT" <?= $statut === 'ABSENT' ? 'selected' : '' ?>>Absent</option>
 	</select>
-
 	<label for="poste">Poste :</label>
 	<select id="poste" name="poste">
 		<option value="GARDIEN" <?= $poste === 'GARDIEN' ? 'selected' : '' ?>>Gardien</option>
@@ -84,13 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		<option value="MILIEU" <?= $poste === 'MILIEU' ? 'selected' : '' ?>>Milieu</option>
 		<option value="ATTAQUANT" <?= $poste === 'ATTAQUANT' ? 'selected' : '' ?>>Attaquant</option>
 	</select>
-
 	<button type="submit">Ajouter</button>
 	<a href="/joueurs"><button type="button">Annuler</button></a>
 </form>
-
-<?php if ($erreur) { ?>
-	<p class="erreur">
-		<?= $erreur ?>
-	</p>
-<?php } ?>

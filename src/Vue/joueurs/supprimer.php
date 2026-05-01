@@ -5,11 +5,11 @@ $joueur = null;
 
 // On vérifie si 'id' existe et si c'est bien un nombre
 if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
-	$erreur = "Identifiant de joueur manquant ou invalide.";
+	$erreur = 'Identifiant de joueur manquant ou invalide.';
 } else {
-	$id = (int) $_GET['id'];
-	$controleur = new ObtenirUnJoueur($id);
-	$joueur = $controleur->executer();
+	$joueurId = (int) $_GET['id'];
+	$obtenirJoueur = new ObtenirUnJoueur($joueurId);
+	$joueur = $obtenirJoueur->executer();
 
 	if (!$joueur) {
 		$erreur = "Ce joueur n'existe pas, impossible de le supprimer.";
@@ -18,27 +18,30 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $joueur) {
 	if (isset($_POST['Oui'])) {
-		$controleurSuppr = new SupprimerUnJoueur($joueur->getJoueurId());
-		$succes = $controleurSuppr->executer();
+		$supprimerJoueur = new SupprimerUnJoueur($joueur->getJoueurId());
 
-		if ($succes) {
-			$_SESSION['succes'] = 'Le joueur ' . htmlspecialchars($joueur->getNom()) . ' a bien été supprimé.';
-			header("Location: /joueurs");
+		if ($supprimerJoueur->executer()) {
+			$_SESSION['succes'] = "Le joueur {$joueur->getFullName()} (N° {$joueur->getNumeroDeLicence()}) a bien été supprimé.";
+			header('Location: /joueurs');
 			exit;
 		} else {
 			$erreur = 'Erreur lors de la suppression. Note : un joueur ayant déjà participé à un match ne peut pas être supprimé.';
 		}
 	} else {
 		$_SESSION['succes'] = 'Suppression annulée.';
-		header("Location: /joueurs");
+		header('Location: /joueurs');
 		exit;
 	}
 }
 ?>
 
-<h1>Supprimer le joueur : <?= htmlspecialchars($joueur ? $joueur->getPrenom() . ' ' . $joueur->getNom() : '') ?></h1>
+<?php if ($erreur): ?>
+	<p class="erreur"><?= $erreur ?></p>
+<?php endif; ?>
 
-<?php if ($joueur) { ?>
+<?php if ($joueur): ?>
+	<h1>Supprimer le joueur : <?= htmlspecialchars($joueur->getFullName()) ?></h1>
+
 	<p>
 		Êtes-vous sûr de vouloir supprimer le joueur
 		<strong><?= htmlspecialchars($joueur->getPrenom() . " " . $joueur->getNom()) ?></strong> ?
@@ -49,10 +52,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $joueur) {
 		<button type="submit" name="Oui">Oui, supprimer</button>
 		<button type="submit" name="Non">Non, annuler</button>
 	</form>
-<?php } ?>
-
-<?php if ($erreur) { ?>
-	<p class="erreur">
-		<?= $erreur ?>
-	</p>
-<?php } ?>
+<?php else: ?>
+	<div class="actions">
+		<a href="/joueurs"><button type="button">Retour à la liste</button></a>
+	</div>
+<?php endif; ?>
