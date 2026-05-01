@@ -2,17 +2,17 @@
 
 class ObtenirUnParticipant
 {
-	private ParticipantDAO $participantDAO;
-	private int $id;
+	private readonly ParticipantDAO $participantDAO;
+	private readonly int $participantId;
 
-	public function __construct(int $id)
+	public function __construct(int $participantId)
 	{
 		$this->participantDAO = ParticipantDAO::getInstance();
-		$this->id = $id;
+		$this->participantId = $participantId;
 	}
 
 	public function executer(): ?Participant
 	{
-		return $this->participantDAO->selectParticipantById($this->id);
+		return $this->participantDAO->selectParticipantById($this->participantId);
 	}
 }

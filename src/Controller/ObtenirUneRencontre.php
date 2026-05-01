@@ -2,17 +2,17 @@
 
 class ObtenirUneRencontre
 {
-	private RencontreDAO $rencontreDAO;
-	private int $id;
+	private readonly RencontreDAO $rencontreDAO;
+	private readonly int $rencontreId;
 
-	public function __construct(int $id)
+	public function __construct(int $rencontreId)
 	{
 		$this->rencontreDAO = RencontreDAO::getInstance();
-		$this->id = $id;
+		$this->rencontreId = $rencontreId;
 	}
 
 	public function executer(): ?Rencontre
 	{
-		return $this->rencontreDAO->selectRencontreById($this->id);
+		return $this->rencontreDAO->selectRencontreById($this->rencontreId);
 	}
 }

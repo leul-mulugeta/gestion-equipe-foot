@@ -2,7 +2,7 @@
 
 class ObtenirToutesLesRencontres
 {
-	private RencontreDAO $rencontreDAO;
+	private readonly RencontreDAO $rencontreDAO;
 
 	public function __construct()
 	{

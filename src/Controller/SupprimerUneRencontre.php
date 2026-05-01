@@ -2,19 +2,19 @@
 
 class SupprimerUneRencontre
 {
-	private RencontreDAO $rencontreDAO;
-	private int $id;
+	private readonly RencontreDAO $rencontreDAO;
+	private readonly int $rencontreId;
 
-	public function __construct(int $id)
+	public function __construct(int $rencontreId)
 	{
 		$this->rencontreDAO = RencontreDAO::getInstance();
-		$this->id = $id;
+		$this->rencontreId = $rencontreId;
 	}
 
 	public function executer(): bool
 	{
 		try {
-			return $this->rencontreDAO->deleteRencontre($this->id);
+			return $this->rencontreDAO->deleteRencontre($this->rencontreId);
 		} catch (Exception $e) {
 			return false;
 		}

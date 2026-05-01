@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $dateEtHeure = new DateTime($dateMatch . ' ' . $heureMatch);
 
-            $creerRencontre = new CreerUneRencontre(
+            $rencontre = new Rencontre(
                 0,
                 $dateEtHeure,
                 Lieu::from($lieu),
@@ -25,9 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 null  // Pas de score adverse à la création
             );
 
-            $rencontre = $creerRencontre->executer();
+            $creerRencontre = new CreerUneRencontre($rencontre);
+            $isSuccessful = $creerRencontre->executer();
 
-            if ($rencontre) {
+            if ($isSuccessful) {
                 $_SESSION['succes'] = "Match contre " . htmlspecialchars($nomEquipeAdverse) . " ajouté avec succès.";
                 header("Location: /matchs");
                 exit;

@@ -2,19 +2,19 @@
 
 class SupprimerUnJoueur
 {
-	private JoueurDAO $joueurDAO;
-	private int $id;
+	private readonly JoueurDAO $joueurDAO;
+	private readonly int $joueurId;
 
-	public function __construct(int $id)
+	public function __construct(int $joueurId)
 	{
 		$this->joueurDAO = JoueurDAO::getInstance();
-		$this->id = $id;
+		$this->joueurId = $joueurId;
 	}
 
 	public function executer(): bool
 	{
 		try {
-			return $this->joueurDAO->deleteJoueur($this->id);
+			return $this->joueurDAO->deleteJoueur($this->joueurId);
 		} catch (Exception $e) {
 			return false;
 		}

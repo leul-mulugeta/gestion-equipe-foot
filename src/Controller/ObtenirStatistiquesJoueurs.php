@@ -2,7 +2,7 @@
 
 class ObtenirStatistiquesJoueurs
 {
-	private StatistiquesDAO $statistiquesDAO;
+	private readonly StatistiquesDAO $statistiquesDAO;
 
 	public function __construct()
 	{

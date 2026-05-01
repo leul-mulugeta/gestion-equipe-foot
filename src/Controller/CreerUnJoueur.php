@@ -2,36 +2,19 @@
 
 class CreerUnJoueur
 {
-	private JoueurDAO $joueurDAO;
-	private int $id;
-	private int $numeroDeLicence;
-	private string $nom;
-	private string $prenom;
-	private DateTime $dateDeNaissance;
-	private int $taille;
-	private float $poids;
-	private Statut $statut;
-	private Poste $poste;
+	private readonly JoueurDAO $joueurDAO;
+	private readonly Joueur $joueur;
 
-	public function __construct(int $id, int $numeroDeLicence, string $nom, string $prenom, DateTime $dateDeNaissance, int $taille, float $poids, Statut $statut, Poste $poste)
+	public function __construct(Joueur $joueur)
 	{
 		$this->joueurDAO = JoueurDAO::getInstance();
-		$this->id = $id;
-		$this->numeroDeLicence = $numeroDeLicence;
-		$this->nom = $nom;
-		$this->prenom = $prenom;
-		$this->dateDeNaissance = $dateDeNaissance;
-		$this->taille = $taille;
-		$this->poids = $poids;
-		$this->statut = $statut;
-		$this->poste = $poste;
+		$this->joueur = $joueur;
 	}
 
 	public function executer(): bool
 	{
 		try {
-			$joueur = new Joueur($this->id, $this->numeroDeLicence, $this->nom, $this->prenom, $this->dateDeNaissance, $this->taille, $this->poids, $this->statut, $this->poste);
-			$this->joueurDAO->insertJoueur($joueur);
+			$this->joueurDAO->insertJoueur($this->joueur);
 			return true;
 		} catch (Exception $e) {
 			return false;

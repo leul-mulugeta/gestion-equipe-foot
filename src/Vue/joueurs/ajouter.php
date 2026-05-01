@@ -15,7 +15,7 @@ $poste = isset($_POST['poste']) ? trim($_POST['poste']) : 'GARDIEN';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if (!empty($numeroDeLicence) && !empty($nom) && !empty($prenom) && !empty($dateDeNaissance) && !empty($taille) && !empty($poids) && !empty($statut) && !empty($poste)) {
 		try {
-			$creerUnJoueur = new CreerUnJoueur(
+			$joueur = new Joueur(
 				0,
 				(int) $numeroDeLicence,
 				$nom,
@@ -26,8 +26,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				Statut::from($statut),
 				Poste::from($poste)
 			);
-			$joueur = $creerUnJoueur->executer();
-			if ($joueur) {
+
+			$creerUnJoueur = new CreerUnJoueur($joueur);
+			$isSuccessful = $creerUnJoueur->executer();
+
+			if ($isSuccessful) {
 				$_SESSION['succes'] = "Joueur $numeroDeLicence ajouté avec succès.";
 				header("Location: /joueurs");
 				exit;

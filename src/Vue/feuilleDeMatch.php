@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
             // On réinjecte l'évaluation sauvegardée (si 0 => null pour la BDD)
             $evalATransmettre = $np['evaluation'] > 0 ? $np['evaluation'] : null;
 
-            $controleurCreation = new CreerUnParticipant(
+            $participant = new Participant(
                 0,
                 $joueur,
                 $rencontre->getRencontreId(),
@@ -115,6 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && empty($erreur)) {
                 Poste::from($np['poste']),
                 $evalATransmettre
             );
+            $controleurCreation = new CreerUnParticipant($participant);
             $controleurCreation->executer();
         }
         $_SESSION['succes'] = "Feuille de match enregistrée avec succès.";

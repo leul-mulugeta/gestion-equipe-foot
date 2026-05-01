@@ -2,34 +2,19 @@
 
 class CreerUneRencontre
 {
-	private RencontreDAO $rencontreDAO;
-	private int $id;
-	private DateTime $dateEtHeure;
-	private Lieu $lieu;
-	private string $adresse;
-	private string $nomEquipeAdverse;
-	private ?Resultat $resultat;
-	private ?int $scoreEquipeLocale;
-	private ?int $scoreEquipeAdverse;
+	private readonly RencontreDAO $rencontreDAO;
+	private readonly Rencontre $rencontre;
 
-	public function __construct(int $id, DateTime $dateEtHeure, Lieu $lieu, string $adresse, string $nomEquipeAdverse, ?Resultat $resultat, ?int $scoreEquipeLocale, ?int $scoreEquipeAdverse)
+	public function __construct(Rencontre $rencontre)
 	{
 		$this->rencontreDAO = RencontreDAO::getInstance();
-		$this->id = $id;
-		$this->dateEtHeure = $dateEtHeure;
-		$this->lieu = $lieu;
-		$this->adresse = $adresse;
-		$this->nomEquipeAdverse = $nomEquipeAdverse;
-		$this->resultat = $resultat;
-		$this->scoreEquipeLocale = $scoreEquipeLocale;
-		$this->scoreEquipeAdverse = $scoreEquipeAdverse;
+		$this->rencontre = $rencontre;
 	}
 
 	public function executer(): bool
 	{
 		try {
-			$rencontre = new Rencontre($this->id, $this->dateEtHeure, $this->lieu, $this->adresse, $this->nomEquipeAdverse, $this->resultat, $this->scoreEquipeLocale, $this->scoreEquipeAdverse);
-			$this->rencontreDAO->insertRencontre($rencontre);
+			$this->rencontreDAO->insertRencontre($this->rencontre);
 			return true;
 		} catch (Exception $e) {
 			return false;

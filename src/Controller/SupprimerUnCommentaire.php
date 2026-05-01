@@ -2,19 +2,19 @@
 
 class SupprimerUnCommentaire
 {
-	private CommentaireDAO $commentaireDAO;
-	private int $id;
+	private readonly CommentaireDAO $commentaireDAO;
+	private readonly int $commentaireId;
 
-	public function __construct(int $id)
+	public function __construct(int $commentaireId)
 	{
 		$this->commentaireDAO = CommentaireDAO::getInstance();
-		$this->id = $id;
+		$this->commentaireId = $commentaireId;
 	}
 
 	public function executer(): bool
 	{
 		try {
-			return $this->commentaireDAO->deleteCommentaire($this->id);
+			return $this->commentaireDAO->deleteCommentaire($this->commentaireId);
 		} catch (Exception $e) {
 			return false;
 		}

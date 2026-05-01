@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $joueur) {
 
 	if (!empty($numeroDeLicence) && !empty($nom) && !empty($prenom) && !empty($dateDeNaissance) && !empty($taille) && !empty($poids) && !empty($statut) && !empty($poste)) {
 		try {
-			$modifierUnJoueur = new ModifierUnJoueur(
+			$joueurAModifier = new Joueur(
 				$joueur->getJoueurId(),
 				(int) $numeroDeLicence,
 				$nom,
@@ -40,8 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $joueur) {
 				Poste::from($poste)
 			);
 
-			$resultat = $modifierUnJoueur->executer();
-			if ($resultat) {
+			$modifierUnJoueur = new ModifierUnJoueur($joueurAModifier);
+			$isSuccessful = $modifierUnJoueur->executer();
+			if ($isSuccessful) {
 				$_SESSION['succes'] = "Joueur $numeroDeLicence modifié avec succès.";
 				header("Location: /joueurs");
 				exit;

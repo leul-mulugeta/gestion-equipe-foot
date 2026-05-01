@@ -2,17 +2,17 @@
 
 class ObtenirUnJoueur
 {
-	private JoueurDAO $joueurDAO;
-	private int $id;
+	private readonly JoueurDAO $joueurDAO;
+	private readonly int $joueurId;
 
-	public function __construct(int $id)
+	public function __construct(int $joueurId)
 	{
 		$this->joueurDAO = JoueurDAO::getInstance();
-		$this->id = $id;
+		$this->joueurId = $joueurId;
 	}
 
 	public function executer(): ?Joueur
 	{
-		return $this->joueurDAO->selectJoueurById($this->id);
+		return $this->joueurDAO->selectJoueurById($this->joueurId);
 	}
 }

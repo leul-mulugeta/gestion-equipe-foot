@@ -2,7 +2,7 @@
 
 class ObtenirTousLesJoueurs
 {
-	private JoueurDAO $joueurDAO;
+	private readonly JoueurDAO $joueurDAO;
 
 	public function __construct()
 	{

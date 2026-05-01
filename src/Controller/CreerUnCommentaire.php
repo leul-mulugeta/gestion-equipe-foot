@@ -2,24 +2,21 @@
 
 class CreerUnCommentaire
 {
-	private CommentaireDAO $commentaireDAO;
-	private int $id;
-	private int $joueurId;
-	private string $contenu;
+	private readonly CommentaireDAO $commentaireDAO;
+	private readonly Commentaire $commentaire;
+	private readonly int $joueurId;
 
-	public function __construct(int $id, int $joueurId, string $contenu)
+	public function __construct(Commentaire $commentaire, int $joueurId)
 	{
 		$this->commentaireDAO = CommentaireDAO::getInstance();
-		$this->id = $id;
+		$this->commentaire = $commentaire;
 		$this->joueurId = $joueurId;
-		$this->contenu = $contenu;
 	}
 
 	public function executer(): bool
 	{
 		try {
-			$commentaire = new Commentaire($this->id, $this->contenu);
-			$this->commentaireDAO->insertCommentaire($commentaire, $this->joueurId);
+			$this->commentaireDAO->insertCommentaire($this->commentaire, $this->joueurId);
 			return true;
 		} catch (Exception $e) {
 			return false;

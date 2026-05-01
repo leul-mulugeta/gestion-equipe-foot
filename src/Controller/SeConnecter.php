@@ -2,10 +2,10 @@
 
 class SeConnecter
 {
-	private string $email;
-	private string $password;
+	private readonly string $email;
+	private readonly string $password;
 
-	public function __construct($email, $password)
+	public function __construct(string $email, string $password)
 	{
 		$this->email = $email;
 		$this->password = $password;

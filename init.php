@@ -30,7 +30,7 @@ require_once __DIR__ . '/src/Model/DAO/StatistiquesDAO.php';
 require_once __DIR__ . '/src/Controller/SeConnecter.php';
 
 require_once __DIR__ . '/src/Controller/CreerUnCommentaire.php';
-require_once __DIR__ . '/src/Controller/ObtenirToutLesCommentairesDUnJoueur.php';
+require_once __DIR__ . '/src/Controller/ObtenirTousLesCommentairesDUnJoueur.php';
 require_once __DIR__ . '/src/Controller/SupprimerUnCommentaire.php';
 
 require_once __DIR__ . '/src/Controller/CreerUnJoueur.php';

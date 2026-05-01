@@ -2,17 +2,17 @@
 
 class ObtenirMoyenneEvaluationJoueur
 {
-	private ParticipantDAO $participantDAO;
-	private int $idJoueur;
+	private readonly ParticipantDAO $participantDAO;
+	private readonly int $joueurId;
 
-	public function __construct(int $idJoueur)
+	public function __construct(int $joueurId)
 	{
 		$this->participantDAO = ParticipantDAO::getInstance();
-		$this->idJoueur = $idJoueur;
+		$this->joueurId = $joueurId;
 	}
 
 	public function executer(): float
 	{
-		return $this->participantDAO->selectMoyennesEvaluationByJoueurId($this->idJoueur);
+		return $this->participantDAO->selectMoyennesEvaluationByJoueurId($this->joueurId);
 	}
 }

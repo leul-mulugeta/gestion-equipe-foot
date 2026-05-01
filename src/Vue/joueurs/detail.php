@@ -19,7 +19,8 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 		if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contenu'])) {
 			$contenu = trim($_POST['contenu']);
 			if (!empty($contenu)) {
-				$creerCom = new CreerUnCommentaire(0, $joueur->getJoueurId(), $contenu);
+				$commentaire = new Commentaire(0, $contenu);
+				$creerCom = new CreerUnCommentaire($commentaire, $joueur->getJoueurId());
 				$resultatCom = $creerCom->executer();
 				if ($resultatCom) {
 					$succes = "Commentaire ajouté avec succès.";
@@ -31,7 +32,7 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 			}
 		}
 
-		$obtenirComs = new ObtenirToutLesCommentairesDUnJoueur($id);
+		$obtenirComs = new ObtenirTousLesCommentairesDUnJoueur($id);
 		$commentaires = $obtenirComs->executer();
 	}
 }

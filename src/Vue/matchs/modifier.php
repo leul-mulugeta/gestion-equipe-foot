@@ -37,7 +37,7 @@ if ($rencontre) {
                 if ($resultatVal === null || $scoreLoc === null || $scoreAdv === null) {
                     $erreur = "Veuillez renseigner les deux scores et le résultat.";
                 } else {
-                    $modifierRencontre = new ModifierUneRencontre(
+                    $rencontreAModifier = new Rencontre(
                         $rencontre->getRencontreId(),
                         $rencontre->getDateEtHeure(),
                         $rencontre->getLieu(),
@@ -47,6 +47,8 @@ if ($rencontre) {
                         $scoreLoc,
                         $scoreAdv
                     );
+
+                    $modifierRencontre = new ModifierUneRencontre($rencontreAModifier);
                     if ($modifierRencontre->executer()) {
                         // Mise à jour des évaluations
                         foreach ($evaluations as $idParticipant => $valeur) {
@@ -77,7 +79,7 @@ if ($rencontre) {
                 } elseif (empty($adresseVal) || empty($adversaireVal)) {
                     $erreur = "Veuillez remplir tous les champs obligatoires.";
                 } else {
-                    $modifierRencontre = new ModifierUneRencontre(
+                    $rencontreAModifier = new Rencontre(
                         $rencontre->getRencontreId(),
                         $nouvelleDate,
                         Lieu::from($lieuVal),
@@ -87,6 +89,8 @@ if ($rencontre) {
                         null,
                         null
                     );
+
+                    $modifierRencontre = new ModifierUneRencontre($rencontreAModifier);
                     if ($modifierRencontre->executer()) {
                         $_SESSION['succes'] = "Match contre " . htmlspecialchars($adversaireVal) . " modifié avec succès.";
                         header("Location: /matchs");
