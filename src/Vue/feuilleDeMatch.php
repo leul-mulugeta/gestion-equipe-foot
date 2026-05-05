@@ -20,8 +20,9 @@ function determinerTypeDeParticipationEtPoste(?Participant $participantExistant,
 
 $erreur = '';
 $rencontre = null;
-$joueursActifs = [];
 $participantsExistants = [];
+$joueurs = [];
+$moyennes = [];
 
 // Initialisation des variables pour pré-remplir le formulaire
 if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
@@ -39,6 +40,9 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
         // Récupération de tous les joueurs
         $obtenirJoueurs = new ObtenirTousLesJoueurs();
         $joueurs = $obtenirJoueurs->executer();
+
+        $obternirMoyennes = new ObtenirToutesLesMoyennesEvaluationJoueur();
+        $moyennes = $obternirMoyennes->executer();
 
         $obtenirParticipants = new ObtenirTousLesParticipantsDUneRencontre($rencontreId);
         $participantsExistantsRaw = $obtenirParticipants->executer();
@@ -71,6 +75,11 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 
 // Traitement du formulaire
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && !$erreur) {
+    $joueursMap = [];
+    foreach ($joueurs as $joueur) {
+        $joueursMap[$joueur->getJoueurId()] = $joueur;
+    }
+
     $typeDeParticipations = $_POST['typeDeParticipation'] ?? [];
     $postes = $_POST['poste'] ?? [];
 
@@ -78,13 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && !$erreur) {
     $nbTitulaires = 0;
     $nbRemplacants = 0;
     $nbGardiensTitulaires = 0;
-
-    // On re-récupère tous les joueurs pour vérifier leur statut lors de la validation
-    $controleurJoueurs = new ObtenirTousLesJoueurs();
-    $joueursMap = [];
-    foreach ($controleurJoueurs->executer() as $joueur) {
-        $joueursMap[$joueur->getJoueurId()] = $joueur;
-    }
 
     foreach ($typeDeParticipations as $joueurId => $typeDeParticipation) {
         if (empty($typeDeParticipation)) {
@@ -115,12 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && !$erreur) {
             ? $participantsExistants[$joueurId]->getEvaluation()
             : null;
 
-        $nouveauxParticipants[] = [
-            'joueurId' => $joueurId,
-            'typeDeParticipation' => $typeDeParticipation,
-            'poste' => $posteChoisi,
-            'evaluation' => $evaluationExistant
-        ];
+        $nouveauxParticipants[] = new Participant(0, $joueurConcerne, $rencontreId, TypeDeParticipation::from($typeDeParticipation), Poste::from($posteChoisi), $evaluationExistant);
     }
 
     // Validation des règles du football
@@ -131,31 +128,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && !$erreur) {
     } elseif ($nbRemplacants > 7) {
         $erreur = "Il ne peut y avoir plus de 7 remplaçants (actuellement : $nbRemplacants).";
     } else {
-        // Sauvegarde
-        $supprimerParticipants = new SupprimerTousLesParticipantsDUneRencontre($rencontre->getRencontreId());
-        $supprimerParticipants->executer();
+        $sauvegarderParticipants = new SauvegarderParticipantsDUneRencontre($rencontreId, $nouveauxParticipants);
 
-        foreach ($nouveauxParticipants as $nouveauParticipant) {
-            $controleurJoueur = new ObtenirUnJoueur($nouveauParticipant['joueurId']);
-            $joueur = $controleurJoueur->executer();
-            // On réinjecte l'évaluation sauvegardée (si 0 => null pour la BDD)
-            $evalATransmettre = $nouveauParticipant['evaluation'] > 0 ? $nouveauParticipant['evaluation'] : null;
-
-            $participant = new Participant(
-                0,
-                $joueur,
-                $rencontre->getRencontreId(),
-                TypeDeParticipation::from($nouveauParticipant['typeDeParticipation']),
-                Poste::from($nouveauParticipant['poste']),
-                $evalATransmettre
-            );
-            $creerParticipant = new CreerUnParticipant($participant);
-            $creerParticipant->executer();
+        if ($sauvegarderParticipants->executer()) {
+            $_SESSION['succes'] = 'Feuille de match enregistrée avec succès.';
+            header('Location: /matchs/detail?id=' . $rencontre->getRencontreId());
+            exit;
+        } else {
+            $erreur = 'Erreur lors de la sauvegarde des participants. Veuillez réessayez.';
         }
-
-        $_SESSION['succes'] = 'Feuille de match enregistrée avec succès.';
-        header('Location: /matchs/detail?id=' . $rencontre->getRencontreId());
-        exit;
     }
 }
 
@@ -197,8 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && !$erreur) {
                     $styleInactif = !$estActif ? 'color: #999; font-style: italic;' : '';
                     [$typeDeParticipationActuel, $posteActuel] = determinerTypeDeParticipationEtPoste($participantExistant, $joueur);
 
-                    $obtenirMoyenne = new ObtenirMoyenneEvaluationJoueur($joueurId);
-                    $moyenne = $obtenirMoyenne->executer();
+                    $moyenne = $moyennes[$joueurId] ?? 0;
                     ?>
                     <tr style="<?= $styleInactif ?>">
                         <td>

@@ -45,12 +45,9 @@ require_once __DIR__ . '/src/Controller/ObtenirUneRencontre.php';
 require_once __DIR__ . '/src/Controller/ObtenirToutesLesRencontres.php';
 require_once __DIR__ . '/src/Controller/SupprimerUneRencontre.php';
 
-require_once __DIR__ . '/src/Controller/CreerUnParticipant.php';
-require_once __DIR__ . '/src/Controller/ObtenirUnParticipant.php';
 require_once __DIR__ . '/src/Controller/ObtenirTousLesParticipantsDUneRencontre.php';
-require_once __DIR__ . '/src/Controller/SupprimerUnParticipant.php';
-require_once __DIR__ . '/src/Controller/SupprimerTousLesParticipantsDUneRencontre.php';
-require_once __DIR__ . '/src/Controller/ObtenirMoyenneEvaluationJoueur.php';
+require_once __DIR__ . '/src/Controller/SauvegarderParticipantsDUneRencontre.php';
+require_once __DIR__ . '/src/Controller/ObtenirToutesLesMoyennesEvaluationJoueur.php';
 require_once __DIR__ . '/src/Controller/ModifierEvaluationParticipant.php';
 require_once __DIR__ . '/src/Controller/ObtenirStatistiquesGlobales.php';
 require_once __DIR__ . '/src/Controller/ObtenirStatistiquesJoueurs.php';

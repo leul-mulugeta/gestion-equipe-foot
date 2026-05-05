@@ -20,35 +20,6 @@ class ParticipantDAO
 		return self::$instance;
 	}
 
-	public function insertParticipant(Participant $participant): void
-	{
-		$query = 'INSERT INTO participant (joueur_id, rencontre_id, type_participation, poste, evaluation) 
-					VALUES (:joueur_id, :rencontre_id, :type_participation, :poste, :evaluation)';
-
-		$statement = $this->pdo->prepare($query);
-		$statement->bindValue(':joueur_id', $participant->getJoueur()->getJoueurId());
-		$statement->bindValue(':rencontre_id', $participant->getRencontreId());
-		$statement->bindValue(':type_participation', $participant->getTypeDeParticipation()->value);
-		$statement->bindValue(':poste', $participant->getPoste()->value);
-		$statement->bindValue(':evaluation', $participant->getEvaluation());
-		$statement->execute();
-	}
-
-	public function selectParticipantById(int $participantId): ?Participant
-	{
-		$query = 'SELECT * FROM participant WHERE participant_id = :participant_id';
-		$statement = $this->pdo->prepare($query);
-		$statement->bindValue(':participant_id', $participantId);
-		$statement->execute();
-
-		$dbLine = $statement->fetch();
-		if (!$dbLine) {
-			return null;
-		}
-
-		return $this->arrayToParticipant($dbLine);
-	}
-
 	public function selectParticipantsByRencontreId(int $rencontreId): array
 	{
 		$query = 'SELECT * FROM participant WHERE rencontre_id = :rencontre_id';
@@ -59,22 +30,14 @@ class ParticipantDAO
 		return array_map(fn($dbLine) => $this->arrayToParticipant($dbLine), $statement->fetchAll());
 	}
 
-	public function deleteParticipant(int $participantId): bool
+	public function selectMoyennesEvaluationByJoueur(): array
 	{
-		$query = 'DELETE FROM participant WHERE participant_id = :participant_id';
-		$statement = $this->pdo->prepare($query);
-		$statement->bindValue(':participant_id', $participantId);
+		$requete = "SELECT joueur_id, AVG(evaluation) as moyenne FROM participant GROUP BY joueur_id HAVING moyenne > 0";
+		$statement = $this->pdo->prepare($requete);
 		$statement->execute();
+		$rows = $statement->fetchAll();
 
-		return $statement->rowCount() > 0;
-	}
-
-	public function deleteParticipantsByRencontreId(int $rencontreId): void
-	{
-		$query = 'DELETE FROM participant WHERE rencontre_id = :rencontre_id';
-		$statement = $this->pdo->prepare($query);
-		$statement->bindValue(':rencontre_id', $rencontreId);
-		$statement->execute();
+		return array_column($rows, 'moyenne', 'joueur_id');
 	}
 
 	public function updateEvaluationParticipant(int $participantId, int $evaluation): void
@@ -86,14 +49,42 @@ class ParticipantDAO
 		$statement->execute();
 	}
 
-	public function selectMoyennesEvaluationByJoueurId(int $joueurId): float
+	public function sauvegarderParticipants(int $rencontreId, array $participants): bool
 	{
-		$query = 'SELECT AVG(evaluation) as moyenne FROM participant WHERE joueur_id = :joueur_id AND evaluation > 0';
+		$this->pdo->beginTransaction();
+		try {
+			$this->deleteParticipantsByRencontreId($rencontreId);
+			foreach ($participants as $participant) {
+				$this->insertParticipant($participant);
+			}
+			$this->pdo->commit();
+			return true;
+		} catch (Throwable $e) {
+			$this->pdo->rollBack();
+			return false;
+		}
+	}
+
+	private function deleteParticipantsByRencontreId(int $rencontreId): void
+	{
+		$query = 'DELETE FROM participant WHERE rencontre_id = :rencontre_id';
 		$statement = $this->pdo->prepare($query);
-		$statement->bindValue(':joueur_id', $joueurId);
+		$statement->bindValue(':rencontre_id', $rencontreId);
 		$statement->execute();
-		$dbLine = $statement->fetch();
-		return $dbLine['moyenne'] ? (float)$dbLine['moyenne'] : 0.0;
+	}
+
+	private function insertParticipant(Participant $participant): void
+	{
+		$query = 'INSERT INTO participant (joueur_id, rencontre_id, type_participation, poste, evaluation) 
+					VALUES (:joueur_id, :rencontre_id, :type_participation, :poste, :evaluation)';
+
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':joueur_id', $participant->getJoueur()->getJoueurId());
+		$statement->bindValue(':rencontre_id', $participant->getRencontreId());
+		$statement->bindValue(':type_participation', $participant->getTypeDeParticipation()->value);
+		$statement->bindValue(':poste', $participant->getPoste()->value);
+		$statement->bindValue(':evaluation', $participant->getEvaluation());
+		$statement->execute();
 	}
 
 	private function arrayToParticipant(array $dbLine): Participant

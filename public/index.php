@@ -65,6 +65,7 @@ if ($uri === '/logout') {
 			try {
 				require_once $page;
 			} catch (Throwable $e) {
+				error_log("Unexpected Error: " . $e->getMessage());
 				echo '<p class="erreur">Oups, notre serveur a rencontré un problème technique</p>';
 			}
 		} else {
