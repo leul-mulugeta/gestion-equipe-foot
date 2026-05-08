@@ -24,9 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $joueur) {
 			$_SESSION['succes'] = "Le joueur {$joueur->getFullName()} (N° {$joueur->getNumeroDeLicence()}) a bien été supprimé.";
 			header('Location: /joueurs');
 			exit;
-		} else {
-			$erreur = 'Erreur lors de la suppression. Note : un joueur ayant déjà participé à un match ne peut pas être supprimé.';
 		}
+		
+		$erreur = 'Erreur lors de la suppression. Note : un joueur ayant déjà participé à un match ne peut pas être supprimé.';
 	} else {
 		$_SESSION['succes'] = 'Suppression annulée.';
 		header('Location: /joueurs');

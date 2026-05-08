@@ -134,9 +134,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre && !$erreur) {
             $_SESSION['succes'] = 'Feuille de match enregistrée avec succès.';
             header('Location: /matchs/detail?id=' . $rencontre->getRencontreId());
             exit;
-        } else {
-            $erreur = 'Erreur lors de la sauvegarde des participants. Veuillez réessayez.';
         }
+        
+        $erreur = 'Erreur lors de la sauvegarde des participants. Veuillez réessayez.';
     }
 }
 

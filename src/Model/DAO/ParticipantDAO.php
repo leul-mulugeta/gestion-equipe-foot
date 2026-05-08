@@ -40,13 +40,19 @@ class ParticipantDAO
 		return array_column($rows, 'moyenne', 'joueur_id');
 	}
 
-	public function updateEvaluationParticipant(int $participantId, int $evaluation): void
+	public function updateEvaluationsParticipants(array $evaluations): bool
 	{
-		$query = 'UPDATE participant SET evaluation = :evaluation WHERE participant_id = :participant_id';
-		$statement = $this->pdo->prepare($query);
-		$statement->bindValue(':evaluation', $evaluation);
-		$statement->bindValue(':participant_id', $participantId);
-		$statement->execute();
+		$this->pdo->beginTransaction();
+		try {
+			foreach ($evaluations as $participantId => $evaluation) {
+				$this->updateEvaluationParticipant($participantId, $evaluation);
+			}
+			$this->pdo->commit();
+			return true;
+		} catch (Exception $e) {
+			$this->pdo->rollBack();
+			return false;
+		}
 	}
 
 	public function sauvegarderParticipants(int $rencontreId, array $participants): bool
@@ -63,6 +69,15 @@ class ParticipantDAO
 			$this->pdo->rollBack();
 			return false;
 		}
+	}
+
+	private function updateEvaluationParticipant(int $participantId, int $evaluation): void
+	{
+		$query = 'UPDATE participant SET evaluation = :evaluation WHERE participant_id = :participant_id';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':evaluation', $evaluation);
+		$statement->bindValue(':participant_id', $participantId);
+		$statement->execute();
 	}
 
 	private function deleteParticipantsByRencontreId(int $rencontreId): void

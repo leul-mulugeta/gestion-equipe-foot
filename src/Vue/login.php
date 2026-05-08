@@ -19,9 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			$_SESSION['id'] = time();
 			header('Location: /joueurs');
 			exit;
-		} else {
-			$erreur = 'Email ou mot de passe incorrect.';
 		}
+		
+		$erreur = 'Email ou mot de passe incorrect.';
 	} else {
 		$erreur = 'Veuillez remplir tous les champs.';
 	}

@@ -45,9 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $joueur) {
 				$_SESSION['succes'] = "Le joueur {$joueur->getFullName()} (N° {$joueur->getNumeroDeLicence()}) a été modifié avec succès.";
 				header('Location: /joueurs');
 				exit;
-			} else {
-				$erreur = 'Échec de la modification du joueur.';
 			}
+			
+			$erreur = 'Échec de la modification du joueur.';
 		} catch (Exception $e) {
 			$erreur = 'Données invalides (date, statut ou poste).';
 		}

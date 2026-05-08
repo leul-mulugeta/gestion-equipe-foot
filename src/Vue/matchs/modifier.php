@@ -1,5 +1,20 @@
 <?php
 
+// Détermine le résultat selon les scores et le lieu du match
+function determinerResultat(Lieu $lieu, int $scoreLoc, int $scoreAdv): Resultat
+{
+    if ($scoreLoc === $scoreAdv) {
+        return Resultat::NUL;
+    };
+
+    $victoire = $scoreLoc > $scoreAdv;
+    if ($lieu === Lieu::DOMICILE) {
+        return $victoire ? Resultat::VICTOIRE : Resultat::DEFAITE;
+    };
+
+    return $victoire ? Resultat::DEFAITE : Resultat::VICTOIRE;
+}
+
 $erreur = '';
 $rencontre = null;
 $participants = [];
@@ -27,40 +42,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre) {
     try {
         if ($estPasse) {
             // Cas match passé : On ne modifie que le résultat et les évaluations
-            $resultatVal = isset($_POST['resultat']) && $_POST['resultat'] !== '' ? $_POST['resultat'] : null;
             $scoreLoc = isset($_POST['scoreEquipeLocale']) && $_POST['scoreEquipeLocale'] !== '' ? (int)$_POST['scoreEquipeLocale'] : null;
             $scoreAdv = isset($_POST['scoreEquipeAdverse']) && $_POST['scoreEquipeAdverse'] !== '' ? (int)$_POST['scoreEquipeAdverse'] : null;
             $evaluations = $_POST['evaluation'] ?? [];
 
-            // Les 3 champs sont obligatoires pour un match passé
-            if ($resultatVal === null || $scoreLoc === null || $scoreAdv === null) {
-                $erreur = 'Veuillez renseigner les deux scores et le résultat.';
+            if ($scoreLoc === null || $scoreAdv === null) {
+                $erreur = 'Veuillez renseigner les deux scores.';
             } else {
+                $resultat = determinerResultat($rencontre->getLieu(), $scoreLoc, $scoreAdv);
                 $rencontreAModifier = new Rencontre(
                     $rencontre->getRencontreId(),
                     $rencontre->getDateEtHeure(),
                     $rencontre->getLieu(),
                     $rencontre->getAdresse(),
                     $rencontre->getNomEquipeAdverse(),
-                    Resultat::from($resultatVal),
+                    $resultat,
                     $scoreLoc,
                     $scoreAdv
                 );
                 $modifierRencontre = new ModifierUneRencontre($rencontreAModifier);
 
                 if ($modifierRencontre->executer()) {
-                    // Mise à jour des évaluations
-                    foreach ($evaluations as $idParticipant => $valeur) {
-                        $modifEval = new ModifierEvaluationParticipant((int)$idParticipant, (int)$valeur);
-                        $modifEval->executer();
-                    }
+                    $modifierEvaluations = new ModifierEvaluationsParticipants($evaluations);
 
-                    $_SESSION['succes'] = 'Résultat et évaluations enregistrés avec succès.';
-                    header('Location: /matchs');
-                    exit;
-                } else {
-                    $erreur = "Échec de l'enregistrement.";
+                    if ($modifierEvaluations->executer()) {
+                        $_SESSION['succes'] = 'Résultat et évaluations enregistrés avec succès.';
+                        header('Location: /matchs');
+                        exit;
+                    }
                 }
+
+                $erreur = "Échec de l'enregistrement.";
             }
         } else {
             // Cas match futur : On modifie les infos de planification
@@ -94,9 +106,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre) {
                     $_SESSION['succes'] = 'Match contre ' . htmlspecialchars($adversaireVal) . ' modifié avec succès.';
                     header('Location: /matchs');
                     exit;
-                } else {
-                    $erreur = 'Échec de la modification du match.';
                 }
+
+                $erreur = 'Échec de la modification du match.';
             }
         }
     } catch (Exception $e) {
@@ -128,13 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre) {
                 <input type="number" id="scoreEquipeLocale" name="scoreEquipeLocale" min="0" value="<?= $rencontre->getScoreEquipeLocale() !== null ? $rencontre->getScoreEquipeLocale() : '' ?>" required>
                 <label for="scoreEquipeAdverse">Score Équipe Adverse :</label>
                 <input type="number" id="scoreEquipeAdverse" name="scoreEquipeAdverse" min="0" value="<?= $rencontre->getScoreEquipeAdverse() !== null ? $rencontre->getScoreEquipeAdverse() : '' ?>" required>
-                <label for="resultat">Issue du match :</label>
-                <select id="resultat" name="resultat" required>
-                    <option value="">-- Choisir le résultat --</option>
-                    <option value="VICTOIRE" <?= $rencontre->getResultat() === Resultat::VICTOIRE ? 'selected' : '' ?>>Victoire</option>
-                    <option value="DEFAITE" <?= $rencontre->getResultat() === Resultat::DEFAITE ? 'selected' : '' ?>>Défaite</option>
-                    <option value="NUL" <?= $rencontre->getResultat() === Resultat::NUL ? 'selected' : '' ?>>Match Nul</option>
-                </select>
             </fieldset>
             <fieldset>
                 <legend>Évaluations des joueurs</legend>

@@ -28,9 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre) {
                 $_SESSION['succes'] = "Match contre {$rencontre->getNomEquipeAdverse()} du {$rencontre->getDateEtHeure()->format('d/m/Y')} supprimé avec succès.";
                 header('Location: /matchs');
                 exit;
-            } else {
-                $erreur = 'Échec de la suppression du match.';
             }
+            
+            $erreur = 'Échec de la suppression du match.';
         }
     } else {
         $_SESSION['succes'] = 'Suppression annulée.';

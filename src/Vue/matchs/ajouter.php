@@ -30,9 +30,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['succes'] = "Match contre $nomEquipeAdverse du {$rencontre->getDateEtHeure()->format('d/m/Y')} ajouté avec succès.";
                 header('Location: /matchs');
                 exit;
-            } else {
-                $erreur = "Échec de l'ajout du match.";
             }
+            
+            $erreur = "Échec de l'ajout du match.";
         } catch (Exception $e) {
 			$erreur = 'Données invalides (date ou lieu).';
 		}

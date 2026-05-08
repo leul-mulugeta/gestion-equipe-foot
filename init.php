@@ -48,6 +48,6 @@ require_once __DIR__ . '/src/Controller/SupprimerUneRencontre.php';
 require_once __DIR__ . '/src/Controller/ObtenirTousLesParticipantsDUneRencontre.php';
 require_once __DIR__ . '/src/Controller/SauvegarderParticipantsDUneRencontre.php';
 require_once __DIR__ . '/src/Controller/ObtenirToutesLesMoyennesEvaluationJoueur.php';
-require_once __DIR__ . '/src/Controller/ModifierEvaluationParticipant.php';
+require_once __DIR__ . '/src/Controller/ModifierEvaluationsParticipants.php';
 require_once __DIR__ . '/src/Controller/ObtenirStatistiquesGlobales.php';
 require_once __DIR__ . '/src/Controller/ObtenirStatistiquesJoueurs.php';

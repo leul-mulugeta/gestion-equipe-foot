@@ -32,9 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				$_SESSION['succes'] = "Le joueur {$joueur->getFullName()} (N° $numeroDeLicence) a été ajouté avec succès.";
 				header('Location: /joueurs');
 				exit;
-			} else {
-				$erreur = "Échec de l'ajout du joueur (Vérifiez si le numéro de licence n'existe pas déjà).";
 			}
+			
+			$erreur = "Échec de l'ajout du joueur (Vérifiez si le numéro de licence n'existe pas déjà).";
 		} catch (Exception $e) {
 			$erreur = 'Données invalides (date, statut ou poste).';
 		}
