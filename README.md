@@ -30,47 +30,39 @@ Cette application web permet à un coach de gérer son équipe de football. Elle
    cd gestion-equipe-foot
    ```
 
-2. **Base de données** :
-   Vous devez disposer d'un serveur MySQL (via **XAMPP**, en ligne ou un autre outil).
-   - Créez une nouvelle base de données via `phpMyAdmin` ou en ligne de commande.
+2. **Préparer l'environnement** :
+   - Renommez le fichier `.env.example` en `.env`.
+   - Modifiez les valeurs à l'intérieur selon vos préférences.
+
+### Option A : La voie rapide avec Docker (Recommandée)
+Si vous ne souhaitez **pas** insérer les données de démonstration, supprimez simplement le fichier `sql/data_test.sql` de votre dossier avant de lancer Docker.
+
+Vous pouvez lancer l'application en une seule commande :
+
+```bash
+docker compose up -d --build
+```
+
+L'application est prête et accessible sur `http://localhost`.
+
+### Option B : La voie classique (Laragon, XAMPP, WAMP)
+Si vous préférez utiliser votre propre serveur local.
+
+1. **Base de données** :
+   - Créez une base de données nommée `gestion-equipe-foot`.
    - Exécutez les scripts SQL situés dans le dossier `sql/` dans l'ordre suivant :
      1. `sql/01_create_tables.sql` (**Obligatoire** : crée la structure).
      2. `sql/02_add_constraints.sql` (**Obligatoire** : ajoute les relations).
      3. `sql/data_test.sql` (**Optionnel** : ajoute des données de démonstration).
 
-3. **Configuration** :
-   - Renommez le fichier `config.sample.php` vers `config.php`.
-   - Modifiez le pour configurer vos accès à la base de données.
-   - L'identifiant et le mot de passe du coach sont également modifiables dans ce fichier (par défaut : `coach@equipe.fr` / `motdepasse`).
+2. **Lancer le serveur Web** :
+   La méthode la plus simple est d'utiliser le serveur intégré de PHP. Dans votre terminal, à la racine du projet, tapez :
+   ```bash
+   php -S localhost:8000 -t public
+   ```
+   L'application sera alors accessible sur `http://localhost:8000`.
 
-4. **Exécution** :
-   Lancez votre serveur web. Reportez-vous à la section **Configuration du Serveur Web** ci-dessous pour plus de détails sur le routage.
-
-## ⚙️ Configuration du Serveur Web
-
-> **⚠️ Important :** Pour que le système de routage fonctionne, l'application **doit être servie à la racine de votre domaine ou port** (ex: `http://localhost:8000` ou `http://gestion-equipe-foot.local`). Elle ne fonctionnera pas si elle est lancée dans un sous-dossier (ex: `http://localhost/gestion-equipe-foot/public`).
-
-### Option 1 : Apache (VirtualHost recommandé)
-Un fichier `public/.htaccess` est déjà inclus. Assurez-vous que le module `mod_rewrite` est activé dans votre configuration Apache.
-Configurez votre **VirtualHost** en utilisant le **chemin absolu** vers votre projet :
-```apache
-<VirtualHost *:80>
-    ServerName gestion-equipe-foot.local
-    # Remplacez CHEMIN_ABSOLU par le chemin réel sur votre machine
-    DocumentRoot "CHEMIN_ABSOLU/gestion-equipe-foot/public"
-    <Directory "CHEMIN_ABSOLU/gestion-equipe-foot/public">
-        AllowOverride All
-        Require all granted
-    </Directory>
-</VirtualHost>
-```
-
-### Option 2 : Serveur intégré PHP (Méthode la plus simple)
-Exécutez la commande suivante à la racine du projet :
-```bash
-php -S localhost:8000 -t public
-```
-L'application sera alors accessible sur `http://localhost:8000`.
+   *(Alternative : Si vous configurez un VirtualHost Apache sur Laragon/XAMPP, assurez-vous de faire pointer le "Document Root" directement vers le sous-dossier `public/`).*
 
 ## 📁 Structure du projet
 - `public/` : Fichiers accessibles (index.php, CSS).

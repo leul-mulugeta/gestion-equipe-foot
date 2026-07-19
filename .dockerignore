@@ -1,0 +1,19 @@
+# Git
+.git
+.gitignore
+
+# Docker
+.dockerignore
+Dockerfile
+compose.yaml
+
+# Fichiers d'environnement
+.env
+.env.example
+
+# Documentation
+README.md
+LICENSE
+
+# Dossiers inutiles pour le serveur web PHP
+sql/

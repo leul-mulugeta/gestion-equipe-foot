@@ -1,3 +1,5 @@
+SET NAMES 'utf8mb4';
+
 -- Désactivation des vérifications de clés étrangères pour permettre le nettoyage dans n'importe quel ordre
 SET FOREIGN_KEY_CHECKS = 0;
 
