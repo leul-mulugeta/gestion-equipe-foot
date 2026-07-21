@@ -6,6 +6,7 @@
 .dockerignore
 Dockerfile
 compose.yaml
+compose.microservices.yaml
 
 # Fichiers d'environnement
 .env
@@ -17,3 +18,5 @@ LICENSE
 
 # Dossiers inutiles pour le serveur web PHP
 sql/
+notes/
+serveur/

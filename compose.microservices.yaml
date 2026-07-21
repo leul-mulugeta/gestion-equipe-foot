@@ -1,0 +1,8 @@
+services:
+  serveur:
+    build: ./serveur
+    restart: always
+    ports:
+      - "8081:80"
+    volumes:
+      - ./serveur/:/var/www/html
