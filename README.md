@@ -1,5 +1,11 @@
 # ⚽ Gestion Équipe de Football
 
+## 🚧 Migration en cours vers une architecture microservices
+
+Ce projet migre progressivement d'un monolithe PHP vers 3 microservices (`auth/`, `serveur/`, `client/`).
+
+En local : `docker compose -f compose.microservices.yaml up -d --build` pour tester la nouvelle stack (le monolithe continue de tourner via `compose.yaml`).
+
 ## 🛠️ Présentation
 Cette application web permet à un coach de gérer son équipe de football. Elle est construite avec une architecture **MVC** (Modèle-Vue-Contrôleur) et utilise le pattern **DAO** (Data Access Object) pour la gestion des données. Elle permet de gérer les joueurs, les rencontres, les statistiques de performance et les évaluations.
 
