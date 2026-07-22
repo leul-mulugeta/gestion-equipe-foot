@@ -1,8 +1,16 @@
 services:
+  auth:
+    build: ./auth
+    restart: always
+    ports:
+      - "8081:80"
+    volumes:
+      - ./auth/:/var/www/html
+
   serveur:
     build: ./serveur
     restart: always
     ports:
-      - "8081:80"
+      - "8082:80"
     volumes:
       - ./serveur/:/var/www/html
