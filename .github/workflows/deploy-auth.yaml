@@ -17,6 +17,7 @@ jobs:
             -avzrc --delete
             --exclude=Dockerfile
             --exclude=.dockerignore
+            --exclude=schema.sql
           path: auth/
           remote_path: ${{ secrets.ALWAYSDATA_AUTH_PATH }}
           remote_host: ${{ secrets.ALWAYSDATA_SSH_HOST }}

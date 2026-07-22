@@ -1,16 +1,35 @@
 services:
+  auth-db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${AUTH_DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${AUTH_DB_ROOT_PASSWORD}
+      MYSQL_USER: ${AUTH_DB_USER}
+      MYSQL_PASSWORD: ${AUTH_DB_PASSWORD}
+    volumes:
+      - ./auth/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - auth-db-data:/var/lib/mysql
+
   auth:
     build: ./auth
-    restart: always
     ports:
       - "8081:80"
+    depends_on:
+      - auth-db
+    environment:
+      - DB_HOST=auth-db
+      - DB_NAME=${AUTH_DB_NAME}
+      - DB_USER=${AUTH_DB_USER}
+      - DB_PASSWORD=${AUTH_DB_PASSWORD}
     volumes:
       - ./auth/:/var/www/html
 
   serveur:
     build: ./serveur
-    restart: always
     ports:
       - "8082:80"
     volumes:
       - ./serveur/:/var/www/html
+
+volumes:
+  auth-db-data:
