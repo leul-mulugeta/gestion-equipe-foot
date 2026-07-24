@@ -61,11 +61,9 @@ try {
 
             // Préparation du Payload du JWT (expiration à 1h)
             $expiration = (new DateTime())->add(new DateInterval('PT1H'))->getTimestamp();
-
-            $headers = ['alg' => 'HS256', 'typ' => 'JWT'];
             $payload = ['email' => $email, 'exp' => $expiration];
 
-            $jwt = $jwtUtils->generateJWT($headers, $payload);
+            $jwt = $jwtUtils->generateJWT($payload);
 
             $api->deliverResponse('success', 200, 'Authentification réussie.', ['token' => $jwt]);
             exit;

@@ -10,8 +10,10 @@ class JWTUtils
         $this->jwtSecretKey = $jwtSecretKey;
     }
 
-    public function generateJWT(array $headers, array $payload): string
+    public function generateJWT(array $payload): string
     {
+        $headers = ['alg' => 'HS256', 'typ' => 'JWT'];
+
         $headersEncoded = $this->base64urlEncode(json_encode($headers));
         $payloadEncoded = $this->base64urlEncode(json_encode($payload));
 
