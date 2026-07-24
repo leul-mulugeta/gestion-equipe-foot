@@ -15,6 +15,7 @@ jobs:
         with:
           switches: >-
             -avzrc --delete
+            --exclude=config.local.php
             --exclude=Dockerfile
             --exclude=.dockerignore
             --exclude=schema.sql
