@@ -12,4 +12,5 @@ if (file_exists($prodConfig)) {
     define('DB_USER', getenv('DB_USER') ?: 'root');
     define('DB_PASSWORD', getenv('DB_PASSWORD') ?: '');
     define('JWT_SECRET_KEY', getenv('JWT_SECRET_KEY') ?: 'cle_secrete');
+    define('INTERNAL_API_KEY', getenv('INTERNAL_API_KEY') ?: 'cle_api');
 }

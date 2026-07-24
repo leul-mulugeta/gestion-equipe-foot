@@ -39,7 +39,7 @@ $requestBody = json_decode(file_get_contents('php://input'), true);
 try {
     $pdo = DBConnection::getInstance()->getConnection();
     $jwtUtils = new JWTUtils(JWT_SECRET_KEY);
-    $auth = new Auth($pdo);
+    $auth = new Auth($pdo, $jwtUtils);
 
     $endpoint = $uriParts[2];
 
@@ -68,6 +68,28 @@ try {
             $jwt = $jwtUtils->generateJWT($headers, $payload);
 
             $api->deliverResponse('success', 200, 'Authentification réussie.', ['token' => $jwt]);
+            exit;
+        case 'verify':
+            $jwt = $requestBody['jwt'] ?? '';
+            $key = $requestBody['api_key'] ?? '';
+
+            if (empty($jwt) || empty($key)) {
+                $api->deliverResponse('error', 400, 'JWT et clé API obligatoires.');
+                exit;
+            }
+
+            if (!hash_equals(INTERNAL_API_KEY, $key)) {
+                $api->deliverResponse('error', 401, "Non autorisé.");
+                exit;
+            }
+
+            $jwtValid = $auth->verify($jwt);
+            if (!$jwtValid) {
+                $api->deliverResponse('error', 401, 'Token invalide ou expiré.');
+                exit;
+            }
+
+            $api->deliverResponse('success', 200, "Token valide.");
             exit;
         default:
             $api->deliverResponse('error', 404, 'Endpoint inconnu.');

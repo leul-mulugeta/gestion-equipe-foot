@@ -4,10 +4,12 @@
 class Auth
 {
 	private PDO $pdo;
+	private JWTUtils $jwtUtils;
 
-	public function __construct(PDO $pdo)
+	public function __construct(PDO $pdo, JWTUtils $jwtUtils)
 	{
 		$this->pdo = $pdo;
+		$this->jwtUtils = $jwtUtils;
 	}
 
 	public function login(string $email, string $password): bool
@@ -27,5 +29,10 @@ class Auth
 		}
 
 		return true;
+	}
+
+	public function verify(string $jwt): bool
+	{
+		return $this->jwtUtils->isJWTValid($jwt);
 	}
 }
