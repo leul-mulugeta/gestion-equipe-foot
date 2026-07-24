@@ -21,6 +21,7 @@ services:
       - DB_NAME=${AUTH_DB_NAME}
       - DB_USER=${AUTH_DB_USER}
       - DB_PASSWORD=${AUTH_DB_PASSWORD}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     volumes:
       - ./auth/:/var/www/html
 
