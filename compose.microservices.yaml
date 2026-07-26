@@ -26,12 +26,31 @@ services:
     volumes:
       - ./auth/:/var/www/html
 
+  serveur-db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${SERVEUR_DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${SERVEUR_DB_ROOT_PASSWORD}
+      MYSQL_USER: ${SERVEUR_DB_USER}
+      MYSQL_PASSWORD: ${SERVEUR_DB_PASSWORD}
+    volumes:
+      - ./serveur/sql:/docker-entrypoint-initdb.d
+      - serveur-db-data:/var/lib/mysql
+
   serveur:
     build: ./serveur
     ports:
       - "8082:80"
+    depends_on:
+      - serveur-db
+    environment:
+      - DB_HOST=serveur-db
+      - DB_NAME=${SERVEUR_DB_NAME}
+      - DB_USER=${SERVEUR_DB_USER}
+      - DB_PASSWORD=${SERVEUR_DB_PASSWORD}
     volumes:
       - ./serveur/:/var/www/html
 
 volumes:
   auth-db-data:
+  serveur-db-data:

@@ -1,0 +1,14 @@
+<?php
+
+// L'opérateur "?:" permet d'utiliser les variables de Docker si elles existent, 
+// sinon on utilise les valeurs par défaut (pour Laragon).
+
+$prodConfig = __DIR__ . '/config.local.php';
+if (file_exists($prodConfig)) {
+    require $prodConfig;
+} else {
+    define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+    define('DB_NAME', getenv('DB_NAME') ?: 'serveur_db');
+    define('DB_USER', getenv('DB_USER') ?: 'root');
+    define('DB_PASSWORD', getenv('DB_PASSWORD') ?: '');
+}

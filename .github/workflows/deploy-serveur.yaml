@@ -15,8 +15,10 @@ jobs:
         with:
           switches: >-
             -avzrc --delete
+            --exclude=config.local.php
             --exclude=Dockerfile
             --exclude=.dockerignore
+            --exclude=sql/
           path: serveur/
           remote_path: ${{ secrets.ALWAYSDATA_SERVEUR_PATH }}
           remote_host: ${{ secrets.ALWAYSDATA_SSH_HOST }}
