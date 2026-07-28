@@ -24,7 +24,7 @@ $api = new Api();
 
 // Vérification de la structure attendue de l'URL (/serveur/...)
 if (count($uriParts) < 3 || count($uriParts) > 5 || ($uriParts[1] ?? '') !== 'serveur') {
-    $api->deliverResponse('error', 404, 'Ressource introuvable.');
+    $api->deliverResponse('error', 404, 'Ressource inconnue.');
     exit;
 }
 
@@ -62,6 +62,8 @@ if ($response['status_code'] !== 200) {
 $requestBody = json_decode(file_get_contents('php://input'), true);
 
 try {
+    $mapper = new Mapper();
+
     $resource = $uriParts[2];
     $segment3 = $uriParts[3] ?? null;
     $segment4 = $uriParts[4] ?? null;
@@ -73,7 +75,14 @@ try {
         $api->deliverResponse('error', 404, 'Ressource inconnue.');
         exit;
     }
+} catch (InvalidArgumentException $e) {
+	$api->deliverResponse('error', 400, $e->getMessage());
 } catch (PDOException $e) {
     error_log("DB Error: " . $e->getMessage());
     $api->deliverResponse('error', 500, 'Connexion à la base de données impossible.');
+} catch (RuntimeException $e) {
+	$api->deliverResponse('error', 404, $e->getMessage());
+} catch (Throwable $e) {
+	error_log("Unexpected Error: " . $e->getMessage());
+	$api->deliverResponse('error', 500, 'Une erreur serveur est survenue lors du traitement.');
 }
