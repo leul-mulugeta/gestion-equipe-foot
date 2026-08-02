@@ -92,6 +92,21 @@ class JoueurDAO
 		$statement->bindValue(':joueur_id', $joueurId);
 		$statement->execute();
 	}
+	public function numeroLicenceExiste(int $numeroLicence, ?int $joueurIdAExclure = null): bool
+	{
+		$query = 'SELECT 1 FROM joueur WHERE numero_licence = :numero_licence';
+		if ($joueurIdAExclure !== null) {
+			$query .= ' AND joueur_id != :joueur_id';
+		}
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':numero_licence', $numeroLicence);
+		if ($joueurIdAExclure !== null) {
+			$statement->bindValue(':joueur_id', $joueurIdAExclure);
+		}
+		$statement->execute();
+		
+		return $statement->fetchColumn() !== false;
+	}
 
 	private function arrayToJoueur(array $dbLine): Joueur
 	{

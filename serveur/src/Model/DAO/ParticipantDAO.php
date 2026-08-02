@@ -20,6 +20,16 @@ class ParticipantDAO
 		return self::$instance;
 	}
 
+	public function joueurAParticipe(int $joueurId): bool
+	{
+		$query = 'SELECT 1 FROM participant WHERE joueur_id = :joueur_id';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':joueur_id', $joueurId);
+		$statement->execute();
+
+		return $statement->fetchColumn() !== false;
+	}
+
 	public function selectMoyennesEvaluationByJoueur(): array
 	{
 		$requete = "SELECT joueur_id, AVG(evaluation) as moyenne FROM participant GROUP BY joueur_id HAVING moyenne > 0";

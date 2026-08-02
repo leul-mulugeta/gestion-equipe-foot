@@ -15,6 +15,10 @@ class ModifierUnJoueur
 	{
 		$this->joueurDAO->selectJoueurById($this->joueur->getJoueurId());
 
+		if ($this->joueurDAO->numeroLicenceExiste($this->joueur->getNumeroDeLicence(), $this->joueur->getJoueurId())) {
+			throw new RuntimeException('Ce numéro de licence est déjà utilisé.');
+		}
+
 		$this->joueurDAO->updateJoueur($this->joueur);
 	}
 }

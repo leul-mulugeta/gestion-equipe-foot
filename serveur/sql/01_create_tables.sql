@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS rencontre;
 
 CREATE TABLE joueur (
 	joueur_id INT AUTO_INCREMENT PRIMARY KEY,
-	numero_licence INT UNIQUE,
+	numero_licence INT UNIQUE NOT NULL,
 	nom VARCHAR(50) NOT NULL,
 	prenom VARCHAR(50) NOT NULL,
 	date_naissance DATE NOT NULL,
