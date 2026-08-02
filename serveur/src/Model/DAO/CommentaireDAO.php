@@ -37,6 +37,24 @@ class CommentaireDAO
 		return array_map(fn($dbLine) => $this->arrayToCommentaire($dbLine), $statement->fetchAll());
 	}
 
+	public function deleteCommentaire(int $commentaireId): void
+	{
+		$query = 'DELETE FROM commentaire WHERE commentaire_id = :commentaire_id';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':commentaire_id', $commentaireId);
+		$statement->execute();
+	}
+
+	public function commentaireExiste(int $commentaireId): bool
+	{
+		$query = 'SELECT 1 FROM commentaire WHERE commentaire_id = :commentaire_id';
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':commentaire_id', $commentaireId);
+		$statement->execute();
+		
+		return $statement->fetchColumn() !== false;
+	}
+
 	private function arrayToCommentaire(array $dbLine): Commentaire
 	{
 		return new Commentaire(

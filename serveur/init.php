@@ -31,6 +31,7 @@ require_once __DIR__ . '/src/Model/DAO/ParticipantDAO.php';
 // Contrôleurs
 require_once __DIR__ . '/src/Controller/CreerUnCommentaire.php';
 require_once __DIR__ . '/src/Controller/ObtenirTousLesCommentairesDUnJoueur.php';
+require_once __DIR__ . '/src/Controller/SupprimerUnCommentaire.php';
 
 require_once __DIR__ . '/src/Controller/CreerUnJoueur.php';
 require_once __DIR__ . '/src/Controller/ModifierUnJoueur.php';
