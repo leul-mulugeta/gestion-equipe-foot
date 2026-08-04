@@ -36,7 +36,7 @@ class Mapper
 		}
 		try {
 			return new Joueur(
-				0,
+				$joueurData['joueurId'] ?? 0,
 				(int) $joueurData['numeroDeLicence'],
 				$joueurData['nom'],
 				$joueurData['prenom'],
@@ -46,7 +46,7 @@ class Mapper
 				Statut::from($joueurData['statut']),
 				Poste::from($joueurData['poste'])
 			);
-		} catch (Throwable $e) {
+		} catch (Throwable) {
 			throw new InvalidArgumentException("Une ou plusieurs valeurs sont invalides.");
 		}
 	}
@@ -69,7 +69,86 @@ class Mapper
 				0,
 				$commentaireData['contenu']
 			);
-		} catch (Throwable $e) {
+		} catch (Throwable) {
+			throw new InvalidArgumentException("Une ou plusieurs valeurs sont invalides.");
+		}
+	}
+
+	public function rencontreToArray(Rencontre $rencontre): array
+	{
+		return [
+			'rencontreId' => $rencontre->getRencontreId(),
+			'dateEtHeure' => $rencontre->getDateEtHeure()->format('Y-m-d H:i:s'),
+			'lieu' => $rencontre->getLieu()->value,
+			'adresse' => $rencontre->getAdresse(),
+			'nomEquipeAdverse' => $rencontre->getNomEquipeAdverse(),
+			'resultat' => $rencontre->getResultat()?->value,
+			'scoreEquipeLocale' => $rencontre->getScoreEquipeLocale(),
+			'scoreEquipeAdverse' => $rencontre->getScoreEquipeAdverse()
+		];
+	}
+
+	public function arrayToRencontre(array $rencontreData): Rencontre
+	{
+		if (
+			!isset(
+			$rencontreData['dateEtHeure'],
+			$rencontreData['lieu'],
+			$rencontreData['adresse'],
+			$rencontreData['nomEquipeAdverse']
+		)
+		) {
+			throw new InvalidArgumentException("Tous les champs sont obligatoires : dateEtHeure, lieu, adresse, nomEquipeAdverse.");
+		}
+		try {
+			return new Rencontre(
+				$rencontreData['rencontreId'] ?? 0,
+				new DateTime($rencontreData['dateEtHeure']),
+				Lieu::from($rencontreData['lieu']),
+				$rencontreData['adresse'],
+				$rencontreData['nomEquipeAdverse'],
+				isset($rencontreData['resultat']) ? Resultat::from($rencontreData['resultat']) : null,
+				$rencontreData['scoreEquipeLocale'] ?? null,
+				$rencontreData['scoreEquipeAdverse'] ?? null
+			);
+		} catch (Throwable) {
+			throw new InvalidArgumentException("Une ou plusieurs valeurs sont invalides.");
+		}
+	}
+
+	public function participantToArray(Participant $participant): array
+	{
+		return [
+			'participantId' => $participant->getParticipantId(),
+			'joueur' => $this->joueurToArray($participant->getJoueur()),
+			'rencontreId' => $participant->getRencontreId(),
+			'typeDeParticipation' => $participant->getTypeDeParticipation()->value,
+			'poste' => $participant->getPoste()->value,
+			'evaluation' => $participant->getEvaluation()
+		];
+	}
+
+	public function arrayToParticipant(array $participantData): Participant
+	{
+		if (
+			!isset(
+			$participantData['joueur'],
+			$participantData['typeDeParticipation'],
+			$participantData['poste']
+		)
+		) {
+			throw new InvalidArgumentException("Tous les champs sont obligatoires : joueur, typeDeParticipation, poste.");
+		}
+		try {
+			return new Participant(
+				0,
+				$this->arrayToJoueur($participantData['joueur']),
+				0,
+				TypeDeParticipation::from($participantData['typeDeParticipation']),
+				Poste::from($participantData['poste']),
+				isset($participantData['evaluation']) ? (int) $participantData['evaluation'] : null
+			);
+		} catch (Throwable) {
 			throw new InvalidArgumentException("Une ou plusieurs valeurs sont invalides.");
 		}
 	}

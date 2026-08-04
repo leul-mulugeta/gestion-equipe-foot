@@ -92,6 +92,7 @@ class JoueurDAO
 		$statement->bindValue(':joueur_id', $joueurId);
 		$statement->execute();
 	}
+
 	public function numeroLicenceExiste(int $numeroLicence, ?int $joueurIdAExclure = null): bool
 	{
 		$query = 'SELECT 1 FROM joueur WHERE numero_licence = :numero_licence';
@@ -104,11 +105,11 @@ class JoueurDAO
 			$statement->bindValue(':joueur_id', $joueurIdAExclure);
 		}
 		$statement->execute();
-		
+
 		return $statement->fetchColumn() !== false;
 	}
 
-	private function arrayToJoueur(array $dbLine): Joueur
+	public function arrayToJoueur(array $dbLine): Joueur
 	{
 		return new Joueur(
 			$dbLine['joueur_id'],
