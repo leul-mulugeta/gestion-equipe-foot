@@ -13,8 +13,15 @@ class ModifierUneRencontre
 
 	public function executer(): void
 	{
-		$this->rencontreDAO->selectRencontreById($this->rencontre->getRencontreId());
+		$rencontreEnBase = $this->rencontreDAO->selectRencontreById($this->rencontre->getRencontreId());
+		if ($rencontreEnBase->getDateEtHeure() < new DateTime()) {
+			throw new ConflitException('La planification ne peut plus être modifiée après la rencontre.');
+		}
 
-		$this->rencontreDAO->updateRencontre($this->rencontre);
+		if ($this->rencontre->getDateEtHeure() < new DateTime()) {
+			throw new ConflitException('Une rencontre ne peut pas être replanifiée dans le passé.');
+		}
+
+		$this->rencontreDAO->updatePlanification($this->rencontre);
 	}
 }

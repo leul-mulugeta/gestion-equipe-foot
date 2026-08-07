@@ -106,9 +106,7 @@ class Mapper
 				new DateTime($rencontreData['dateEtHeure']),
 				Lieu::from($rencontreData['lieu']),
 				$rencontreData['adresse'],
-				$rencontreData['nomEquipeAdverse'],
-				$rencontreData['scoreEquipeLocale'] ?? null,
-				$rencontreData['scoreEquipeAdverse'] ?? null
+				$rencontreData['nomEquipeAdverse']
 			);
 		} catch (Throwable) {
 			throw new InvalidArgumentException("Une ou plusieurs valeurs sont invalides.");

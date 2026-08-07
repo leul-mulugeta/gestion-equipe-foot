@@ -67,6 +67,12 @@ switch ($httpMethod) {
             exit;
         }
 
+        if ($rencontreId && $segment4 === 'resultat') {
+            (new ModifierLeResultatDUneRencontre($rencontreId, $requestBody))->executer();
+            $api->deliverResponse('success', 200, 'Résultat de la rencontre modifié avec succès.');
+            exit;
+        }
+
         if (!$rencontreId) {
             $api->deliverResponse('error', 400, 'Identifiant manquant.');
             exit;

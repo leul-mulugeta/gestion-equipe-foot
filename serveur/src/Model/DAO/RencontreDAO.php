@@ -33,15 +33,13 @@ class RencontreDAO
 		$statement->execute();
 	}
 
-	public function updateRencontre(Rencontre $rencontre): void
+	public function updatePlanification(Rencontre $rencontre): void
 	{
-		$query = 'UPDATE rencontre SET 
-					date_heure = :date_heure, 
-					lieu = :lieu, 
-					adresse = :adresse, 
-					nom_equipe_adverse = :nom_equipe_adverse, 
-					score_equipe_locale = :score_equipe_locale, 
-					score_equipe_adverse = :score_equipe_adverse 
+		$query = 'UPDATE rencontre SET
+					date_heure = :date_heure,
+					lieu = :lieu,
+					adresse = :adresse,
+					nom_equipe_adverse = :nom_equipe_adverse
 					WHERE rencontre_id = :rencontre_id';
 
 		$statement = $this->pdo->prepare($query);
@@ -49,9 +47,21 @@ class RencontreDAO
 		$statement->bindValue(':lieu', $rencontre->getLieu()->value);
 		$statement->bindValue(':adresse', $rencontre->getAdresse());
 		$statement->bindValue(':nom_equipe_adverse', $rencontre->getNomEquipeAdverse());
-		$statement->bindValue(':score_equipe_locale', $rencontre->getScoreEquipeLocale());
-		$statement->bindValue(':score_equipe_adverse', $rencontre->getScoreEquipeAdverse());
 		$statement->bindValue(':rencontre_id', $rencontre->getRencontreId());
+		$statement->execute();
+	}
+
+	public function updateScores(int $rencontreId, int $scoreEquipeLocale, int $scoreEquipeAdverse): void
+	{
+		$query = 'UPDATE rencontre SET
+					score_equipe_locale = :score_equipe_locale,
+					score_equipe_adverse = :score_equipe_adverse
+					WHERE rencontre_id = :rencontre_id';
+
+		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':score_equipe_locale', $scoreEquipeLocale);
+		$statement->bindValue(':score_equipe_adverse', $scoreEquipeAdverse);
+		$statement->bindValue(':rencontre_id', $rencontreId);
 		$statement->execute();
 	}
 

@@ -48,6 +48,7 @@ require_once __DIR__ . '/src/Controller/ObtenirToutesLesMoyennesEvaluationJoueur
 
 require_once __DIR__ . '/src/Controller/CreerUneRencontre.php';
 require_once __DIR__ . '/src/Controller/ModifierUneRencontre.php';
+require_once __DIR__ . '/src/Controller/ModifierLeResultatDUneRencontre.php';
 require_once __DIR__ . '/src/Controller/ObtenirUneRencontre.php';
 require_once __DIR__ . '/src/Controller/ObtenirToutesLesRencontres.php';
 require_once __DIR__ . '/src/Controller/SupprimerUneRencontre.php';
