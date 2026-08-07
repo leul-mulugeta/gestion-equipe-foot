@@ -18,7 +18,7 @@ class SupprimerUnJoueur
 		$this->joueurDAO->selectJoueurById($this->joueurId);
 
 		if ($this->participantDAO->joueurAParticipe($this->joueurId)) {
-			throw new RuntimeException('Ce joueur a participé à des rencontres et ne peut pas être supprimé.');
+			throw new ConflitException('Ce joueur a participé à des rencontres et ne peut pas être supprimé.');
 		}
 
 		$this->joueurDAO->deleteJoueur($this->joueurId);

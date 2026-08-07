@@ -53,18 +53,17 @@ class ParticipantDAO
 		return array_map(fn($dbLine) => $this->arrayToParticipant($dbLine), $statement->fetchAll());
 	}
 
-	public function updateEvaluationsParticipants(array $evaluations): void
+	public function updateEvaluationsParticipants(int $rencontreId, array $evaluations): void
 	{
 		$this->pdo->beginTransaction();
 		try {
 			foreach ($evaluations as $participantId => $evaluation) {
-				$this->updateEvaluationParticipant($participantId, $evaluation);
+				$this->updateEvaluationParticipant($rencontreId, $participantId, $evaluation);
 			}
 			$this->pdo->commit();
-		} catch (Exception $e) {
+		} catch (Throwable $e) {
 			$this->pdo->rollBack();
-			error_log('Erreur modifier evaluations participants : ' . $e->getMessage());
-			throw new PDOException('Erreur lors de la modification des evaluations des participants.');
+			throw $e;
 		}
 	}
 
@@ -79,15 +78,15 @@ class ParticipantDAO
 			$this->pdo->commit();
 		} catch (Throwable $e) {
 			$this->pdo->rollBack();
-			error_log('Erreur sauvegarde participants : ' . $e->getMessage());
-			throw new PDOException('Erreur lors de la sauvegarde des participants.');
+			throw $e;
 		}
 	}
 
-	private function updateEvaluationParticipant(int $participantId, int $evaluation): void
+	private function updateEvaluationParticipant(int $rencontreId, int $participantId, int $evaluation): void
 	{
-		$query = 'UPDATE participant SET evaluation = :evaluation WHERE participant_id = :participant_id';
+		$query = 'UPDATE participant SET evaluation = :evaluation WHERE rencontre_id = :rencontre_id AND participant_id = :participant_id';
 		$statement = $this->pdo->prepare($query);
+		$statement->bindValue(':rencontre_id', $rencontreId);
 		$statement->bindValue(':evaluation', $evaluation);
 		$statement->bindValue(':participant_id', $participantId);
 		$statement->execute();

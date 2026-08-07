@@ -14,7 +14,7 @@ class CreerUnJoueur
 	public function executer(): void
 	{
 		if ($this->joueurDAO->numeroLicenceExiste($this->joueur->getNumeroDeLicence())) {
-			throw new RuntimeException('Ce numéro de licence est déjà utilisé.');
+			throw new ConflitException('Ce numéro de licence est déjà utilisé.');
 		}
 
 		$this->joueurDAO->insertJoueur($this->joueur);

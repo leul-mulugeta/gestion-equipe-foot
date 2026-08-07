@@ -13,6 +13,10 @@ class CreerUneRencontre
 
 	public function executer(): void
 	{
+		if ($this->rencontre->getDateEtHeure() < new DateTime()) {
+			throw new ConflitException('Une rencontre ne peut pas être créée dans le passé.');
+		}
+
 		$this->rencontreDAO->insertRencontre($this->rencontre);
 	}
 }

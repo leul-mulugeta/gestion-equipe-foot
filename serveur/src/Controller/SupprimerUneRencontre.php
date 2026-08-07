@@ -13,7 +13,10 @@ class SupprimerUneRencontre
 
 	public function executer(): void
 	{
-		$this->rencontreDAO->selectRencontreById($this->rencontreId);
+		$rencontre = $this->rencontreDAO->selectRencontreById($this->rencontreId);
+		if ($rencontre->getDateEtHeure() < new DateTime()) {
+			throw new ConflitException('Une rencontre déjà jouée ne peut pas être supprimée.');
+		}
 
 		$this->rencontreDAO->deleteRencontre($this->rencontreId);
 	}

@@ -109,6 +109,25 @@ class JoueurDAO
 		return $statement->fetchColumn() !== false;
 	}
 
+	public function selectJoueursByIds(array $joueurIds): array
+	{
+		if (empty($joueurIds)) {
+			return [];
+		}
+
+		$placeholders = implode(',', array_fill(0, count($joueurIds), '?'));
+		$query = "SELECT * FROM joueur WHERE joueur_id IN ($placeholders)";
+		$statement = $this->pdo->prepare($query);
+		$statement->execute($joueurIds);
+		$joueurs = [];
+
+		foreach ($statement->fetchAll() as $dbLine) {
+			$joueurs[(int) $dbLine['joueur_id']] = $this->arrayToJoueur($dbLine);
+		}
+
+		return $joueurs;
+	}
+
 	public function arrayToJoueur(array $dbLine): Joueur
 	{
 		return new Joueur(

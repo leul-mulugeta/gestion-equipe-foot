@@ -59,7 +59,12 @@ if ($response['status_code'] !== 200) {
 }
 
 // Décodage du corps de la requête
-$requestBody = json_decode(file_get_contents('php://input'), true);
+$rawBody = file_get_contents('php://input');
+$requestBody = $rawBody !== '' ? json_decode($rawBody, true) : [];
+if (!is_array($requestBody)) {
+    $api->deliverResponse('error', 400, 'Le corps de la requête est invalide.');
+    exit;
+}
 
 try {
     $mapper = new Mapper();
@@ -76,13 +81,15 @@ try {
         exit;
     }
 } catch (InvalidArgumentException $e) {
-	$api->deliverResponse('error', 400, $e->getMessage());
+    $api->deliverResponse('error', 400, $e->getMessage());
+} catch (ConflitException $e) {
+    $api->deliverResponse('error', 409, $e->getMessage());
 } catch (PDOException $e) {
     error_log("DB Error: " . $e->getMessage());
-    $api->deliverResponse('error', 500, 'Connexion à la base de données impossible.');
+    $api->deliverResponse('error', 500, "Une erreur est survenue lors de l'accès aux données.");
 } catch (RuntimeException $e) {
-	$api->deliverResponse('error', 404, $e->getMessage());
+    $api->deliverResponse('error', 404, $e->getMessage());
 } catch (Throwable $e) {
-	error_log("Unexpected Error: " . $e->getMessage());
-	$api->deliverResponse('error', 500, 'Une erreur serveur est survenue lors du traitement.');
+    error_log("Unexpected Error: " . $e->getMessage());
+    $api->deliverResponse('error', 500, 'Une erreur serveur est survenue lors du traitement.');
 }

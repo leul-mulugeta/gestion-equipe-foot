@@ -12,6 +12,9 @@ require_once __DIR__ . '/src/BearerToken.php';
 require_once __DIR__ . '/src/HttpClient.php';
 require_once __DIR__ . '/src/Mapper.php';
 
+// Exceptions
+require_once __DIR__ . '/src/Exception/ConflitException.php';
+
 // Énumérations
 require_once __DIR__ . '/src/Model/Enum/Lieu.php';
 require_once __DIR__ . '/src/Model/Enum/Poste.php';
