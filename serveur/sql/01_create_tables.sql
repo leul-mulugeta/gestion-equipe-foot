@@ -36,7 +36,6 @@ CREATE TABLE rencontre (
 	lieu ENUM('DOMICILE', 'EXTERIEUR') NOT NULL,
 	adresse VARCHAR(100) NOT NULL,
 	nom_equipe_adverse VARCHAR(50) NOT NULL,
-	resultat ENUM('VICTOIRE', 'DEFAITE', 'NUL'),
 	score_equipe_locale INT,
 	score_equipe_adverse INT
 );

@@ -7,11 +7,10 @@ class Rencontre
 	private Lieu $lieu;
 	private string $adresse;
 	private string $nomEquipeAdverse;
-	private ?Resultat $resultat;
 	private ?int $scoreEquipeLocale;
 	private ?int $scoreEquipeAdverse;
 
-	public function __construct(int $rencontreId, DateTime $dateEtHeure, Lieu $lieu, string $adresse, string $nomEquipeAdverse, ?Resultat $resultat = null, ?int $scoreEquipeLocale = null, ?int $scoreEquipeAdverse = null)
+	public function __construct(int $rencontreId, DateTime $dateEtHeure, Lieu $lieu, string $adresse, string $nomEquipeAdverse, ?int $scoreEquipeLocale = null, ?int $scoreEquipeAdverse = null)
 	{
 		$annee = (int) $dateEtHeure->format('Y');
 		if ($annee < 1900) {
@@ -46,25 +45,8 @@ class Rencontre
 			throw new InvalidArgumentException('Les deux scores doivent être renseignés ensemble.');
 		}
 
-		if ($resultat !== null && $scoreEquipeLocale === null) {
-			throw new InvalidArgumentException('Un résultat ne peut pas être renseigné sans les scores.');
-		}
-
-		if ($dateEtHeure > new DateTime() && ($resultat !== null || $scoreEquipeLocale !== null)) {
-			throw new InvalidArgumentException('Un match à venir ne peut pas avoir de résultat.');
-		}
-
-		if ($scoreEquipeLocale !== null && $scoreEquipeAdverse !== null && $resultat !== null) {
-			if ($scoreEquipeLocale === $scoreEquipeAdverse) {
-				$attendu = Resultat::NUL;
-			} elseif ($lieu === Lieu::DOMICILE) {
-				$attendu = $scoreEquipeLocale > $scoreEquipeAdverse ? Resultat::VICTOIRE : Resultat::DEFAITE;
-			} else {
-				$attendu = $scoreEquipeAdverse > $scoreEquipeLocale ? Resultat::VICTOIRE : Resultat::DEFAITE;
-			}
-			if ($resultat !== $attendu) {
-				throw new InvalidArgumentException('Le résultat ne correspond pas aux scores.');
-			}
+		if ($dateEtHeure > new DateTime() && $scoreEquipeLocale !== null) {
+			throw new InvalidArgumentException('Un match à venir ne peut pas avoir de score.');
 		}
 
 		$this->rencontreId = $rencontreId;
@@ -72,7 +54,6 @@ class Rencontre
 		$this->lieu = $lieu;
 		$this->adresse = $adresse;
 		$this->nomEquipeAdverse = $nomEquipeAdverse;
-		$this->resultat = $resultat;
 		$this->scoreEquipeLocale = $scoreEquipeLocale;
 		$this->scoreEquipeAdverse = $scoreEquipeAdverse;
 	}
@@ -109,7 +90,18 @@ class Rencontre
 
 	public function getResultat(): ?Resultat
 	{
-		return $this->resultat;
+		if ($this->scoreEquipeLocale === null || $this->scoreEquipeAdverse === null) {
+			return null;
+		}
+
+		if ($this->scoreEquipeLocale === $this->scoreEquipeAdverse) {
+			return Resultat::NUL;
+		}
+
+		$victoireLocale = $this->scoreEquipeLocale > $this->scoreEquipeAdverse;
+		return $this->lieu === Lieu::DOMICILE
+			? ($victoireLocale ? Resultat::VICTOIRE : Resultat::DEFAITE)
+			: ($victoireLocale ? Resultat::DEFAITE : Resultat::VICTOIRE);
 	}
 
 	public function getScoreEquipeLocale(): ?int

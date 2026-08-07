@@ -50,14 +50,14 @@ INSERT INTO commentaire (joueur_id, contenu) VALUES
 (14, 'Suspendu suite au carton rouge du dernier match.');
 
 -- Insertion des 7 Rencontres
-INSERT INTO rencontre (date_heure, lieu, adresse, nom_equipe_adverse, resultat, score_equipe_locale, score_equipe_adverse) VALUES
-('2025-11-10 20:45:00', 'DOMICILE', 'Stade de France, Paris', 'Allemagne', 'VICTOIRE', 3, 1),
-('2025-11-25 20:45:00', 'EXTERIEUR', 'Wembley, Londres', 'Angleterre', 'NUL', 2, 2),
-('2025-12-05 20:45:00', 'DOMICILE', 'Stade de France, Paris', 'Italie', 'DEFAITE', 0, 1),
-('2025-12-15 20:45:00', 'EXTERIEUR', 'Santiago Bernabéu, Madrid', 'Espagne', 'VICTOIRE', 2, 0),
-('2026-01-10 21:00:00', 'DOMICILE', 'Stade Vélodrome, Marseille', 'Brésil', 'VICTOIRE', 4, 1),
-('2026-02-05 20:45:00', 'DOMICILE', 'Stade de France, Paris', 'Portugal', NULL, NULL, NULL),
-('2026-02-12 20:45:00', 'EXTERIEUR', 'Estadio da Luz, Lisbonne', 'Portugal', NULL, NULL, NULL);
+INSERT INTO rencontre (date_heure, lieu, adresse, nom_equipe_adverse, score_equipe_locale, score_equipe_adverse) VALUES
+('2025-11-10 20:45:00', 'DOMICILE', 'Stade de France, Paris', 'Allemagne', 3, 1),
+('2025-11-25 20:45:00', 'EXTERIEUR', 'Wembley, Londres', 'Angleterre', 2, 2),
+('2025-12-05 20:45:00', 'DOMICILE', 'Stade de France, Paris', 'Italie', 0, 1),
+('2025-12-15 20:45:00', 'EXTERIEUR', 'Santiago Bernabéu, Madrid', 'Espagne', 2, 0),
+('2026-01-10 21:00:00', 'DOMICILE', 'Stade Vélodrome, Marseille', 'Brésil', 4, 1),
+('2026-02-05 20:45:00', 'DOMICILE', 'Stade de France, Paris', 'Portugal', NULL, NULL),
+('2026-02-12 20:45:00', 'EXTERIEUR', 'Estadio da Luz, Lisbonne', 'Portugal', NULL, NULL);
 
 -- Insertion des Participants
 -- Match 1

@@ -107,7 +107,6 @@ class Mapper
 				Lieu::from($rencontreData['lieu']),
 				$rencontreData['adresse'],
 				$rencontreData['nomEquipeAdverse'],
-				isset($rencontreData['resultat']) ? Resultat::from($rencontreData['resultat']) : null,
 				$rencontreData['scoreEquipeLocale'] ?? null,
 				$rencontreData['scoreEquipeAdverse'] ?? null
 			);

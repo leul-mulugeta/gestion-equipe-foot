@@ -20,15 +20,14 @@ class RencontreDAO
 
 	public function insertRencontre(Rencontre $rencontre): void
 	{
-		$query = 'INSERT INTO rencontre (date_heure, lieu, adresse, nom_equipe_adverse, resultat, score_equipe_locale, score_equipe_adverse) 
-					VALUES (:date_heure, :lieu, :adresse, :nom_equipe_adverse, :resultat, :score_equipe_locale, :score_equipe_adverse)';
+		$query = 'INSERT INTO rencontre (date_heure, lieu, adresse, nom_equipe_adverse, score_equipe_locale, score_equipe_adverse) 
+					VALUES (:date_heure, :lieu, :adresse, :nom_equipe_adverse, :score_equipe_locale, :score_equipe_adverse)';
 
 		$statement = $this->pdo->prepare($query);
 		$statement->bindValue(':date_heure', $rencontre->getDateEtHeure()->format('Y-m-d H:i:s'));
 		$statement->bindValue(':lieu', $rencontre->getLieu()->value);
 		$statement->bindValue(':adresse', $rencontre->getAdresse());
 		$statement->bindValue(':nom_equipe_adverse', $rencontre->getNomEquipeAdverse());
-		$statement->bindValue(':resultat', $rencontre->getResultat() ? $rencontre->getResultat()->value : null);
 		$statement->bindValue(':score_equipe_locale', $rencontre->getScoreEquipeLocale());
 		$statement->bindValue(':score_equipe_adverse', $rencontre->getScoreEquipeAdverse());
 		$statement->execute();
@@ -41,7 +40,6 @@ class RencontreDAO
 					lieu = :lieu, 
 					adresse = :adresse, 
 					nom_equipe_adverse = :nom_equipe_adverse, 
-					resultat = :resultat, 
 					score_equipe_locale = :score_equipe_locale, 
 					score_equipe_adverse = :score_equipe_adverse 
 					WHERE rencontre_id = :rencontre_id';
@@ -51,7 +49,6 @@ class RencontreDAO
 		$statement->bindValue(':lieu', $rencontre->getLieu()->value);
 		$statement->bindValue(':adresse', $rencontre->getAdresse());
 		$statement->bindValue(':nom_equipe_adverse', $rencontre->getNomEquipeAdverse());
-		$statement->bindValue(':resultat', $rencontre->getResultat() ? $rencontre->getResultat()->value : null);
 		$statement->bindValue(':score_equipe_locale', $rencontre->getScoreEquipeLocale());
 		$statement->bindValue(':score_equipe_adverse', $rencontre->getScoreEquipeAdverse());
 		$statement->bindValue(':rencontre_id', $rencontre->getRencontreId());
@@ -98,7 +95,6 @@ class RencontreDAO
 			Lieu::from($dbLine['lieu']),
 			$dbLine['adresse'],
 			$dbLine['nom_equipe_adverse'],
-			$dbLine['resultat'] !== null ? Resultat::from($dbLine['resultat']) : null,
 			$dbLine['score_equipe_locale'] !== null ? (int) $dbLine['score_equipe_locale'] : null,
 			$dbLine['score_equipe_adverse'] !== null ? (int) $dbLine['score_equipe_adverse'] : null
 		);
