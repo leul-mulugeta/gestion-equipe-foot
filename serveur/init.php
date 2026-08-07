@@ -33,6 +33,7 @@ require_once __DIR__ . '/src/Model/DAO/CommentaireDAO.php';
 require_once __DIR__ . '/src/Model/DAO/JoueurDAO.php';
 require_once __DIR__ . '/src/Model/DAO/RencontreDAO.php';
 require_once __DIR__ . '/src/Model/DAO/ParticipantDAO.php';
+require_once __DIR__ . '/src/Model/DAO/StatistiquesDAO.php';
 
 // Contrôleurs
 require_once __DIR__ . '/src/Controller/CreerUnCommentaire.php';
@@ -56,3 +57,6 @@ require_once __DIR__ . '/src/Controller/SupprimerUneRencontre.php';
 require_once __DIR__ . '/src/Controller/ObtenirTousLesParticipantsDUneRencontre.php';
 require_once __DIR__ . '/src/Controller/SauvegarderParticipantsDUneRencontre.php';
 require_once __DIR__ . '/src/Controller/ModifierEvaluationsParticipants.php';
+
+require_once __DIR__ . '/src/Controller/ObtenirStatistiquesGlobales.php';
+require_once __DIR__ . '/src/Controller/ObtenirStatistiquesJoueurs.php';
