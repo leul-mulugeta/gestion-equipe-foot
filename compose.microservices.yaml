@@ -1,4 +1,13 @@
 services:
+  # Génère la paire de clés RS256 au premier démarrage (voir scripts/keygen.sh)
+  keygen:
+    image: alpine:3
+    volumes:
+      - ./scripts/keygen.sh:/keygen.sh:ro
+      - jwt-private:/private
+      - jwt-public:/public
+    command: sh /keygen.sh
+
   auth-db:
     image: mysql:8.4
     environment:
@@ -15,16 +24,19 @@ services:
     ports:
       - "8081:80"
     depends_on:
-      - auth-db
+      auth-db:
+        condition: service_started
+      keygen:
+        condition: service_completed_successfully
     environment:
       - DB_HOST=auth-db
       - DB_NAME=${AUTH_DB_NAME}
       - DB_USER=${AUTH_DB_USER}
       - DB_PASSWORD=${AUTH_DB_PASSWORD}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+      - JWT_PRIVATE_KEY_PATH=/keys/private.pem
     volumes:
       - ./auth/:/var/www/html
+      - jwt-private:/keys:ro
 
   serveur-db:
     image: mysql:8.4
@@ -42,17 +54,22 @@ services:
     ports:
       - "8082:80"
     depends_on:
-      - serveur-db
+      serveur-db:
+        condition: service_started
+      keygen:
+        condition: service_completed_successfully
     environment:
       - DB_HOST=serveur-db
       - DB_NAME=${SERVEUR_DB_NAME}
       - DB_USER=${SERVEUR_DB_USER}
       - DB_PASSWORD=${SERVEUR_DB_PASSWORD}
-      - AUTH_URL=http://auth
-      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+      - JWT_PUBLIC_KEY_PATH=/keys/public.pem
     volumes:
       - ./serveur/:/var/www/html
+      - jwt-public:/keys:ro
 
 volumes:
   auth-db-data:
   serveur-db-data:
+  jwt-private:
+  jwt-public:

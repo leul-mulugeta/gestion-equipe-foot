@@ -11,6 +11,5 @@ if (file_exists($prodConfig)) {
     define('DB_NAME', getenv('DB_NAME') ?: 'serveur_db');
     define('DB_USER', getenv('DB_USER') ?: 'root');
     define('DB_PASSWORD', getenv('DB_PASSWORD') ?: '');
-    define('AUTH_URL', getenv('AUTH_URL') ?: 'http://auth.test');
-    define('INTERNAL_API_KEY', getenv('INTERNAL_API_KEY') ?: 'cle_api');
+    define('JWT_PUBLIC_KEY_PATH', getenv('JWT_PUBLIC_KEY_PATH') ?: throw new RuntimeException('JWT_PUBLIC_KEY_PATH non défini.'));
 }

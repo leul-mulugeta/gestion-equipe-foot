@@ -1,0 +1,3 @@
+# Les scripts shell sont exécutés dans des conteneurs Linux : ils doivent garder des fins
+# de ligne LF, sinon le shell échoue sur les retours chariot ajoutés par core.autocrlf
+*.sh text eol=lf

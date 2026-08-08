@@ -8,6 +8,6 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/src/Api.php';
 require_once __DIR__ . '/src/DBConnection.php';
 
-require_once __DIR__ . '/src/JWTUtils.php';
+require_once __DIR__ . '/src/JWTSigner.php';
 
 require_once __DIR__ . '/src/Auth.php';

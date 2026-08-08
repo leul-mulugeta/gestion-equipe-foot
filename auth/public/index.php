@@ -29,17 +29,21 @@ $uriParts = explode('/', $path);
 
 // Vérification de la structure attendue de l'URL (/auth/...)
 if (count($uriParts) !== 3 || ($uriParts[1] ?? '') !== 'auth') {
-    $api->deliverResponse('error', 404, 'Ressource introuvable.');
+    $api->deliverResponse('error', 404, 'Ressource inconnue.');
     exit;
 }
 
 // Décodage du corps de la requête
 $requestBody = json_decode(file_get_contents('php://input'), true);
+if (!is_array($requestBody)) {
+    $api->deliverResponse('error', 400, 'Le corps de la requête est invalide.');
+    exit;
+}
 
 try {
     $pdo = DBConnection::getInstance()->getConnection();
-    $jwtUtils = new JWTUtils(JWT_SECRET_KEY);
-    $auth = new Auth($pdo, $jwtUtils);
+    $jwtSigner = new JWTSigner(JWT_PRIVATE_KEY_PATH);
+    $auth = new Auth($pdo);
 
     $endpoint = $uriParts[2];
 
@@ -59,38 +63,15 @@ try {
                 exit;
             }
 
-            // Préparation du Payload du JWT (expiration à 1h)
-            $expiration = (new DateTime())->add(new DateInterval('PT1H'))->getTimestamp();
+            $expiration = (new DateTime())->modify('+1 hour')->getTimestamp();
             $payload = ['email' => $email, 'exp' => $expiration];
 
-            $jwt = $jwtUtils->generateJWT($payload);
+            $jwt = $jwtSigner->generateJWT($payload);
 
             $api->deliverResponse('success', 200, 'Authentification réussie.', ['token' => $jwt]);
             exit;
-        case 'verify':
-            $jwt = $requestBody['jwt'] ?? '';
-            $key = $requestBody['api_key'] ?? '';
-
-            if (empty($jwt) || empty($key)) {
-                $api->deliverResponse('error', 400, 'JWT et clé API obligatoires.');
-                exit;
-            }
-
-            if (!hash_equals(INTERNAL_API_KEY, $key)) {
-                $api->deliverResponse('error', 401, "Non autorisé.");
-                exit;
-            }
-
-            $jwtValid = $auth->verify($jwt);
-            if (!$jwtValid) {
-                $api->deliverResponse('error', 401, 'Token invalide ou expiré.');
-                exit;
-            }
-
-            $api->deliverResponse('success', 200, "Token valide.");
-            exit;
         default:
-            $api->deliverResponse('error', 404, 'Endpoint inconnu.');
+            $api->deliverResponse('error', 404, 'Ressource inconnue.');
             exit;
     }
 } catch (PDOException $e) {

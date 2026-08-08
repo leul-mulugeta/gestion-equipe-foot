@@ -28,7 +28,7 @@ if (count($uriParts) < 3 || count($uriParts) > 5 || ($uriParts[1] ?? '') !== 'se
     exit;
 }
 
-// Vérification du token JWT auprès du serveur d'authentification
+// Vérification du token JWT
 $bearerToken = new BearerToken();
 $token = $bearerToken->getBearerToken();
 
@@ -37,24 +37,16 @@ if (!$token) {
     exit;
 }
 
-$httpClient = new HttpClient(AUTH_URL . '/auth/verify');
-
 try {
-    $response = $httpClient->post(['jwt' => $token, 'api_key' => INTERNAL_API_KEY]);
+    $jwtVerifier = new JWTVerifier(JWT_PUBLIC_KEY_PATH);
 } catch (RuntimeException $e) {
-    error_log("Auth Service Error: " . $e->getMessage());
+    error_log("JWT Config Error: " . $e->getMessage());
     $api->deliverResponse('error', 500, "Une erreur est survenue. Veuillez réessayer.");
     exit;
 }
 
-if (!$response) {
-    error_log("Auth Service Error: réponse invalide (non-JSON)");
-    $api->deliverResponse('error', 500, "Une erreur est survenue. Veuillez réessayer.");
-    exit;
-}
-
-if ($response['status_code'] !== 200) {
-    $api->deliverResponse('error', $response['status_code'], $response['status_message']);
+if (!$jwtVerifier->isJWTValid($token)) {
+    $api->deliverResponse('error', 401, 'Token invalide ou expiré.');
     exit;
 }
 
