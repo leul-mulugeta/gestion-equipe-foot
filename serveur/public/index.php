@@ -22,8 +22,8 @@ $uriParts = explode('/', $path);
 
 $api = new Api();
 
-// Vérification de la structure attendue de l'URL (/serveur/...)
-if (count($uriParts) < 3 || count($uriParts) > 5 || ($uriParts[1] ?? '') !== 'serveur') {
+// Vérification de la structure attendue de l'URL
+if (count($uriParts) < 2 || count($uriParts) > 4) {
     $api->deliverResponse('error', 404, 'Ressource inconnue.');
     exit;
 }
@@ -61,9 +61,9 @@ if (!is_array($requestBody)) {
 try {
     $mapper = new Mapper();
 
-    $resource = $uriParts[2];
-    $segment3 = $uriParts[3] ?? null;
-    $segment4 = $uriParts[4] ?? null;
+    $resource = $uriParts[1];
+    $segment3 = $uriParts[2] ?? null;
+    $segment4 = $uriParts[3] ?? null;
 
     $routerFile = __DIR__ . "/../src/Router/$resource.php";
     if (file_exists($routerFile)) {
