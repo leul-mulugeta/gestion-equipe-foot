@@ -13,6 +13,7 @@ require_once __DIR__ . '/src/JWTVerifier.php';
 require_once __DIR__ . '/src/Mapper.php';
 
 // Exceptions
+require_once __DIR__ . '/src/Exception/NonTrouveException.php';
 require_once __DIR__ . '/src/Exception/ConflitException.php';
 
 // Énumérations

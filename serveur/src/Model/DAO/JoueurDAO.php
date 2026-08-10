@@ -70,7 +70,7 @@ class JoueurDAO
 
 		$dbLine = $statement->fetch();
 		if (!$dbLine) {
-			throw new RuntimeException("Ce joueur n'existe pas.");
+			throw new NonTrouveException("Ce joueur n'existe pas.");
 		}
 
 		return $this->arrayToJoueur($dbLine);

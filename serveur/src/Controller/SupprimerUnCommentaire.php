@@ -14,7 +14,7 @@ class SupprimerUnCommentaire
 	public function executer(): void
 	{
 		if (!$this->commentaireDAO->commentaireExiste($this->commentaireId)) {
-			throw new RuntimeException("Ce commentaire n'existe pas.");
+			throw new NonTrouveException("Ce commentaire n'existe pas.");
 		}
 
 		$this->commentaireDAO->deleteCommentaire($this->commentaireId);

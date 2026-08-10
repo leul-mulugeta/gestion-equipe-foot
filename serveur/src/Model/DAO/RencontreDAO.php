@@ -74,7 +74,7 @@ class RencontreDAO
 
 		$dbLine = $statement->fetch();
 		if (!$dbLine) {
-			throw new RuntimeException("Cette rencontre n'existe pas.");
+			throw new NonTrouveException("Cette rencontre n'existe pas.");
 		}
 
 		return $this->arrayToRencontre($dbLine);
