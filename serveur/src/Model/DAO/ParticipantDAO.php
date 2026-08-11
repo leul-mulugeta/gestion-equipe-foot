@@ -102,15 +102,14 @@ class ParticipantDAO
 
 	private function insertParticipant(Participant $participant): void
 	{
-		$query = 'INSERT INTO participant (joueur_id, rencontre_id, type_participation, poste, evaluation) 
-					VALUES (:joueur_id, :rencontre_id, :type_participation, :poste, :evaluation)';
+		$query = 'INSERT INTO participant (joueur_id, rencontre_id, type_participation, poste)
+					VALUES (:joueur_id, :rencontre_id, :type_participation, :poste)';
 
 		$statement = $this->pdo->prepare($query);
 		$statement->bindValue(':joueur_id', $participant->getJoueur()->getJoueurId());
 		$statement->bindValue(':rencontre_id', $participant->getRencontreId());
 		$statement->bindValue(':type_participation', $participant->getTypeDeParticipation()->value);
 		$statement->bindValue(':poste', $participant->getPoste()->value);
-		$statement->bindValue(':evaluation', $participant->getEvaluation());
 		$statement->execute();
 	}
 

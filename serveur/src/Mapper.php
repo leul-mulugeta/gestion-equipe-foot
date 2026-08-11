@@ -125,26 +125,39 @@ class Mapper
 		];
 	}
 
-	public function arrayToParticipant(array $participantData): Participant
+	// Une feuille de match est une liste d'objets, un par participant
+	public function arrayToParticipantsData(array $requestBody): array
+	{
+		$participantsData = [];
+
+		foreach ($requestBody as $participantData) {
+			if (!is_array($participantData)) {
+				throw new InvalidArgumentException('Chaque participant doit être un objet JSON.');
+			}
+
+			$participantsData[] = $this->arrayToParticipantData($participantData);
+		}
+
+		return $participantsData;
+	}
+
+	private function arrayToParticipantData(array $participantData): array
 	{
 		if (
 			!isset(
-			$participantData['joueur'],
+			$participantData['joueurId'],
 			$participantData['typeDeParticipation'],
 			$participantData['poste']
 		)
 		) {
-			throw new InvalidArgumentException("Tous les champs sont obligatoires : joueur, typeDeParticipation, poste.");
+			throw new InvalidArgumentException("Tous les champs sont obligatoires : joueurId, typeDeParticipation, poste.");
 		}
 		try {
-			return new Participant(
-				0,
-				$this->arrayToJoueur($participantData['joueur']),
-				0,
-				TypeDeParticipation::from($participantData['typeDeParticipation']),
-				Poste::from($participantData['poste']),
-				isset($participantData['evaluation']) ? (int) $participantData['evaluation'] : null
-			);
+			return [
+				'joueurId' => (int) $participantData['joueurId'],
+				'typeDeParticipation' => TypeDeParticipation::from($participantData['typeDeParticipation']),
+				'poste' => Poste::from($participantData['poste'])
+			];
 		} catch (Throwable) {
 			throw new InvalidArgumentException("Une ou plusieurs valeurs sont invalides.");
 		}

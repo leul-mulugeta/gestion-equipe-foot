@@ -39,8 +39,8 @@ switch ($httpMethod) {
         exit;
     case 'PUT':
         if ($rencontreId && $segment4 === 'participants') {
-            $participants = array_map(fn($participant) => $mapper->arrayToParticipant($participant), $requestBody);
-            (new SauvegarderParticipantsDUneRencontre($rencontreId, $participants))->executer();
+            $participantsData = $mapper->arrayToParticipantsData($requestBody);
+            (new SauvegarderParticipantsDUneRencontre($rencontreId, $participantsData))->executer();
             $api->deliverResponse('success', 200, 'Participants sauvegardés avec succès.');
             exit;
         }

@@ -9,7 +9,7 @@ class Participant
 	private Poste $poste;
 	private ?int $evaluation;
 
-	public function __construct(int $participantId, Joueur $joueur, int $rencontreId, TypeDeParticipation $typeDeParticipation, Poste $poste, ?int $evaluation)
+	public function __construct(int $participantId, Joueur $joueur, int $rencontreId, TypeDeParticipation $typeDeParticipation, Poste $poste, ?int $evaluation = null)
 	{
 		if ($evaluation !== null && ($evaluation < 1 || $evaluation > 5)) {
 			throw new InvalidArgumentException("L'évaluation doit être comprise entre 1 et 5.");
@@ -36,11 +36,6 @@ class Participant
 	public function getRencontreId(): int
 	{
 		return $this->rencontreId;
-	}
-
-	public function setRencontreId(int $rencontreId): void
-	{
-		$this->rencontreId = $rencontreId;
 	}
 
 	public function getTypeDeParticipation(): TypeDeParticipation

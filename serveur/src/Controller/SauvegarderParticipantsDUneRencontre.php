@@ -6,20 +6,20 @@ class SauvegarderParticipantsDUneRencontre
 	private readonly RencontreDAO $rencontreDAO;
 	private readonly JoueurDAO $joueurDAO;
 	private readonly int $rencontreId;
-	private readonly array $participants;
+	private readonly array $participantsData;
 
-	public function __construct(int $rencontreId, array $participants)
+	public function __construct(int $rencontreId, array $participantsData)
 	{
 		$this->participantDAO = ParticipantDAO::getInstance();
 		$this->rencontreDAO = RencontreDAO::getInstance();
 		$this->joueurDAO = JoueurDAO::getInstance();
 		$this->rencontreId = $rencontreId;
-		$this->participants = $participants;
+		$this->participantsData = $participantsData;
 	}
 
 	public function executer(): void
 	{
-		if (empty($this->participants)) {
+		if (empty($this->participantsData)) {
 			throw new InvalidArgumentException("Aucun participant n'a été fourni.");
 		}
 
@@ -28,7 +28,7 @@ class SauvegarderParticipantsDUneRencontre
 			throw new ConflitException('La feuille de match ne peut plus être modifiée après la rencontre.');
 		}
 
-		$joueurIds = array_map(fn($p) => $p->getJoueur()->getJoueurId(), $this->participants);
+		$joueurIds = array_column($this->participantsData, 'joueurId');
 		if (count($joueurIds) !== count(array_unique($joueurIds))) {
 			throw new InvalidArgumentException('Un même joueur ne peut pas être inscrit deux fois à la même rencontre.');
 		}
@@ -38,24 +38,33 @@ class SauvegarderParticipantsDUneRencontre
 			throw new InvalidArgumentException("Un ou plusieurs joueurs sélectionnés n'existent pas.");
 		}
 
+		$participants = [];
 		$nbTitulaires = 0;
 		$nbRemplacants = 0;
 		$nbGardiensTitulaires = 0;
 
-		foreach ($this->participants as $participant) {
-			$joueur = $joueursEnBase[$participant->getJoueur()->getJoueurId()];
+		foreach ($this->participantsData as $participantData) {
+			$joueur = $joueursEnBase[$participantData['joueurId']];
 			if ($joueur->getStatut() !== Statut::ACTIF) {
 				throw new ConflitException("Le joueur {$joueur->getPrenom()} {$joueur->getNom()} est {$joueur->getStatut()->value} et ne peut pas être sélectionné.");
 			}
 
-			if ($participant->getTypeDeParticipation() === TypeDeParticipation::TITULAIRE) {
+			if ($participantData['typeDeParticipation'] === TypeDeParticipation::TITULAIRE) {
 				$nbTitulaires++;
-				if ($participant->getPoste() === Poste::GARDIEN) {
+				if ($participantData['poste'] === Poste::GARDIEN) {
 					$nbGardiensTitulaires++;
 				}
 			} else {
 				$nbRemplacants++;
 			}
+
+			$participants[] = new Participant(
+				0,
+				$joueur,
+				$this->rencontreId,
+				$participantData['typeDeParticipation'],
+				$participantData['poste']
+			);
 		}
 
 		if ($nbTitulaires !== 11) {
@@ -68,10 +77,6 @@ class SauvegarderParticipantsDUneRencontre
 			throw new InvalidArgumentException("Il ne peut y avoir plus de 7 remplaçants (actuellement : $nbRemplacants).");
 		}
 
-		foreach ($this->participants as $participant) {
-			$participant->setRencontreId($this->rencontreId);
-		}
-
-		$this->participantDAO->sauvegarderParticipants($this->rencontreId, $this->participants);
+		$this->participantDAO->sauvegarderParticipants($this->rencontreId, $participants);
 	}
 }
