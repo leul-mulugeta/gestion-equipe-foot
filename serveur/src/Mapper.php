@@ -36,7 +36,7 @@ class Mapper
 		}
 		try {
 			return new Joueur(
-				$joueurData['joueurId'] ?? 0,
+				0,
 				(int) $joueurData['numeroDeLicence'],
 				$joueurData['nom'],
 				$joueurData['prenom'],
@@ -102,7 +102,7 @@ class Mapper
 		}
 		try {
 			return new Rencontre(
-				$rencontreData['rencontreId'] ?? 0,
+				0,
 				new DateTime($rencontreData['dateEtHeure']),
 				Lieu::from($rencontreData['lieu']),
 				$rencontreData['adresse'],

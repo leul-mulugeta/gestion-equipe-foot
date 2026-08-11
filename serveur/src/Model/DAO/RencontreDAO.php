@@ -20,16 +20,14 @@ class RencontreDAO
 
 	public function insertRencontre(Rencontre $rencontre): void
 	{
-		$query = 'INSERT INTO rencontre (date_heure, lieu, adresse, nom_equipe_adverse, score_equipe_locale, score_equipe_adverse) 
-					VALUES (:date_heure, :lieu, :adresse, :nom_equipe_adverse, :score_equipe_locale, :score_equipe_adverse)';
+		$query = 'INSERT INTO rencontre (date_heure, lieu, adresse, nom_equipe_adverse)
+					VALUES (:date_heure, :lieu, :adresse, :nom_equipe_adverse)';
 
 		$statement = $this->pdo->prepare($query);
 		$statement->bindValue(':date_heure', $rencontre->getDateEtHeure()->format('Y-m-d H:i:s'));
 		$statement->bindValue(':lieu', $rencontre->getLieu()->value);
 		$statement->bindValue(':adresse', $rencontre->getAdresse());
 		$statement->bindValue(':nom_equipe_adverse', $rencontre->getNomEquipeAdverse());
-		$statement->bindValue(':score_equipe_locale', $rencontre->getScoreEquipeLocale());
-		$statement->bindValue(':score_equipe_adverse', $rencontre->getScoreEquipeAdverse());
 		$statement->execute();
 	}
 
