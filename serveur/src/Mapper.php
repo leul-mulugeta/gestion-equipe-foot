@@ -152,9 +152,14 @@ class Mapper
 		) {
 			throw new InvalidArgumentException("Tous les champs sont obligatoires : joueurId, typeDeParticipation, poste.");
 		}
+
+		if (!is_int($participantData['joueurId'])) {
+			throw new InvalidArgumentException("Un joueurId doit être un entier.");
+		}
+
 		try {
 			return [
-				'joueurId' => (int) $participantData['joueurId'],
+				'joueurId' => $participantData['joueurId'],
 				'typeDeParticipation' => TypeDeParticipation::from($participantData['typeDeParticipation']),
 				'poste' => Poste::from($participantData['poste'])
 			];
