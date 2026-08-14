@@ -53,12 +53,12 @@ class ParticipantDAO
 		return array_map(fn($dbLine) => $this->arrayToParticipant($dbLine), $statement->fetchAll());
 	}
 
-	public function updateEvaluationsParticipants(int $rencontreId, array $evaluations): void
+	public function updateEvaluationsParticipants(int $rencontreId, array $evaluationsData): void
 	{
 		$this->pdo->beginTransaction();
 		try {
-			foreach ($evaluations as $participantId => $evaluation) {
-				$this->updateEvaluationParticipant($rencontreId, $participantId, $evaluation);
+			foreach ($evaluationsData as $evaluationData) {
+				$this->updateEvaluationParticipant($rencontreId, $evaluationData['participantId'], $evaluationData['evaluation']);
 			}
 			$this->pdo->commit();
 		} catch (Throwable $e) {
