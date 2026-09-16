@@ -1,7 +1,8 @@
 <?php
 // Routeur pour la gestion des joueurs
 
-$joueurId = $segment3 ? (int) $segment3 : null;
+$isPositiveInt = $segment3 !== null && ctype_digit((string) $segment3) && (int) $segment3 > 0;
+$joueurId = $isPositiveInt ? (int) $segment3 : null;
 
 switch ($httpMethod) {
     case 'GET':
@@ -12,19 +13,19 @@ switch ($httpMethod) {
             exit;
         }
 
-        if ($segment3 === 'moyennes-evaluations' && !$segment4) {
+        if ($segment3 === 'moyennes-evaluations' && $segment4 === null) {
             $moyennes = (new ObtenirToutesLesMoyennesEvaluationJoueur())->executer();
             $api->deliverResponse('success', 200, 'OK', $moyennes);
             exit;
         }
 
-        if ($joueurId && !$segment4) {
+        if ($joueurId && $segment4 === null) {
             $joueur = (new ObtenirUnJoueur($joueurId))->executer();
             $api->deliverResponse('success', 200, 'OK', $mapper->joueurToArray($joueur));
             exit;
         }
 
-        if ($segment3 || $segment4) {
+        if ($segment3 !== null || $segment4 !== null) {
             $api->deliverResponse('error', 404, 'Ressource inconnue.');
             exit;
         }
@@ -41,7 +42,7 @@ switch ($httpMethod) {
             exit;
         }
 
-        if ($segment3 || $segment4) {
+        if ($segment3 !== null || $segment4 !== null) {
             $api->deliverResponse('error', 404, 'Ressource inconnue.');
             exit;
         }
@@ -51,12 +52,12 @@ switch ($httpMethod) {
         $api->deliverResponse('success', 201, 'Joueur ajouté avec succès.');
         exit;
     case 'PUT':
-        if (!$joueurId) {
+        if ($segment3 === null) {
             $api->deliverResponse('error', 400, 'Identifiant manquant.');
             exit;
         }
 
-        if ($segment4) {
+        if (!$joueurId || $segment4 !== null) {
             $api->deliverResponse('error', 404, 'Ressource inconnue.');
             exit;
         }
@@ -67,12 +68,12 @@ switch ($httpMethod) {
         $api->deliverResponse('success', 200, 'Joueur modifié avec succès.');
         exit;
     case 'DELETE':
-        if (!$joueurId) {
+        if ($segment3 === null) {
             $api->deliverResponse('error', 400, 'Identifiant manquant.');
             exit;
         }
 
-        if ($segment4) {
+        if (!$joueurId || $segment4 !== null) {
             $api->deliverResponse('error', 404, 'Ressource inconnue.');
             exit;
         }

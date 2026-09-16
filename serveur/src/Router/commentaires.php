@@ -1,17 +1,18 @@
 <?php
 // Routeur pour la gestion des commentaires
 
-$commentaireId = $segment3 ? (int) $segment3 : null;
+$isPositiveInt = $segment3 !== null && ctype_digit((string) $segment3) && (int) $segment3 > 0;
+$commentaireId = $isPositiveInt ? (int) $segment3 : null;
 
 switch ($httpMethod) {
     case 'DELETE':
-        if ($segment4) {
-            $api->deliverResponse('error', 404, 'Ressource inconnue.');
+        if ($segment3 === null) {
+            $api->deliverResponse('error', 400, 'Identifiant manquant.');
             exit;
         }
 
-        if (!$commentaireId) {
-            $api->deliverResponse('error', 400, 'Identifiant manquant.');
+        if (!$commentaireId || $segment4 !== null) {
+            $api->deliverResponse('error', 404, 'Ressource inconnue.');
             exit;
         }
 

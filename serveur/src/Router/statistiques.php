@@ -3,7 +3,7 @@
 
 switch ($httpMethod) {
     case 'GET':
-        if ($segment4) {
+        if ($segment4 !== null) {
             $api->deliverResponse('error', 404, 'Ressource inconnue.');
             exit;
         }

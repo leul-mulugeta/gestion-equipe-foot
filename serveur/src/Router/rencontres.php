@@ -1,7 +1,8 @@
 <?php
 // Routeur pour la gestion des rencontres
 
-$rencontreId = $segment3 ? (int) $segment3 : null;
+$isPositiveInt = $segment3 !== null && ctype_digit((string) $segment3) && (int) $segment3 > 0;
+$rencontreId = $isPositiveInt ? (int) $segment3 : null;
 
 switch ($httpMethod) {
     case 'GET':
@@ -12,13 +13,13 @@ switch ($httpMethod) {
             exit;
         }
 
-        if ($rencontreId && !$segment4) {
+        if ($rencontreId && $segment4 === null) {
             $rencontre = (new ObtenirUneRencontre($rencontreId))->executer();
             $api->deliverResponse('success', 200, 'OK', $mapper->rencontreToArray($rencontre));
             exit;
         }
 
-        if ($segment4) {
+        if ($segment3 !== null || $segment4 !== null) {
             $api->deliverResponse('error', 404, 'Ressource inconnue.');
             exit;
         }
@@ -28,7 +29,7 @@ switch ($httpMethod) {
         $api->deliverResponse('success', 200, 'OK', $data);
         exit;
     case 'POST':
-        if ($segment3 || $segment4) {
+        if ($segment3 !== null || $segment4 !== null) {
             $api->deliverResponse('error', 404, 'Ressource inconnue.');
             exit;
         }
@@ -45,12 +46,12 @@ switch ($httpMethod) {
             exit;
         }
 
-        if (!$rencontreId) {
+        if ($segment3 === null) {
             $api->deliverResponse('error', 400, 'Identifiant manquant.');
             exit;
         }
 
-        if ($segment4) {
+        if (!$rencontreId || $segment4 !== null) {
             $api->deliverResponse('error', 404, 'Ressource inconnue.');
             exit;
         }
@@ -73,7 +74,7 @@ switch ($httpMethod) {
             exit;
         }
 
-        if (!$rencontreId) {
+        if ($segment3 === null) {
             $api->deliverResponse('error', 400, 'Identifiant manquant.');
             exit;
         }
@@ -81,12 +82,12 @@ switch ($httpMethod) {
         $api->deliverResponse('error', 404, 'Ressource inconnue.');
         exit;
     case 'DELETE':
-        if (!$rencontreId) {
+        if ($segment3 === null) {
             $api->deliverResponse('error', 400, 'Identifiant manquant.');
             exit;
         }
 
-        if ($segment4) {
+        if (!$rencontreId || $segment4 !== null) {
             $api->deliverResponse('error', 404, 'Ressource inconnue.');
             exit;
         }
