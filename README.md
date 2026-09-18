@@ -1,10 +1,23 @@
 # ⚽ Gestion Équipe de Football
 
-## 🚧 Migration en cours vers une architecture microservices
+## 🚧 Migration vers une architecture microservices
 
-Ce projet migre progressivement d'un monolithe PHP vers 3 microservices (`auth/`, `serveur/`, `client/`).
+Le projet migre de son architecture monolithique initiale vers 3 microservices découplés. **Le back-end est entièrement finalisé et documenté :**
 
-En local : `docker compose -f compose.microservices.yaml up -d --build` pour tester la nouvelle stack (le monolithe continue de tourner via `compose.yaml`).
+| Service | Rôle | État | Documentation |
+| :--- | :--- | :---: | :--- |
+| **`auth/`** | Service d'authentification & signature JWT (RS256) | Terminé | [Documentation API `auth`](auth/README.md) |
+| **`serveur/`** | API REST des données (joueurs, matchs, stats...) | Terminé | [Documentation API `serveur`](serveur/README.md) |
+| **`client/`** | Interface utilisateur (consommateur des APIs) | À venir | *(en cours de migration)* |
+
+#### Tester la nouvelle stack en local :
+```bash
+docker compose -f compose.microservices.yaml up -d --build
+```
+* **API Auth** : `http://localhost:8081`
+* **API Données** : `http://localhost:8082`
+
+*(Le monolithe continue de fonctionner en parallèle via `compose.yaml` ou Laragon ci-dessous).*
 
 ## 🛠️ Présentation
 Cette application web permet à un coach de gérer son équipe de football. Elle est construite avec une architecture **MVC** (Modèle-Vue-Contrôleur) et utilise le pattern **DAO** (Data Access Object) pour la gestion des données. Elle permet de gérer les joueurs, les rencontres, les statistiques de performance et les évaluations.
