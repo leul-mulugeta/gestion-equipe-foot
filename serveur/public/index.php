@@ -41,7 +41,7 @@ try {
     $jwtVerifier = new JWTVerifier(JWT_PUBLIC_KEY_PATH);
 } catch (RuntimeException $e) {
     error_log("JWT Config Error: " . $e->getMessage());
-    $api->deliverResponse('error', 500, "Une erreur est survenue. Veuillez réessayer.");
+    $api->deliverResponse('error', 500, 'Une erreur serveur est survenue lors du traitement.');
     exit;
 }
 
