@@ -1,2 +1,6 @@
-schema.sql
+# Docker
+.dockerignore
+Dockerfile
 README.md
+
+schema.sql

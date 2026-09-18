@@ -76,8 +76,8 @@ try {
     }
 } catch (PDOException $e) {
     error_log("DB Error: " . $e->getMessage());
-    $api->deliverResponse('error', 500, 'Connexion à la base de données impossible.');
+    $api->deliverResponse('error', 500, "Une erreur est survenue lors de l'accès aux données.");
 } catch (Throwable $e) {
     error_log("Unexpected Error: " . $e->getMessage());
-    $api->deliverResponse('error', 500, 'Une erreur est survenue. Veuillez réessayer.');
+    $api->deliverResponse('error', 500, 'Une erreur serveur est survenue lors du traitement.');
 }

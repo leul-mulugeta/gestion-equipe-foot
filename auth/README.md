@@ -101,5 +101,5 @@ En cas d'erreur, l'API renvoie toujours la même structure :
 * **`405 Method Not Allowed`**
   * `"Méthode non autorisée."` *(requête autre que `POST`)*
 * **`500 Internal Server Error`**
-  * `"Connexion à la base de données impossible."` *(échec de la base de données)*
-  * `"Une erreur est survenue. Veuillez réessayer."` *(clé privée introuvable/invalide ou erreur serveur)*
+  * `"Une erreur est survenue lors de l'accès aux données."` *(échec de la base de données)*
+  * `"Une erreur serveur est survenue lors du traitement."` *(clé privée introuvable/invalide ou erreur inattendue)*
