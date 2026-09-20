@@ -68,6 +68,18 @@ services:
       - ./serveur/:/var/www/html
       - jwt-public:/keys:ro
 
+  client:
+    build: ./client
+    ports:
+      - "8080:80"
+    depends_on:
+      serveur:
+        condition: service_started
+      auth:
+        condition: service_started
+    volumes:
+      - ./client/:/var/www/html
+
 volumes:
   auth-db-data:
   serveur-db-data:
