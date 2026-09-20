@@ -4,11 +4,11 @@
 
 Le projet migre de son architecture monolithique initiale vers 3 microservices découplés. **Le back-end est entièrement finalisé et documenté :**
 
-| Service | Rôle | État | Documentation |
-| :--- | :--- | :---: | :--- |
-| **`auth/`** | Service d'authentification & signature JWT (RS256) | Terminé | [Documentation API `auth`](auth/README.md) |
-| **`serveur/`** | API REST des données (joueurs, matchs, stats...) | Terminé | [Documentation API `serveur`](serveur/README.md) |
-| **`client/`** | Interface utilisateur (consommateur des APIs) | À venir | *(en cours de migration)* |
+| Service | Rôle | État | Accès (Production) | Documentation |
+| :--- | :--- | :---: | :--- | :--- |
+| **`auth/`** | Service d'authentification & signature JWT (RS256) | Terminé | [https://gestion-equipe-foot-api.alwaysdata.net/auth](https://gestion-equipe-foot-api.alwaysdata.net/auth) | [Documentation API `auth`](auth/README.md) |
+| **`serveur/`** | API REST des données (joueurs, matchs, stats...) | Terminé | [https://gestion-equipe-foot-api.alwaysdata.net](https://gestion-equipe-foot-api.alwaysdata.net) | [Documentation API `serveur`](serveur/README.md) |
+| **`client/`** | Interface utilisateur (consommateur des APIs) | En cours | [https://gestion-equipe-foot.alwaysdata.net/v2](https://gestion-equipe-foot.alwaysdata.net/v2) (temporaire) | *(en cours de migration)* |
 
 #### Tester la nouvelle stack en local :
 ```bash
