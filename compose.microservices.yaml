@@ -77,6 +77,9 @@ services:
         condition: service_started
       auth:
         condition: service_started
+    environment:
+      - AUTH_URL=http://auth
+      - SERVEUR_URL=http://serveur
     volumes:
       - ./client/:/var/www/html
 
