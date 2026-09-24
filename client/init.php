@@ -20,6 +20,7 @@ require_once __DIR__ . '/src/Controller/SeConnecter.php';
 // Joueurs
 require_once __DIR__ . '/src/Controller/ObtenirTousLesJoueurs.php';
 require_once __DIR__ . '/src/Controller/ObtenirUnJoueur.php';
+require_once __DIR__ . '/src/Controller/CreerUnJoueur.php';
 
 // Commentaires
 require_once __DIR__ . '/src/Controller/ObtenirTousLesCommentairesDUnJoueur.php';
