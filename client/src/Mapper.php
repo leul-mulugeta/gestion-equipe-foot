@@ -5,7 +5,7 @@ class Mapper
 	public static function arrayToJoueur(array $joueurData): Joueur
 	{
 		return new Joueur(
-			(int) $joueurData['joueurId'],
+			(int) ($joueurData['joueurId'] ?? 0),
 			(int) $joueurData['numeroDeLicence'],
 			$joueurData['nom'],
 			$joueurData['prenom'],
@@ -17,10 +17,22 @@ class Mapper
 		);
 	}
 
+	public static function commentaireToArray(Commentaire $commentaire): array
+	{
+		return [
+			'commentaireId' => $commentaire->getCommentaireId(),
+			'contenu' => $commentaire->getContenu()
+		];
+	}
+
 	public static function arrayToCommentaire(array $commentaireData): Commentaire
 	{
+		if (!isset($commentaireData['contenu'])) {
+			throw new InvalidArgumentException('Le contenu du commentaire est obligatoire.');
+		}
+
 		return new Commentaire(
-			(int) $commentaireData['commentaireId'],
+			(int) ($commentaireData['commentaireId'] ?? 0),
 			$commentaireData['contenu']
 		);
 	}

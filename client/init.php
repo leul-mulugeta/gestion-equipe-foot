@@ -23,3 +23,5 @@ require_once __DIR__ . '/src/Controller/ObtenirUnJoueur.php';
 
 // Commentaires
 require_once __DIR__ . '/src/Controller/ObtenirTousLesCommentairesDUnJoueur.php';
+require_once __DIR__ . '/src/Controller/CreerUnCommentaire.php';
+require_once __DIR__ . '/src/Controller/SupprimerUnCommentaire.php';

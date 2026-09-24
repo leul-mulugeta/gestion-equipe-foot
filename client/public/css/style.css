@@ -194,6 +194,24 @@ button:hover {
     padding: 15px;
     border-left: 5px solid black;
     margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.liste-commentaires li span {
+    word-break: break-word;
+}
+
+.liste-commentaires form {
+    margin: 0;
+}
+
+.liste-commentaires button {
+    margin: 0;
+    padding: 6px 12px;
+    font-size: 14px;
 }
 
 /* --- Statistiques --- */

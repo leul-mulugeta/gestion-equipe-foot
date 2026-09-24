@@ -20,6 +20,35 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 }
 
 if ($joueur) {
+	if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contenu'])) {
+		$contenu = trim($_POST['contenu']);
+
+		try {
+			$commentaire = new Commentaire(0, $contenu);
+			$creerCommentaire = new CreerUnCommentaire($apiDonnees, $joueur->getJoueurId(), $commentaire);
+			$creerCommentaire->executer();
+			$succes = 'Commentaire ajouté avec succès.';
+		} catch (InvalidArgumentException | RuntimeException $e) {
+			$erreur = $e->getMessage();
+		}
+	}
+
+	if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_commentaire'])) {
+		if (!empty($_POST['commentaire_id']) && ctype_digit($_POST['commentaire_id'])) {
+			$commentaireId = (int) $_POST['commentaire_id'];
+
+			try {
+				$supprimerCommentaire = new SupprimerUnCommentaire($apiDonnees, $commentaireId);
+				$supprimerCommentaire->executer();
+				$succes = 'Commentaire supprimé avec succès.';
+			} catch (RuntimeException $e) {
+				$erreur = $e->getMessage();
+			}
+		} else {
+			$erreur = 'Identifiant de commentaire manquant ou invalide.';
+		}
+	}
+
 	try {
 		$obtenirCommentaires = new ObtenirTousLesCommentairesDUnJoueur($apiDonnees, $joueurId);
 		$commentaires = $obtenirCommentaires->executer();
@@ -63,8 +92,11 @@ if ($joueur) {
 		<ul class="liste-commentaires">
 			<?php foreach ($commentaires as $commentaire): ?>
 				<li>
-					<?= htmlspecialchars($commentaire->getContenu()) ?>
-					<hr>
+					<span><?= htmlspecialchars($commentaire->getContenu()) ?></span>
+					<form method="post" action="" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');">
+						<input type="hidden" name="commentaire_id" value="<?= $commentaire->getCommentaireId() ?>">
+						<button type="submit" name="supprimer_commentaire">Supprimer</button>
+					</form>
 				</li>
 			<?php endforeach; ?>
 		</ul>
@@ -72,11 +104,12 @@ if ($joueur) {
 		<p>Aucun commentaire pour ce joueur.</p>
 	<?php endif; ?>
 
-	<!-- <h4>Ajouter une note :</h4>
+	<h4>Ajouter une note :</h4>
 	<form method="post" action="">
-		<textarea name="contenu" rows="4" cols="50" placeholder="Saisir votre observation ici..." required></textarea>
+		<textarea name="contenu" rows="4" cols="50" placeholder="Saisir votre observation ici..." maxlength="200"
+			required></textarea>
 		<button type="submit">Ajouter la note</button>
-	</form> -->
+	</form>
 <?php endif; ?>
 
 <div class="actions">
