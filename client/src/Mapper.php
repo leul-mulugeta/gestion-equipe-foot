@@ -16,4 +16,12 @@ class Mapper
 			Poste::from($joueurData['poste'])
 		);
 	}
+
+	public static function arrayToCommentaire(array $commentaireData): Commentaire
+	{
+		return new Commentaire(
+			(int) $commentaireData['commentaireId'],
+			$commentaireData['contenu']
+		);
+	}
 }

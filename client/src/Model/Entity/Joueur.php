@@ -86,6 +86,11 @@ class Joueur
 		return $this->prenom;
 	}
 
+	public function getNomComplet(): string
+	{
+		return "{$this->prenom} {$this->nom}";
+	}
+
 	public function getDateDeNaissance(): DateTime
 	{
 		return $this->dateDeNaissance;
