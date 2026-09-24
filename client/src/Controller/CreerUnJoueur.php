@@ -11,7 +11,7 @@ class CreerUnJoueur
 		$this->joueur = $joueur;
 	}
 
-	public function executer(): bool
+	public function executer(): void
 	{
 		$response = $this->api->post('/joueurs', Mapper::joueurToArray($this->joueur));
 
@@ -22,7 +22,5 @@ class CreerUnJoueur
 		if ($response['status_code'] !== 201) {
 			throw new RuntimeException($response['status_message'] ?? 'Une erreur est survenue. Veuillez réessayer.');
 		}
-
-		return true;
 	}
 }

@@ -13,7 +13,7 @@ class CreerUnCommentaire
 		$this->commentaire = $commentaire;
 	}
 
-	public function executer(): bool
+	public function executer(): void
 	{
 		$response = $this->api->post("/joueurs/{$this->joueurId}/commentaires", Mapper::commentaireToArray($this->commentaire));
 
@@ -24,7 +24,5 @@ class CreerUnCommentaire
 		if ($response['status_code'] !== 201) {
 			throw new RuntimeException($response['status_message'] ?? 'Une erreur est survenue. Veuillez réessayer.');
 		}
-
-		return true;
 	}
 }

@@ -11,7 +11,7 @@ class SupprimerUnCommentaire
 		$this->commentaireId = $commentaireId;
 	}
 
-	public function executer(): bool
+	public function executer(): void
 	{
 		$response = $this->api->delete("/commentaires/$this->commentaireId");
 
@@ -22,7 +22,5 @@ class SupprimerUnCommentaire
 		if ($response['status_code'] !== 200) {
 			throw new RuntimeException($response['status_message'] ?? 'Une erreur est survenue. Veuillez réessayer.');
 		}
-
-		return true;
 	}
 }
