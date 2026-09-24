@@ -19,36 +19,31 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 	}
 }
 
-if ($joueur) {
-	if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['contenu'])) {
-		$contenu = trim($_POST['contenu']);
-
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $joueur) {
+	if (isset($_POST['contenu'])) {
 		try {
-			$commentaire = new Commentaire(0, $contenu);
+			$commentaire = Mapper::arrayToCommentaire($_POST);
 			$creerCommentaire = new CreerUnCommentaire($apiDonnees, $joueur->getJoueurId(), $commentaire);
 			$creerCommentaire->executer();
 			$succes = 'Commentaire ajouté avec succès.';
 		} catch (InvalidArgumentException | RuntimeException $e) {
 			$erreur = $e->getMessage();
 		}
-	}
-
-	if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['supprimer_commentaire'])) {
-		if (!empty($_POST['commentaire_id']) && ctype_digit($_POST['commentaire_id'])) {
-			$commentaireId = (int) $_POST['commentaire_id'];
-
-			try {
-				$supprimerCommentaire = new SupprimerUnCommentaire($apiDonnees, $commentaireId);
-				$supprimerCommentaire->executer();
-				$succes = 'Commentaire supprimé avec succès.';
-			} catch (RuntimeException $e) {
-				$erreur = $e->getMessage();
-			}
-		} else {
-			$erreur = 'Identifiant de commentaire manquant ou invalide.';
+	} elseif (isset($_POST['commentaireId']) && ctype_digit($_POST['commentaireId'])) {
+		try {
+			$commentaireId = (int) $_POST['commentaireId'];
+			$supprimerCommentaire = new SupprimerUnCommentaire($apiDonnees, $commentaireId);
+			$supprimerCommentaire->executer();
+			$succes = 'Commentaire supprimé avec succès.';
+		} catch (RuntimeException $e) {
+			$erreur = $e->getMessage();
 		}
+	} else {
+		$erreur = 'Action non reconnue.';
 	}
+}
 
+if ($joueur) {
 	try {
 		$obtenirCommentaires = new ObtenirTousLesCommentairesDUnJoueur($apiDonnees, $joueurId);
 		$commentaires = $obtenirCommentaires->executer();
@@ -94,8 +89,8 @@ if ($joueur) {
 				<li>
 					<span><?= htmlspecialchars($commentaire->getContenu()) ?></span>
 					<form method="post" action="" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce commentaire ?');">
-						<input type="hidden" name="commentaire_id" value="<?= $commentaire->getCommentaireId() ?>">
-						<button type="submit" name="supprimer_commentaire">Supprimer</button>
+						<input type="hidden" name="commentaireId" value="<?= $commentaire->getCommentaireId() ?>">
+						<button type="submit">Supprimer</button>
 					</form>
 				</li>
 			<?php endforeach; ?>
