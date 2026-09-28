@@ -114,4 +114,15 @@ class Mapper
 		}
 	}
 
+	public static function arrayToParticipant(array $participantData): Participant
+	{
+		return new Participant(
+			$participantData['participantId'],
+			self::arrayToJoueur($participantData['joueur']),
+			$participantData['rencontreId'],
+			TypeDeParticipation::from($participantData['typeDeParticipation']),
+			Poste::from($participantData['poste']),
+			$participantData['evaluation'] ?? null
+		);
+	}
 }
