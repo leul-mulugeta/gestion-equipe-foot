@@ -73,4 +73,18 @@ class Mapper
 			$commentaireData['contenu']
 		);
 	}
+
+	public static function arrayToRencontre(array $rencontreData): Rencontre
+	{
+		return new Rencontre(
+			(int) $rencontreData['rencontreId'],
+			new DateTime($rencontreData['dateEtHeure']),
+			Lieu::from($rencontreData['lieu']),
+			$rencontreData['adresse'],
+			$rencontreData['nomEquipeAdverse'],
+			$rencontreData['scoreEquipeLocale'] ?? null,
+			$rencontreData['scoreEquipeAdverse'] ?? null
+		);
+	}
+
 }

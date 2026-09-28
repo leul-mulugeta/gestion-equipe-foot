@@ -10,10 +10,13 @@ require_once __DIR__ . '/src/Mapper.php';
 // Énumérations
 require_once __DIR__ . '/src/Model/Enum/Poste.php';
 require_once __DIR__ . '/src/Model/Enum/Statut.php';
+require_once __DIR__ . '/src/Model/Enum/Lieu.php';
+require_once __DIR__ . '/src/Model/Enum/Resultat.php';
 
 // Entités
 require_once __DIR__ . '/src/Model/Entity/Joueur.php';
 require_once __DIR__ . '/src/Model/Entity/Commentaire.php';
+require_once __DIR__ . '/src/Model/Entity/Rencontre.php';
 
 require_once __DIR__ . '/src/Controller/SeConnecter.php';
 
@@ -28,3 +31,6 @@ require_once __DIR__ . '/src/Controller/SupprimerUnJoueur.php';
 require_once __DIR__ . '/src/Controller/ObtenirTousLesCommentairesDUnJoueur.php';
 require_once __DIR__ . '/src/Controller/CreerUnCommentaire.php';
 require_once __DIR__ . '/src/Controller/SupprimerUnCommentaire.php';
+
+// Rencontres
+require_once __DIR__ . '/src/Controller/ObtenirToutesLesRencontres.php';
