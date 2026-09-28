@@ -32,7 +32,7 @@ class Mapper
 			$joueurData['poste']
 		)
 		) {
-			throw new InvalidArgumentException("Tous les champs sont obligatoires : numeroDeLicence, nom, prenom, dateDeNaissance, taille, poids, statut, poste.");
+			throw new InvalidArgumentException('Tous les champs sont obligatoires : numeroDeLicence, nom, prenom, dateDeNaissance, taille, poids, statut, poste.');
 		}
 		try {
 			return new Joueur(
@@ -46,8 +46,10 @@ class Mapper
 				Statut::from($joueurData['statut']),
 				Poste::from($joueurData['poste'])
 			);
+		} catch (InvalidArgumentException $e) {
+			throw $e;
 		} catch (Throwable) {
-			throw new InvalidArgumentException("Une ou plusieurs valeurs sont invalides.");
+			throw new InvalidArgumentException('Une ou plusieurs valeurs sont invalides (date, statut ou poste).');
 		}
 	}
 
@@ -61,17 +63,14 @@ class Mapper
 
 	public function arrayToCommentaire(array $commentaireData): Commentaire
 	{
-		if (!isset($commentaireData['contenu'])) {
-			throw new InvalidArgumentException("Tous les champs sont obligatoires : contenu.");
+		if (!isset($commentaireData['contenu']) || !is_string($commentaireData['contenu'])) {
+			throw new InvalidArgumentException('Le contenu du commentaire est obligatoire.');
 		}
-		try {
-			return new Commentaire(
-				0,
-				$commentaireData['contenu']
-			);
-		} catch (Throwable) {
-			throw new InvalidArgumentException("Une ou plusieurs valeurs sont invalides.");
-		}
+
+		return new Commentaire(
+			0,
+			$commentaireData['contenu']
+		);
 	}
 
 	public function rencontreToArray(Rencontre $rencontre): array
@@ -98,7 +97,7 @@ class Mapper
 			$rencontreData['nomEquipeAdverse']
 		)
 		) {
-			throw new InvalidArgumentException("Tous les champs sont obligatoires : dateEtHeure, lieu, adresse, nomEquipeAdverse.");
+			throw new InvalidArgumentException('Tous les champs sont obligatoires : dateEtHeure, lieu, adresse, nomEquipeAdverse.');
 		}
 		try {
 			return new Rencontre(
@@ -108,8 +107,10 @@ class Mapper
 				$rencontreData['adresse'],
 				$rencontreData['nomEquipeAdverse']
 			);
+		} catch (InvalidArgumentException $e) {
+			throw $e;
 		} catch (Throwable) {
-			throw new InvalidArgumentException("Une ou plusieurs valeurs sont invalides.");
+			throw new InvalidArgumentException('Une ou plusieurs valeurs sont invalides (date ou lieu).');
 		}
 	}
 
@@ -150,11 +151,11 @@ class Mapper
 			$participantData['poste']
 		)
 		) {
-			throw new InvalidArgumentException("Tous les champs sont obligatoires : joueurId, typeDeParticipation, poste.");
+			throw new InvalidArgumentException('Tous les champs sont obligatoires : joueurId, typeDeParticipation, poste.');
 		}
 
 		if (!is_int($participantData['joueurId'])) {
-			throw new InvalidArgumentException("Un joueurId doit être un entier.");
+			throw new InvalidArgumentException('Un joueurId doit être un entier.');
 		}
 
 		try {
@@ -164,7 +165,7 @@ class Mapper
 				'poste' => Poste::from($participantData['poste'])
 			];
 		} catch (Throwable) {
-			throw new InvalidArgumentException("Une ou plusieurs valeurs sont invalides.");
+			throw new InvalidArgumentException('Une ou plusieurs valeurs sont invalides (type de participation ou poste).');
 		}
 	}
 }
