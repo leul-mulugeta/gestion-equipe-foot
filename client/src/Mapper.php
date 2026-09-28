@@ -74,17 +74,44 @@ class Mapper
 		);
 	}
 
+	public static function rencontreToArray(Rencontre $rencontre): array
+	{
+		return [
+			'rencontreId' => $rencontre->getRencontreId(),
+			'dateEtHeure' => $rencontre->getDateEtHeure()->format('Y-m-d H:i:s'),
+			'lieu' => $rencontre->getLieu()->value,
+			'adresse' => $rencontre->getAdresse(),
+			'nomEquipeAdverse' => $rencontre->getNomEquipeAdverse()
+		];
+	}
+
 	public static function arrayToRencontre(array $rencontreData): Rencontre
 	{
-		return new Rencontre(
-			(int) $rencontreData['rencontreId'],
-			new DateTime($rencontreData['dateEtHeure']),
-			Lieu::from($rencontreData['lieu']),
+		if (
+			!isset(
+			$rencontreData['dateEtHeure'],
+			$rencontreData['lieu'],
 			$rencontreData['adresse'],
-			$rencontreData['nomEquipeAdverse'],
-			$rencontreData['scoreEquipeLocale'] ?? null,
-			$rencontreData['scoreEquipeAdverse'] ?? null
-		);
+			$rencontreData['nomEquipeAdverse']
+		)
+		) {
+			throw new InvalidArgumentException('Tous les champs sont obligatoires : dateEtHeure, lieu, adresse, nomEquipeAdverse.');
+		}
+		try {
+			return new Rencontre(
+				(int) ($rencontreData['rencontreId'] ?? 0),
+				new DateTime($rencontreData['dateEtHeure']),
+				Lieu::from($rencontreData['lieu']),
+				$rencontreData['adresse'],
+				$rencontreData['nomEquipeAdverse'],
+				$rencontreData['scoreEquipeLocale'] ?? null,
+				$rencontreData['scoreEquipeAdverse'] ?? null
+			);
+		} catch (InvalidArgumentException $e) {
+			throw $e;
+		} catch (Throwable) {
+			throw new InvalidArgumentException('Une ou plusieurs valeurs sont invalides (date ou lieu).');
+		}
 	}
 
 }

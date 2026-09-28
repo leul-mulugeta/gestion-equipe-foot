@@ -34,3 +34,4 @@ require_once __DIR__ . '/src/Controller/SupprimerUnCommentaire.php';
 
 // Rencontres
 require_once __DIR__ . '/src/Controller/ObtenirToutesLesRencontres.php';
+require_once __DIR__ . '/src/Controller/CreerUneRencontre.php';
