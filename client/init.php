@@ -38,6 +38,7 @@ require_once __DIR__ . '/src/Controller/SupprimerUnCommentaire.php';
 require_once __DIR__ . '/src/Controller/ObtenirToutesLesRencontres.php';
 require_once __DIR__ . '/src/Controller/CreerUneRencontre.php';
 require_once __DIR__ . '/src/Controller/ObtenirUneRencontre.php';
+require_once __DIR__ . '/src/Controller/SupprimerUneRencontre.php';
 
 // Participants
 require_once __DIR__ . '/src/Controller/ObtenirTousLesParticipantsDUneRencontre.php';
