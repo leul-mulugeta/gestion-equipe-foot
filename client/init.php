@@ -47,3 +47,7 @@ require_once __DIR__ . '/src/Controller/ModifierLeResultatDUneRencontre.php';
 require_once __DIR__ . '/src/Controller/ObtenirTousLesParticipantsDUneRencontre.php';
 require_once __DIR__ . '/src/Controller/SauvegarderParticipantsDUneRencontre.php';
 require_once __DIR__ . '/src/Controller/ModifierEvaluationsParticipants.php';
+
+// Statistiques
+require_once __DIR__ . '/src/Controller/ObtenirStatistiquesGlobales.php';
+require_once __DIR__ . '/src/Controller/ObtenirStatistiquesJoueurs.php';
