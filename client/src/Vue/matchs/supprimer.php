@@ -19,19 +19,15 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre) {
     if (isset($_POST['Oui'])) {
-        // Vérification de date au moment de la suppression
-        if ($rencontre->getDateEtHeure() < new DateTime()) {
-            $erreur = 'Une rencontre déjà jouée ne peut pas être supprimée.';
-        } else {
-            try {
-                $controleurSuppr = new SupprimerUneRencontre($apiDonnees, $rencontre->getRencontreId());
-                $controleurSuppr->executer();
-                $_SESSION['succes'] = "Match contre {$rencontre->getNomEquipeAdverse()} supprimé avec succès.";
-                header("Location: /matchs");
-                exit;
-            } catch (RuntimeException $e) {
-                $erreur = $e->getMessage();
-            }
+        try {
+            $supprimerRencontre = new SupprimerUneRencontre($apiDonnees, $rencontre->getRencontreId());
+            $supprimerRencontre->executer();
+            
+            $_SESSION['succes'] = "Match contre {$rencontre->getNomEquipeAdverse()} supprimé avec succès.";
+            header("Location: /matchs");
+            exit;
+        } catch (RuntimeException $e) {
+            $erreur = $e->getMessage();
         }
     } else {
         $_SESSION['succes'] = 'Suppression annulée.';
@@ -44,7 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $rencontre) {
 $estPasse = false;
 if ($rencontre && $rencontre->getDateEtHeure() < new DateTime()) {
     $estPasse = true;
-    $erreur = 'Ce match a déjà eu lieu (ou est en cours), il ne peut pas être supprimé.';
+    if (!$erreur) {
+        $erreur = 'Ce match a déjà eu lieu (ou est en cours), il ne peut pas être supprimé.';
+    }
 }
 
 ?>
