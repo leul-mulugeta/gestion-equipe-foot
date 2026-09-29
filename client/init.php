@@ -28,6 +28,7 @@ require_once __DIR__ . '/src/Controller/ObtenirUnJoueur.php';
 require_once __DIR__ . '/src/Controller/CreerUnJoueur.php';
 require_once __DIR__ . '/src/Controller/ModifierUnJoueur.php';
 require_once __DIR__ . '/src/Controller/SupprimerUnJoueur.php';
+require_once __DIR__ . '/src/Controller/ObtenirToutesLesMoyennesEvaluationJoueur.php';
 
 // Commentaires
 require_once __DIR__ . '/src/Controller/ObtenirTousLesCommentairesDUnJoueur.php';
@@ -42,3 +43,4 @@ require_once __DIR__ . '/src/Controller/SupprimerUneRencontre.php';
 
 // Participants
 require_once __DIR__ . '/src/Controller/ObtenirTousLesParticipantsDUneRencontre.php';
+require_once __DIR__ . '/src/Controller/SauvegarderParticipantsDUneRencontre.php';

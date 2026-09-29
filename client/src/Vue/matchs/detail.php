@@ -21,7 +21,14 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
     }
 }
 
+$succes = $_SESSION['succes'] ?? '';
+unset($_SESSION['succes']);
+
 ?>
+
+<?php if ($succes): ?>
+    <p class="succes"><?= htmlspecialchars($succes) ?></p>
+<?php endif; ?>
 
 <?php if ($erreur): ?>
     <p class="erreur"><?= htmlspecialchars($erreur) ?></p>
@@ -32,7 +39,7 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
 
     <div class="actions">
         <?php if ($rencontre->getDateEtHeure() > new DateTime()): ?>
-            <a href="/feuilleDeMatch?id=<?= $rencontre->getRencontreId() ?>"><button type="button">Feuille de match</button></a>
+            <a href="/matchs/feuilleDeMatch?id=<?= $rencontre->getRencontreId() ?>"><button type="button">Feuille de match</button></a>
         <?php endif; ?>
 
         <a href="/matchs/modifier?id=<?= $rencontre->getRencontreId() ?>"><button type="button">Modifier</button></a>
@@ -90,7 +97,7 @@ if (!isset($_GET['id']) || !ctype_digit($_GET['id'])) {
         <p>Aucune feuille de match n'a été saisie avant la rencontre.</p>
     <?php else: ?>
         <p>Aucune feuille de match n'a été saisie pour cette rencontre. Allez dans "<a
-                href="/feuilleDeMatch?id=<?= $rencontre->getRencontreId() ?>">Feuille de match</a>" pour sélectionner vos
+                href="/matchs/feuilleDeMatch?id=<?= $rencontre->getRencontreId() ?>">Feuille de match</a>" pour sélectionner vos
             joueurs.</p>
     <?php endif; ?>
 <?php endif; ?>

@@ -58,7 +58,7 @@ $apiDonnees = new Api(SERVEUR_URL, $_COOKIE['token'] ?? null);
 		<nav>
 			<ul>
 				<li><a href="/joueurs" class="<?= str_starts_with($uri, '/joueurs') ? 'active' : '' ?>">Joueurs</a></li>
-				<li><a href="/matchs" class="<?= str_starts_with($uri, '/matchs') || $uri === '/feuilleDeMatch' ? 'active' : '' ?>">Matchs</a></li>
+				<li><a href="/matchs" class="<?= str_starts_with($uri, '/matchs') ? 'active' : '' ?>">Matchs</a></li>
 				<li><a href="/statistiques" class="<?= $uri === '/statistiques' ? 'active' : '' ?>">Statistiques</a></li>
 				<li><a href="/logout">Déconnexion</a></li>
 			</ul>
