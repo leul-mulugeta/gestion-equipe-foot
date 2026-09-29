@@ -1,97 +1,91 @@
 # ⚽ Gestion Équipe de Football
 
-## 🚧 Migration vers une architecture microservices
+Application web permettant à un entraîneur de gérer son équipe de football (gestion des joueurs, planification des matchs, feuilles de match, évaluations et calcul automatique des statistiques). 
 
-Le projet migre de son architecture monolithique initiale vers 3 microservices découplés. **Le back-end est entièrement finalisé et documenté :**
+Le projet est conçu selon une architecture **microservices** conteneurisée avec Docker.
 
-| Service | Rôle | État | Accès (Production) | Documentation |
-| :--- | :--- | :---: | :--- | :--- |
-| **`auth/`** | Service d'authentification & signature JWT (RS256) | Terminé | [https://gestion-equipe-foot-api.alwaysdata.net/auth](https://gestion-equipe-foot-api.alwaysdata.net/auth) | [Documentation API `auth`](auth/README.md) |
-| **`serveur/`** | API REST des données (joueurs, matchs, stats...) | Terminé | [https://gestion-equipe-foot-api.alwaysdata.net](https://gestion-equipe-foot-api.alwaysdata.net) | [Documentation API `serveur`](serveur/README.md) |
-| **`client/`** | Interface utilisateur (consommateur des APIs) | En cours | [https://gestion-equipe-foot.alwaysdata.net/v2](https://gestion-equipe-foot.alwaysdata.net/v2) (temporaire) | *(en cours de migration)* |
-
-#### Tester la nouvelle stack en local :
-```bash
-docker compose -f compose.microservices.yaml up -d --build
-```
-* **API Auth** : `http://localhost:8081`
-* **API Données** : `http://localhost:8082`
-
-*(Le monolithe continue de fonctionner en parallèle via `compose.yaml` ou Laragon ci-dessous).*
-
-## 🛠️ Présentation
-Cette application web permet à un coach de gérer son équipe de football. Elle est construite avec une architecture **MVC** (Modèle-Vue-Contrôleur) et utilise le pattern **DAO** (Data Access Object) pour la gestion des données. Elle permet de gérer les joueurs, les rencontres, les statistiques de performance et les évaluations.
-
-**🌐 [Démo en ligne](https://gestion-equipe-foot.alwaysdata.net/)**
+**🌐 Démo en ligne :** [https://gestion-equipe-foot.alwaysdata.net](https://gestion-equipe-foot.alwaysdata.net)
 
 >**Identifiants de test :**
 > - **Email :** `coach@equipe.fr`
 > - **Mot de passe :** `motdepasse`
 
+## 🏛️ Architecture
+
+Le projet est découpé en trois services autonomes communiquant via HTTP/REST et deux bases de données distinctes :
+
+- **`auth/`** : Service d'authentification. Il vérifie les identifiants et génère un jeton JWT signé avec une clé privée (RS256). Il utilise sa propre base de données (`auth_db`).
+- **`serveur/`** : API REST de données. Elle gère les ressources métier (joueurs, rencontres, statistiques) et valide les jetons JWT à l'aide de la clé publique. Elle utilise une base de données dédiée (`serveur_db`).
+- **`client/`** : Interface web utilisateur. Elle consomme l'API d'authentification et l'API de données, et gère la session utilisateur via le jeton JWT.
+
+| Service | Rôle | Port local | Accès (Production) | Documentation |
+| :--- | :--- | :---: | :--- | :--- |
+| **`client/`** | Interface web utilisateur | `8080` | [https://gestion-equipe-foot.alwaysdata.net](https://gestion-equipe-foot.alwaysdata.net) | — |
+| **`auth/`** | Service d'authentification & signature JWT | `8081` | [https://gestion-equipe-foot-api.alwaysdata.net/auth](https://gestion-equipe-foot-api.alwaysdata.net/auth) | [Documentation API `auth`](auth/README.md) |
+| **`serveur/`** | API REST des données métier | `8082` | [https://gestion-equipe-foot-api.alwaysdata.net](https://gestion-equipe-foot-api.alwaysdata.net) | [Documentation API `serveur`](serveur/README.md) |
+
+> **Déploiement continu (CI/CD) :** Chaque microservice dispose d'un workflow GitHub Actions dédié qui déploie automatiquement les modifications vers Alwaysdata lors d'un push sur `main`.
+
 ## 🚀 Fonctionnalités
-- **Compte Coach unique** : Accès protégé pour la gestion globale de l'équipe.
-- **Gestion des Joueurs** : Suivi des informations, des postes et des statuts (actif, blessé, etc.).
-- **Gestion des Matchs** : Planification des rencontres et saisie des résultats.
-- **Feuilles de Match** : Sélection des participants pour chaque rencontre.
-- **Évaluations** : Système de notes et de commentaires par joueur après les matchs.
-- **Statistiques** : Calcul automatique des performances individuelles et collectives.
+
+- **Authentification** : Accès protégé par compte entraîneur avec jeton JWT.
+- **Gestion des Joueurs** : Suivi de l'effectif (informations personnelles, poste habituel, statut actif/blessé/suspendu/absent).
+- **Commentaires** : Ajout et historique de notes de suivi par joueur.
+- **Gestion des Matchs** : Planification des rencontres (date, lieu, adversaire) et gestion des résultats.
+- **Feuilles de Match** : Préparation de la composition d'équipe (11 titulaires dont 1 gardien, remplaçants).
+- **Évaluations** : Notation individuelle des joueurs après chaque match.
+- **Statistiques** : Calcul automatique des performances collectives (bilan victoires/nuls/défaites) et individuelles (sélections, temps de jeu, moyennes).
 
 ## 💻 Stack Technique
-- **Langage** : PHP 8.1+ (POO)
-- **Base de données** : MySQL
-- **Architecture** : MVC & DAO
+
+- **Langage** : PHP 8.3 (POO)
+- **Bases de données** : MySQL 8.4 (deux instances indépendantes `auth_db` et `serveur_db`)
+- **Authentification** : Jetons JWT asymétriques (RS256)
 - **Frontend** : HTML5 / CSS3
 
-## ⚙️ Installation et Configuration
-1. **Cloner le projet** :
-   ```bash
-   git clone https://github.com/leul-mulugeta/gestion-equipe-foot.git
-   cd gestion-equipe-foot
-   ```
+## ⚙️ Installation et Démarrage
 
-2. **Préparer l'environnement** :
-   - Renommez le fichier `.env.example` en `.env`.
-   - Modifiez les valeurs à l'intérieur selon vos préférences.
+### Prérequis
+- Docker & Docker Compose
 
-### Option A : La voie rapide avec Docker (Recommandée)
-Si vous ne souhaitez **pas** insérer les données de démonstration, supprimez simplement le fichier `sql/data_test.sql` de votre dossier avant de lancer Docker.
+### 1. Cloner le projet
+```bash
+git clone https://github.com/leul-mulugeta/gestion-equipe-foot.git
+cd gestion-equipe-foot
+```
 
-Vous pouvez lancer l'application en une seule commande :
+### 2. Configurer l'environnement
+Copiez le fichier d'exemple `.env.example` en `.env` :
+```bash
+cp .env.example .env
+```
 
+### 3. Lancer l'application
 ```bash
 docker compose up -d --build
 ```
 
-L'application est prête et accessible sur `http://localhost`.
+Au premier démarrage, le conteneur utilitaire `keygen` génère automatiquement la paire de clés RSA requise pour les jetons JWT, et les bases de données sont initialisées.
 
-### Option B : La voie classique (Laragon, XAMPP, WAMP)
-Si vous préférez utiliser votre propre serveur local.
+### 4. Accès local
 
-1. **Base de données** :
-   - Créez une base de données nommée `gestion-equipe-foot`.
-   - Exécutez les scripts SQL situés dans le dossier `sql/` dans l'ordre suivant :
-     1. `sql/01_create_tables.sql` (**Obligatoire** : crée la structure).
-     2. `sql/02_add_constraints.sql` (**Obligatoire** : ajoute les relations).
-     3. `sql/data_test.sql` (**Optionnel** : ajoute des données de démonstration).
+- **Application Web** : [http://localhost:8080](http://localhost:8080)
+- **API Authentification** : [http://localhost:8081](http://localhost:8081)
+- **API Données** : [http://localhost:8082](http://localhost:8082)
 
-2. **Lancer le serveur Web** :
-   La méthode la plus simple est d'utiliser le serveur intégré de PHP. Dans votre terminal, à la racine du projet, tapez :
-   ```bash
-   php -S localhost:8000 -t public
-   ```
-   L'application sera alors accessible sur `http://localhost:8000`.
+## 📁 Structure du Projet
 
-   *(Alternative : Si vous configurez un VirtualHost Apache sur Laragon/XAMPP, assurez-vous de faire pointer le "Document Root" directement vers le sous-dossier `public/`).*
-
-## 📁 Structure du projet
-- `public/` : Fichiers accessibles (index.php, CSS).
-- `src/Controller/` : Logique de contrôle.
-- `src/Model/` : Objets métiers (Entity) et accès aux données (DAO).
-- `src/Vue/` : Vues de l'application (HTML/PHP).
-- `sql/` : Scripts de création de la base de données.
-
-## 🧑‍💻 À propos
-Projet réalisé dans le cadre du **BUT Informatique** par Leul Mulugeta et Mathias Chatelard.
+```text
+gestion-equipe-foot/
+├── auth/                 # Microservice d'authentification (base auth_db)
+├── serveur/              # Microservice API REST Données (base serveur_db)
+├── client/               # Interface Web utilisateur (consommateur d'APIs)
+├── scripts/              # Scripts utilitaires (génération des clés JWT)
+├── compose.yaml          # Orchestration des conteneurs Docker
+├── .env.example          # Modèle des variables d'environnement
+└── README.md
+```
 
 ## 📄 Licence
+
 Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.

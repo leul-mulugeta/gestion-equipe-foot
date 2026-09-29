@@ -32,7 +32,7 @@ serveur/
 
 ## 3. Configuration
 
-Les variables d'environnement sont définies dans le fichier `.env` à la racine du projet et injectées via Docker Compose (`compose.microservices.yaml`) :
+Les variables d'environnement sont définies dans le fichier `.env` à la racine du projet et injectées via Docker Compose (`compose.yaml`) :
 
 * `DB_HOST` : hôte de la base (ex. `serveur-db` sous Docker)
 * `DB_NAME` : nom de la base (ex. `serveur_db`)
