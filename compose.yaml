@@ -1,35 +1,90 @@
 services:
-  db:
-    image: mysql:8.4
-    restart: always
-    environment:
-        MYSQL_DATABASE: ${DB_NAME}
-        MYSQL_USER: ${DB_USER}
-        MYSQL_PASSWORD: ${DB_PASSWORD}
-        MYSQL_ROOT_PASSWORD: root
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    ports:
-        - "3306:3306"
+  # Génère la paire de clés RS256 au premier démarrage (voir scripts/keygen.sh)
+  keygen:
+    image: alpine:3
     volumes:
-        - ./sql:/docker-entrypoint-initdb.d
-        - db_data:/var/lib/mysql
+      - ./scripts/keygen.sh:/keygen.sh:ro
+      - jwt-private:/private
+      - jwt-public:/public
+    command: sh /keygen.sh
 
-  web:
-    build: .
-    restart: always
-    ports:
-      - "80:80"
-    depends_on:
-      - db
+  auth-db:
+    image: mysql:8.4
     environment:
-      - DB_HOST=db
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - COACH_EMAIL=${COACH_EMAIL}
-      - COACH_PASSWORD=${COACH_PASSWORD}
+      MYSQL_DATABASE: ${AUTH_DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${AUTH_DB_ROOT_PASSWORD}
+      MYSQL_USER: ${AUTH_DB_USER}
+      MYSQL_PASSWORD: ${AUTH_DB_PASSWORD}
     volumes:
-      - ./:/var/www/html
+      - ./auth/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - auth-db-data:/var/lib/mysql
+
+  auth:
+    build: ./auth
+    ports:
+      - "8081:80"
+    depends_on:
+      auth-db:
+        condition: service_started
+      keygen:
+        condition: service_completed_successfully
+    environment:
+      - DB_HOST=auth-db
+      - DB_NAME=${AUTH_DB_NAME}
+      - DB_USER=${AUTH_DB_USER}
+      - DB_PASSWORD=${AUTH_DB_PASSWORD}
+      - JWT_PRIVATE_KEY_PATH=/keys/private.pem
+    volumes:
+      - ./auth/:/var/www/html
+      - jwt-private:/keys:ro
+
+  serveur-db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: ${SERVEUR_DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${SERVEUR_DB_ROOT_PASSWORD}
+      MYSQL_USER: ${SERVEUR_DB_USER}
+      MYSQL_PASSWORD: ${SERVEUR_DB_PASSWORD}
+    volumes:
+      - ./serveur/sql:/docker-entrypoint-initdb.d
+      - serveur-db-data:/var/lib/mysql
+
+  serveur:
+    build: ./serveur
+    ports:
+      - "8082:80"
+    depends_on:
+      serveur-db:
+        condition: service_started
+      keygen:
+        condition: service_completed_successfully
+    environment:
+      - DB_HOST=serveur-db
+      - DB_NAME=${SERVEUR_DB_NAME}
+      - DB_USER=${SERVEUR_DB_USER}
+      - DB_PASSWORD=${SERVEUR_DB_PASSWORD}
+      - JWT_PUBLIC_KEY_PATH=/keys/public.pem
+    volumes:
+      - ./serveur/:/var/www/html
+      - jwt-public:/keys:ro
+
+  client:
+    build: ./client
+    ports:
+      - "8080:80"
+    depends_on:
+      serveur:
+        condition: service_started
+      auth:
+        condition: service_started
+    environment:
+      - AUTH_URL=http://auth
+      - SERVEUR_URL=http://serveur
+    volumes:
+      - ./client/:/var/www/html
 
 volumes:
-    db_data:
+  auth-db-data:
+  serveur-db-data:
+  jwt-private:
+  jwt-public:
