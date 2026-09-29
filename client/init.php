@@ -40,7 +40,10 @@ require_once __DIR__ . '/src/Controller/ObtenirToutesLesRencontres.php';
 require_once __DIR__ . '/src/Controller/CreerUneRencontre.php';
 require_once __DIR__ . '/src/Controller/ObtenirUneRencontre.php';
 require_once __DIR__ . '/src/Controller/SupprimerUneRencontre.php';
+require_once __DIR__ . '/src/Controller/ModifierUneRencontre.php';
+require_once __DIR__ . '/src/Controller/ModifierLeResultatDUneRencontre.php';
 
 // Participants
 require_once __DIR__ . '/src/Controller/ObtenirTousLesParticipantsDUneRencontre.php';
 require_once __DIR__ . '/src/Controller/SauvegarderParticipantsDUneRencontre.php';
+require_once __DIR__ . '/src/Controller/ModifierEvaluationsParticipants.php';
