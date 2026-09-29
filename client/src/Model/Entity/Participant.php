@@ -11,10 +11,6 @@ class Participant
 
 	public function __construct(int $participantId, Joueur $joueur, int $rencontreId, TypeDeParticipation $typeDeParticipation, Poste $poste, ?int $evaluation = null)
 	{
-		if ($evaluation !== null && ($evaluation < 1 || $evaluation > 5)) {
-			throw new InvalidArgumentException("L'évaluation doit être comprise entre 1 et 5.");
-		}
-
 		$this->participantId = $participantId;
 		$this->joueur = $joueur;
 		$this->rencontreId = $rencontreId;

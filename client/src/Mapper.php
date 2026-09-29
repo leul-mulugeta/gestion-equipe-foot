@@ -45,11 +45,7 @@ class Mapper
 				Statut::from($joueurData['statut']),
 				Poste::from($joueurData['poste'])
 			);
-		} catch (InvalidArgumentException $e) {
-			// On préserve le message précis du constructeur
-			throw $e;
 		} catch (Throwable) {
-			// Attrape ValueError (Enum) ou DateMalformedStringException (DateTime)
 			throw new InvalidArgumentException('Une ou plusieurs valeurs sont invalides (date, statut ou poste).');
 		}
 	}
@@ -107,8 +103,6 @@ class Mapper
 				$rencontreData['scoreEquipeLocale'] ?? null,
 				$rencontreData['scoreEquipeAdverse'] ?? null
 			);
-		} catch (InvalidArgumentException $e) {
-			throw $e;
 		} catch (Throwable) {
 			throw new InvalidArgumentException('Une ou plusieurs valeurs sont invalides (date ou lieu).');
 		}
